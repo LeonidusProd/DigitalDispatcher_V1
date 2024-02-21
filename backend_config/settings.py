@@ -180,3 +180,10 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
     ],
 }
+
+
+# Bots tokens
+RESIDENTS_BOT_TOKEN = str(os.environ.get(
+    "RESIDENTS_BOT_TOKEN",
+    default='6200922540:AAHYgNdtkiWKAk1pqcHm2oIC8vuCz7hm8Fo'
+))
