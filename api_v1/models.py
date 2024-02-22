@@ -2,6 +2,8 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
+from django.utils import timezone
+
 
 class City(models.Model):
     name = models.CharField(max_length=40, null=False, verbose_name='Город')
@@ -241,7 +243,8 @@ class Request(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Задача')
 
     def __str__(self):
-        return f'{self.created_at}: {self.address} - {self.status}'
+        local_time = timezone.localtime(self.created_at, timezone.get_current_timezone())
+        return f'{local_time}: {self.address} - {self.status}'
 
     class Meta:
         verbose_name = 'Заявка/Обращение'
