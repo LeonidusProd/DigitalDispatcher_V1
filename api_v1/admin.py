@@ -11,7 +11,9 @@ class CityAdmin(admin.ModelAdmin):
     list_display_links = ('name',)
     ordering = ['name']
     list_per_page = 10
-    search_fields = ['name']
+    search_fields = [
+        'name'
+    ]
     save_on_top = True
 
     class Meta:
@@ -25,7 +27,10 @@ class StreetAdmin(admin.ModelAdmin):
     list_display_links = ('name', 'city',)
     ordering = ['name', 'city']
     list_per_page = 10
-    search_fields = ['name']
+    search_fields = [
+        'name',
+        'city__name'
+    ]
     save_on_top = True
 
     class Meta:
@@ -35,7 +40,11 @@ class StreetAdmin(admin.ModelAdmin):
 @admin.register(Building)
 class BuildingAdmin(admin.ModelAdmin):
     fields = ['street', 'number', 'corpus']
-    search_fields = ['street', 'number']
+    search_fields = [
+        'street__name',
+        'street__city__name',
+        'number'
+    ]
     ordering = ['street', 'number']
     list_per_page = 10
     save_on_top = True
@@ -81,7 +90,12 @@ class WorkScheduleAdmin(admin.ModelAdmin):
 @admin.register(Office)
 class OfficeAdmin(admin.ModelAdmin):
     save_on_top = True
-    search_fields = ['name', 'address']
+    search_fields = [
+        'name',
+        'address__street__name',
+        'address__street__city__name',
+        'address__number'
+    ]
     readonly_fields = ['display_related_employees']
 
     def display_related_employees(self, obj):
@@ -102,7 +116,12 @@ class OfficeAdmin(admin.ModelAdmin):
 @admin.register(HousingComplex)
 class HousingComplexAdmin(admin.ModelAdmin):
     save_on_top = True
-    search_fields = ['name', 'office__name',]
+    search_fields = [
+        'name',
+        'office__name',
+        'street__name',
+        'street__city__name'
+    ]
     readonly_fields = ['display_related_houses']
 
     def display_related_houses(self, obj):
