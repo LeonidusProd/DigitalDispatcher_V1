@@ -2,6 +2,46 @@ from django.contrib import admin
 from .models import *
 
 
+@admin.register(City)
+class CityAdmin(admin.ModelAdmin):
+    fields = ['name']
+    list_display = ('name',)
+    list_display_links = ('name',)
+    ordering = ['name']
+    list_per_page = 10
+    search_fields = ['name']
+    save_on_top = True
+
+    class Meta:
+        model = City
+
+
+@admin.register(Street)
+class StreetAdmin(admin.ModelAdmin):
+    fields = ['name', 'city']
+    list_display = ('name', 'city',)
+    list_display_links = ('name', 'city',)
+    ordering = ['name', 'city']
+    list_per_page = 10
+    search_fields = ['name']
+    save_on_top = True
+
+    class Meta:
+        model = Street
+
+
+@admin.register(Building)
+class BuildingAdmin(admin.ModelAdmin):
+    fields = ['street', 'number', 'corpus']
+    search_fields = ['street', 'number']
+    ordering = ['street', 'number']
+    list_per_page = 10
+    save_on_top = True
+
+    class Meta:
+        model = Building
+
+
 class WorkDayInline(admin.TabularInline):
     model = WorkDay
     extra = 0
@@ -38,3 +78,8 @@ class WorkScheduleAdmin(admin.ModelAdmin):
 
     class Meta:
         model = WorkSchedule
+
+
+
+
+

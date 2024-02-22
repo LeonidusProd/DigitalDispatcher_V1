@@ -1,5 +1,7 @@
 from django.db import models
-
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from django.core.exceptions import ValidationError
 
 class City(models.Model):
     name = models.CharField(max_length=40, null=False, verbose_name='Город')
@@ -33,7 +35,7 @@ class Street(models.Model):
 class Building(models.Model):
     street = models.ForeignKey(Street, on_delete=models.CASCADE, null=False, verbose_name='Улица')
     number = models.IntegerField(null=False, verbose_name='Номер здания')
-    corpus = models.CharField(max_length=5, null=True, verbose_name='Корпус')
+    corpus = models.CharField(max_length=5, null=True, blank=True, verbose_name='Корпус')
 
     def __str__(self):
         corp = ''
@@ -48,12 +50,27 @@ class Building(models.Model):
         return f'{self.street.short_str()}, д. {self.number}{corp}'
 
     class Meta:
+        # unique_together = ('street', 'number', 'corpus')
         verbose_name = 'Адрес'
         verbose_name_plural = 'Адреса'
 
 
+@receiver(pre_save, sender=Building)
+def check_unique_building(sender, instance, **kwargs):
+    # Проверка уникальности комбинации номера и корпуса для каждой улицы перед сохранением объекта Building
+    if Building.objects.filter(street=instance.street, number=instance.number, corpus=instance.corpus).exists():
+        raise ValidationError("Здание с таким номером и корпусом уже существует на этой улице.")
+
+
 class WorkSchedule(models.Model):
     name = models.CharField(max_length=100, null=False, verbose_name='Название графика работы')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'График работы'
+        verbose_name_plural = 'Графики работы'
 
 
 class WorkDay(models.Model):
@@ -69,8 +86,19 @@ class WorkDay(models.Model):
     schedule = models.ForeignKey(WorkSchedule, on_delete=models.CASCADE, related_name='work_days', null=False, verbose_name='График работы')
     day_of_week = models.IntegerField(choices=DAY_CHOICES, null=False, verbose_name='День недели')
     is_not_working = models.BooleanField(default=False, null=False, verbose_name='Нерабочий')
-    start_time = models.TimeField(null=True, verbose_name='Время начала работы')
-    end_time = models.TimeField(null=True, verbose_name='Время конца работы')
+    start_time = models.TimeField(null=True, blank=True, verbose_name='Время начала работы')
+    end_time = models.TimeField(null=True, blank=True, verbose_name='Время конца работы')
+
+    def __str__(self):
+        if self.is_not_working:
+            end = ' Нерабочий'
+        else:
+            end = f' c {self.start_time} до {self.end_time}'
+        return f'{self.schedule.name}: {self.day_of_week}{end}'
+
+    class Meta:
+        verbose_name = 'Рабочий день'
+        verbose_name_plural = 'Рабочие дни'
 
 
 class Office(models.Model):
@@ -78,16 +106,37 @@ class Office(models.Model):
     address = models.ForeignKey(Building, on_delete=models.CASCADE, null=False, verbose_name='Адрес офиса УК')
     work_schedule = models.ForeignKey(WorkSchedule, on_delete=models.CASCADE, null=False, verbose_name='График работы')
 
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Управляющая компания'
+        verbose_name_plural = 'Управляющие компании'
+
 
 class HousingComplex(models.Model):
     name = models.CharField(max_length=50, null=False, verbose_name='Название ЖК')
     office = models.ForeignKey(Office, on_delete=models.CASCADE, null=False, verbose_name='Офис УК')
     street = models.ForeignKey(Street, on_delete=models.CASCADE, null=False, verbose_name='Улица ЖК')
 
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Жилой комплекс'
+        verbose_name_plural = 'Жилые комплексы'
+
 
 class House(models.Model):
     complex = models.ForeignKey(HousingComplex, on_delete=models.CASCADE, null=False, verbose_name='Жилой комплекс')
     address = models.ForeignKey(Building, on_delete=models.CASCADE, null=False, verbose_name='Адрес')
+
+    def __str__(self):
+        return f'{self.complex.__str__()}: {self.address.__str__()}'
+
+    class Meta:
+        verbose_name = 'Жилой дом'
+        verbose_name_plural = 'Жилые дома'
 
 
 class Resident(models.Model):
@@ -95,21 +144,49 @@ class Resident(models.Model):
     surname = models.CharField(max_length=50, null=False, verbose_name='Фамилия')
     patronymic = models.CharField(max_length=50, null=False, verbose_name='Отчество')
     phone = models.CharField(max_length=15, null=False, verbose_name='Номер телефона')
-    tg_id = models.BigIntegerField(unique=True, null=True, verbose_name='ID пользователя в Telegram')
+    tg_id = models.BigIntegerField(unique=True, null=True, blank=True, verbose_name='ID пользователя в Telegram')
+
+    def __str__(self):
+        return f'{self.surname} {self.name} {self.patronymic}'
+
+    class Meta:
+        verbose_name = 'Житель'
+        verbose_name_plural = 'Жители'
 
 
 class ExecutionStatus(models.Model):
     # Можно сделать жёстко, но надо продумать статусы
     name = models.CharField(max_length=50, null=False, verbose_name='Название')
 
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Статус выполнения'
+        verbose_name_plural = 'Статусы выполнения'
+
 
 class Department(models.Model):
     name = models.CharField(max_length=50, null=False, verbose_name='Отдел')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Отдел'
+        verbose_name_plural = 'Отделы'
 
 
 class Position(models.Model):
     name = models.CharField(max_length=50, null=False, verbose_name='Должность')
     department = models.ForeignKey(Department, on_delete=models.CASCADE, null=False, verbose_name='Отдел')
+
+    def __str__(self):
+        return f'{self.department.__str__()}: {self.name}'
+
+    class Meta:
+        verbose_name = 'Должность'
+        verbose_name_plural = 'Должности'
 
 
 class Employee(models.Model):
@@ -117,9 +194,16 @@ class Employee(models.Model):
     surname = models.CharField(max_length=50, null=False, verbose_name='Фамилия')
     patronymic = models.CharField(max_length=50, null=False, verbose_name='Отчество')
     phone = models.CharField(max_length=15, null=False, verbose_name='Номер телефона')
-    email = models.EmailField(verbose_name='Электронная почта', null=True)
+    email = models.EmailField(verbose_name='Электронная почта', null=True, blank=True)
     position = models.ForeignKey(Position, on_delete=models.CASCADE, null=False, verbose_name='Должность')
-    tg_id = models.BigIntegerField(unique=True, null=True, verbose_name='ID пользователя в Telegram')
+    tg_id = models.BigIntegerField(unique=True, null=True, blank=True, verbose_name='ID пользователя в Telegram')
+
+    def __str__(self):
+        return f'{self.surname} {self.name} {self.patronymic}'
+
+    class Meta:
+        verbose_name = 'Сотрудник'
+        verbose_name_plural = 'Сотрудники'
 
 
 def get_request_photo_path(instance, filename=None):
@@ -132,12 +216,26 @@ class Request(models.Model):
     status = models.ForeignKey(ExecutionStatus, on_delete=models.CASCADE, null=False, verbose_name='Статус выполнения')
     resident = models.ForeignKey(Resident, on_delete=models.CASCADE, null=False, verbose_name='Автор заявки')
     address = models.ForeignKey(House, on_delete=models.CASCADE, null=False, verbose_name='Адрес заявки')
-    apartment = models.IntegerField(null=True, verbose_name='Номер квартиры')
-    photo = models.ImageField(upload_to=get_request_photo_path, null=True, verbose_name='Фото обращения')
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, verbose_name='Исполнитель')
+    apartment = models.IntegerField(null=True, blank=True, verbose_name='Номер квартиры')
+    photo = models.ImageField(upload_to=get_request_photo_path, null=True, blank=True, verbose_name='Фото обращения')
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Исполнитель')
+
+    def __str__(self):
+        return f'{self.created_at}: {self.address} - {self.status}'
+
+    class Meta:
+        verbose_name = 'Заявка/Обращение'
+        verbose_name_plural = 'Заявки/Обращения'
 
 
 class Service(models.Model):
     name = models.CharField(max_length=100, null=False, verbose_name='Типовая задача')
     description = models.TextField(null=False, verbose_name='Описание задачи')
     position = models.ForeignKey(Position, on_delete=models.CASCADE, null=False, verbose_name='Требуемая должность исполнителя')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Типовая задача'
+        verbose_name_plural = 'Типовые задачи'
