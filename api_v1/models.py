@@ -142,12 +142,15 @@ class House(models.Model):
 class Resident(models.Model):
     name = models.CharField(max_length=50, null=False, verbose_name='Имя')
     surname = models.CharField(max_length=50, null=False, verbose_name='Фамилия')
-    patronymic = models.CharField(max_length=50, null=False, verbose_name='Отчество')
+    patronymic = models.CharField(max_length=50, null=True, blank=True, verbose_name='Отчество')
     phone = models.CharField(max_length=15, null=False, verbose_name='Номер телефона')
     tg_id = models.BigIntegerField(unique=True, null=True, blank=True, verbose_name='ID пользователя в Telegram')
 
     def __str__(self):
-        return f'{self.surname} {self.name} {self.patronymic}'
+        if self.patronymic:
+            return f'{self.surname} {self.name} {self.patronymic}'
+        else:
+            return f'{self.surname} {self.name}'
 
     class Meta:
         verbose_name = 'Житель'
@@ -155,8 +158,7 @@ class Resident(models.Model):
 
 
 class ExecutionStatus(models.Model):
-    # Можно сделать жёстко, но надо продумать статусы
-    name = models.CharField(max_length=50, null=False, verbose_name='Название')
+    name = models.CharField(max_length=50, null=False, verbose_name='Статус')
 
     def __str__(self):
         return self.name
@@ -195,11 +197,15 @@ class Employee(models.Model):
     patronymic = models.CharField(max_length=50, null=False, verbose_name='Отчество')
     phone = models.CharField(max_length=15, null=False, verbose_name='Номер телефона')
     email = models.EmailField(verbose_name='Электронная почта', null=True, blank=True)
+    office = models.ForeignKey(Office, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Управляющая компания')
     position = models.ForeignKey(Position, on_delete=models.CASCADE, null=False, verbose_name='Должность')
     tg_id = models.BigIntegerField(unique=True, null=True, blank=True, verbose_name='ID пользователя в Telegram')
 
     def __str__(self):
-        return f'{self.surname} {self.name} {self.patronymic}'
+        if self.office:
+            return f'УК {self.office.name}: {self.surname} {self.name} {self.patronymic}'
+        else:
+            return f'{self.surname} {self.name} {self.patronymic}'
 
     class Meta:
         verbose_name = 'Сотрудник'
@@ -208,24 +214,6 @@ class Employee(models.Model):
 
 def get_request_photo_path(instance, filename=None):
     return f'request/{instance.pk}/{filename}'
-
-
-class Request(models.Model):
-    created_at = models.DateField(null=False, verbose_name='Дата и время создания', auto_now_add=True)
-    text = models.TextField(null=False, verbose_name='Текст обращения')
-    status = models.ForeignKey(ExecutionStatus, on_delete=models.CASCADE, null=False, verbose_name='Статус выполнения')
-    resident = models.ForeignKey(Resident, on_delete=models.CASCADE, null=False, verbose_name='Автор заявки')
-    address = models.ForeignKey(House, on_delete=models.CASCADE, null=False, verbose_name='Адрес заявки')
-    apartment = models.IntegerField(null=True, blank=True, verbose_name='Номер квартиры')
-    photo = models.ImageField(upload_to=get_request_photo_path, null=True, blank=True, verbose_name='Фото обращения')
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Исполнитель')
-
-    def __str__(self):
-        return f'{self.created_at}: {self.address} - {self.status}'
-
-    class Meta:
-        verbose_name = 'Заявка/Обращение'
-        verbose_name_plural = 'Заявки/Обращения'
 
 
 class Service(models.Model):
@@ -239,3 +227,22 @@ class Service(models.Model):
     class Meta:
         verbose_name = 'Типовая задача'
         verbose_name_plural = 'Типовые задачи'
+
+
+class Request(models.Model):
+    created_at = models.DateTimeField(null=False, verbose_name='Дата и время создания', auto_now_add=True)
+    text = models.TextField(null=False, verbose_name='Текст обращения')
+    status = models.ForeignKey(ExecutionStatus, on_delete=models.CASCADE, null=False, verbose_name='Статус выполнения')
+    resident = models.ForeignKey(Resident, on_delete=models.CASCADE, null=False, verbose_name='Автор заявки')
+    address = models.ForeignKey(House, on_delete=models.CASCADE, null=False, verbose_name='Адрес заявки')
+    apartment = models.IntegerField(null=True, blank=True, verbose_name='Номер квартиры')
+    photo = models.ImageField(upload_to=get_request_photo_path, null=True, blank=True, verbose_name='Фото обращения')
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Исполнитель')
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Задача')
+
+    def __str__(self):
+        return f'{self.created_at}: {self.address} - {self.status}'
+
+    class Meta:
+        verbose_name = 'Заявка/Обращение'
+        verbose_name_plural = 'Заявки/Обращения'
