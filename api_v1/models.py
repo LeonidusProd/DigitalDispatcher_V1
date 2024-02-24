@@ -214,10 +214,6 @@ class Employee(models.Model):
         verbose_name_plural = 'Сотрудники'
 
 
-def get_request_photo_path(instance, filename=None):
-    return f'request/{instance.pk}/{filename}'
-
-
 class Service(models.Model):
     name = models.CharField(max_length=100, null=False, verbose_name='Типовая задача')
     description = models.TextField(null=False, verbose_name='Описание задачи')
@@ -229,6 +225,10 @@ class Service(models.Model):
     class Meta:
         verbose_name = 'Типовая задача'
         verbose_name_plural = 'Типовые задачи'
+
+
+def get_request_photo_path(instance, filename=None):
+    return f'request/{instance.resident.tg_id}/{filename}'
 
 
 class Request(models.Model):

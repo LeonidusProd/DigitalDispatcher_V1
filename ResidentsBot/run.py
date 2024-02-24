@@ -13,10 +13,10 @@ RESIDENTS_BOT_TOKEN = str(os.environ.get(
     "RESIDENTS_BOT_TOKEN",
     default='6200922540:AAHYgNdtkiWKAk1pqcHm2oIC8vuCz7hm8Fo'
 ))
+bot = Bot(token=RESIDENTS_BOT_TOKEN, parse_mode='HTML')
 
 
 async def main():
-    bot = Bot(token=RESIDENTS_BOT_TOKEN, parse_mode='HTML')
     dp.include_router(router=router)
     await dp.start_polling(bot)
 
