@@ -4,9 +4,13 @@ from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
+from django.urls import reverse
+
 
 class City(models.Model):
-    name = models.CharField(max_length=40, null=False, verbose_name='Город')
+    name = models.CharField(max_length=40, null=False, unique=True, verbose_name='Название')
 
     def __str__(self):
         return f'Город {self.name}'
@@ -52,7 +56,6 @@ class Building(models.Model):
         return f'{self.street.short_str()}, д. {self.number}{corp}'
 
     class Meta:
-        # unique_together = ('street', 'number', 'corpus')
         verbose_name = 'Адрес'
         verbose_name_plural = 'Адреса'
 
@@ -85,7 +88,9 @@ class WorkDay(models.Model):
         (6, 'Суббота'),
         (7, 'Воскресенье'),
     )
-    schedule = models.ForeignKey(WorkSchedule, on_delete=models.CASCADE, related_name='work_days', null=False, verbose_name='График работы')
+    schedule = models.ForeignKey(
+        WorkSchedule, on_delete=models.CASCADE, related_name='work_days', null=False, verbose_name='График работы'
+    )
     day_of_week = models.IntegerField(choices=DAY_CHOICES, null=False, verbose_name='День недели')
     is_not_working = models.BooleanField(default=False, null=False, verbose_name='Нерабочий')
     start_time = models.TimeField(null=True, blank=True, verbose_name='Время начала работы')
@@ -93,14 +98,29 @@ class WorkDay(models.Model):
 
     def __str__(self):
         if self.is_not_working:
-            end = ' Нерабочий'
+            end = ' не рабочий'
         else:
             end = f' c {self.start_time} до {self.end_time}'
-        return f'{self.schedule.name}: {self.day_of_week}{end}'
+        return f'{self.schedule.name}: {self.get_day_of_week_display}{end}'
+
+    def short_str(self):
+        if self.is_not_working:
+            end = ' не рабочий'
+        else:
+            end = f' c {self.start_time} до {self.end_time}'
+        return f'{self.get_day_of_week_display()}{end}'
 
     class Meta:
         verbose_name = 'Рабочий день'
         verbose_name_plural = 'Рабочие дни'
+
+
+@receiver(post_save, sender=WorkSchedule)
+def create_work_days(sender, instance, created, **kwargs):
+    if created:
+        for day_of_week in range(1, 8):
+            WorkDay.objects.create(schedule=instance, day_of_week=day_of_week, is_not_working=True)
+        # WorkDay.objects.create(user=instance, is_performer=True)
 
 
 class Office(models.Model):
@@ -119,7 +139,6 @@ class Office(models.Model):
 class HousingComplex(models.Model):
     name = models.CharField(max_length=50, null=False, verbose_name='Название ЖК')
     office = models.ForeignKey(Office, on_delete=models.CASCADE, null=False, verbose_name='Офис УК')
-    street = models.ForeignKey(Street, on_delete=models.CASCADE, null=False, verbose_name='Улица ЖК')
 
     def __str__(self):
         return self.name

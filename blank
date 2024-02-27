@@ -1,0 +1,112 @@
+    path('tableway/', views.Tableway ShortListView.as_view(), name='tableway _list'),
+    path('tableway/<int:pk>/', views.Tableway ShortDetailView.as_view(), name='tableway _detail'),
+
+    path('secure/tableway/', views.Tableway FullListView.as_view(), name='tableway _full_list'),
+    path('secure/tableway/<int:pk>', views.Tableway FullDetailView.as_view(), name='tableway _full_detail'),
+    path('secure/tableway/manage/<int:pk>', views.Tableway FullDetailManageView.as_view(), name='tableway _full_detail_manage'),
+    path('secure/tableway/create/', views.Tableway CreateView.as_view(), name='tableway _create'),
+    path('secure/tableway/delete/<int:pk>', views.Tableway DeleteView.as_view(), name='tableway _delete'),
+
+
+
+
+class Tableway ShortListView(generics.ListAPIView):
+    """Список всех tableway (без конфиденциальных данных)"""
+    queryset = Tableway.objects.all()
+    serializer_class = Tableway ShortListSerializer
+    permission_classes = (AllowAny, )
+
+
+class Tableway ShortDetailView(generics.RetrieveAPIView):
+    """Полная информация о tableway (без конфиденциальных данных)"""
+    queryset = Tableway.objects.all()
+    serializer_class = Tableway ShortDetailSerializer
+    permission_classes = (AllowAny, )
+
+
+class Tableway FullListView(generics.ListAPIView):
+    """Список всех tableway (с конфиденциальными данными)"""
+    queryset = Tableway.objects.all()
+    serializer_class = Tableway FullListSerializer
+    permission_classes = (IsStaff, )
+
+
+class Tableway FullDetailView(generics.RetrieveAPIView):
+    """Полная информация о tableway (с конфиденциальными данными без управления)"""
+    queryset = Tableway.objects.all()
+    serializer_class = Tableway FullDetailSerializer
+    permission_classes = (IsStaff, )
+
+
+class Tableway FullDetailManageView(generics.RetrieveUpdateAPIView):
+    """Полная информация о tableway (с конфиденциальными данными с управлением)"""
+    queryset = Tableway.objects.all()
+    serializer_class = Tableway FullDetailManageSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class Tableway CreateView(generics.CreateAPIView):
+    """Добавление нового tableway"""
+    queryset = Tableway.objects.all()
+    serializer_class = Tableway CreateSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class Tableway DeleteView(generics.DestroyAPIView):
+    """Удаление tableway"""
+    queryset = Tableway.objects.all()
+    serializer_class = Tableway DeleteSerializer
+    permission_classes = (IsSuperuser, )
+
+
+
+
+
+
+class Tableway ShortListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tableway
+        fields = '__all__'
+
+
+class Tableway ShortDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tableway
+        fields = '__all__'
+
+
+class Tableway FullListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tableway
+        fields = '__all__'
+
+
+class Tableway FullDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tableway
+        fields = '__all__'
+
+
+class Tableway FullDetailManageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tableway
+        fields = '__all__'
+
+
+class Tableway CreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tableway
+        fields = '__all__'
+
+
+class Tableway DeleteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tableway
+        fields = '__all__'

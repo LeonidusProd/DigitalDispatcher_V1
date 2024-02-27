@@ -75,13 +75,13 @@ class WorkScheduleAdmin(admin.ModelAdmin):
             self.inlines = []
         return super().get_inline_instances(request, obj)
 
-    def save_model(self, request, obj, form, change):
-        if not change:
-            super().save_model(request, obj, form, change)
-            for day_of_week in range(1, 8):
-                WorkDay.objects.create(schedule=obj, day_of_week=day_of_week, is_not_working=True)
-        else:
-            super().save_model(request, obj, form, change)
+    # def save_model(self, request, obj, form, change):
+    #     if not change:
+    #         super().save_model(request, obj, form, change)
+    #         for day_of_week in range(1, 8):
+    #             WorkDay.objects.create(schedule=obj, day_of_week=day_of_week, is_not_working=True)
+    #     else:
+    #         super().save_model(request, obj, form, change)
 
     class Meta:
         model = WorkSchedule
