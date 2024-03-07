@@ -1,12 +1,10 @@
 from django.db import models
 from django.db.models.signals import pre_save
-from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.urls import reverse
 
 
 class City(models.Model):
@@ -173,6 +171,12 @@ class Resident(models.Model):
         else:
             return f'{self.surname} {self.name}'
 
+    def get_respectful_treatment(self):
+        if self.patronymic:
+            return f'{self.name} {self.patronymic}'
+        else:
+            return f'{self.name}'
+
     class Meta:
         verbose_name = 'Житель'
         verbose_name_plural = 'Жители'
@@ -218,7 +222,8 @@ class Employee(models.Model):
     patronymic = models.CharField(max_length=50, null=False, verbose_name='Отчество')
     phone = models.CharField(max_length=15, null=False, verbose_name='Номер телефона')
     email = models.EmailField(verbose_name='Электронная почта', null=True, blank=True)
-    office = models.ForeignKey(Office, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Управляющая компания')
+    office = models.ForeignKey(Office, on_delete=models.SET_NULL, null=True, blank=True,
+                               verbose_name='Управляющая компания')
     position = models.ForeignKey(Position, on_delete=models.CASCADE, null=False, verbose_name='Должность')
     tg_id = models.BigIntegerField(unique=True, null=True, blank=True, verbose_name='ID пользователя в Telegram')
 
@@ -228,6 +233,12 @@ class Employee(models.Model):
         else:
             return f'{self.surname} {self.name} {self.patronymic}'
 
+    def get_respectful_treatment(self):
+        if self.patronymic:
+            return f'{self.name} {self.patronymic}'
+        else:
+            return f'{self.name}'
+
     class Meta:
         verbose_name = 'Сотрудник'
         verbose_name_plural = 'Сотрудники'
@@ -236,7 +247,8 @@ class Employee(models.Model):
 class Service(models.Model):
     name = models.CharField(max_length=100, null=False, verbose_name='Типовая задача')
     description = models.TextField(null=False, verbose_name='Описание задачи')
-    position = models.ForeignKey(Position, on_delete=models.CASCADE, null=False, verbose_name='Требуемая должность исполнителя')
+    position = models.ForeignKey(Position, on_delete=models.CASCADE, null=False,
+                                 verbose_name='Требуемая должность исполнителя')
 
     def __str__(self):
         return self.name
