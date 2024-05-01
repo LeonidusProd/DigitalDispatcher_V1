@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from . import views
 
@@ -121,4 +121,7 @@ urlpatterns = [
     path('request/manage/<int:pk>', views.RequestManageView.as_view(), name='request_manage'),
     path('request/create/', views.RequestCreateView.as_view(), name='request_create'),
     path('request/delete/<int:pk>', views.RequestDeleteView.as_view(), name='request_delete'),
+
+
+    # path('auth/', include('rest_framework.urls')),
 ]
