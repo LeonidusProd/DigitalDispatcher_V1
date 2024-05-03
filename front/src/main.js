@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import router from "@/router/router";
 import components from "@/components/UI"
+import store from "@/store/index";
 
 // import 'bootstrap-vue/dist/bootstrap-vue.css';
 // import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
@@ -15,5 +16,7 @@ components.forEach(component => {
     app.component(component.name, component)
 })
 
-app.use(router).mount('#app')
-// app.use(router).use(BootstrapVue).use(IconsPlugin).mount('#app')
+app
+    .use(router)
+    .use(store)
+    .mount('#app')

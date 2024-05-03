@@ -1,6 +1,6 @@
 <template>
   <div class="request-short-card">
-    <span>{{ date }}</span>
+    <span>Заявка от {{ date.split(' ')[0] }} в {{ date.split(' ')[1] }}</span>
     <span>{{ adress }}</span>
     <div class="request-short-text">
       {{ info }}
@@ -10,7 +10,7 @@
 
 <script>
 export default {
-props:['date', 'adress', 'info']
+  props: ['date', 'adress', 'info'],
 }
 </script>
 
