@@ -384,12 +384,80 @@ class RequestLstMngCrtDelSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class RequestDetSerializer(serializers.ModelSerializer):
-    full_name = serializers.SerializerMethodField(method_name='get_full_name')
+# class RequestDetSerializer(serializers.ModelSerializer):
+#     full_name = serializers.SerializerMethodField(method_name='get_full_name')
+#
+#     def get_full_name(self, obj): return str(obj)
+#
+#     class Meta:
+#         model = Request
+#         fields = ['id', 'created_at', 'text', 'status', 'resident', 'address', 'apartment',
+#                   'photo', 'employee', 'service', 'full_name']
 
-    def get_full_name(self, obj): return str(obj)
+
+class RequestDetSerializer(serializers.ModelSerializer):
+    info = serializers.SerializerMethodField(method_name='get_info')
+    date = serializers.SerializerMethodField(method_name='get_date')
+    complex = serializers.SerializerMethodField(method_name='get_complex')
+    status = serializers.SlugRelatedField(slug_field='name', read_only=True)
+    address = serializers.SerializerMethodField(method_name='get_address')
+    resident = serializers.SerializerMethodField(method_name='get_resident')
+
+    def get_info(self, obj):
+        return obj.text
+
+    def get_date(self, obj):
+        local_time = timezone.localtime(obj.created_at, timezone.get_current_timezone())
+        return f"{local_time.date().strftime('%d.%m.%Y')} {local_time.time().strftime('%H:%M')}"
+
+    def get_complex(self, obj):
+        return obj.address.complex.__str__()
+
+    def get_address(self, obj):
+        if obj.apartment:
+            return f"{obj.address.address.short_str()}, кв. {obj.apartment}"
+        else:
+            return f"{obj.address.address.short_str()}"
+
+    def get_resident(self, obj):
+        return obj.resident.__str__()
 
     class Meta:
         model = Request
-        fields = ['id', 'created_at', 'text', 'status', 'resident', 'address', 'apartment',
-                  'photo', 'employee', 'service', 'full_name']
+        fields = ['pk', 'info', 'date', 'status', 'resident', 'address', 'complex', 'photo']
+
+
+class RequestShortInfoSerializer(serializers.ModelSerializer):
+    date = serializers.SerializerMethodField(method_name='get_date')
+    info = serializers.SerializerMethodField(method_name='get_info')
+    address = serializers.SerializerMethodField(method_name='get_address')
+
+    def get_date(self, obj):
+        local_time = timezone.localtime(obj.created_at, timezone.get_current_timezone())
+        return f"{local_time.date().strftime('%d.%m.%Y')} {local_time.time().strftime('%H:%M')}"
+
+    def get_info(self, obj):
+        return obj.text
+
+    def get_address(self, obj):
+        return obj.address.address.short_str()
+
+    class Meta:
+        model = Request
+        fields = ['pk', 'date', 'address', 'info']
+
+
+class RequestTaskInfoSerializer(serializers.ModelSerializer):
+    employee = serializers.SerializerMethodField(method_name='get_employee')
+    task = serializers.SerializerMethodField(method_name='get_task')
+    status = serializers.SlugRelatedField(slug_field='name', read_only=True)
+
+    def get_employee(self, obj):
+        return obj.employee.get_respectful_treatment()
+
+    def get_task(self, obj):
+        return obj.service.name
+
+    class Meta:
+        model = RequestTask
+        fields = ['pk', 'employee', 'task', 'status']

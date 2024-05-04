@@ -270,8 +270,9 @@ class Request(models.Model):
     address = models.ForeignKey(House, on_delete=models.CASCADE, null=False, verbose_name='Адрес заявки')
     apartment = models.IntegerField(null=True, blank=True, verbose_name='Номер квартиры')
     photo = models.ImageField(upload_to=get_request_photo_path, null=True, blank=True, verbose_name='Фото обращения')
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Исполнитель')
-    service = models.ForeignKey(Service, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Задача')
+    # employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True,
+    # verbose_name='Исполнитель') service = models.ForeignKey(Service, on_delete=models.CASCADE, null=True,
+    # blank=True, verbose_name='Задача')
 
     def __str__(self):
         local_time = timezone.localtime(self.created_at, timezone.get_current_timezone())
@@ -280,3 +281,17 @@ class Request(models.Model):
     class Meta:
         verbose_name = 'Заявка/Обращение'
         verbose_name_plural = 'Заявки/Обращения'
+
+
+class RequestTask(models.Model):
+    request = models.ForeignKey(Request, on_delete=models.CASCADE, null=False, verbose_name='Заявка')
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=False, verbose_name='Исполнитель')
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, null=False, verbose_name='Задача')
+    status = models.ForeignKey(ExecutionStatus, on_delete=models.CASCADE, null=False, verbose_name='Статус выполнения')
+
+    # def __str__(self):
+    #     return
+
+    class Meta:
+        verbose_name = 'Задача'
+        verbose_name_plural = 'Задачи'

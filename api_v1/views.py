@@ -582,6 +582,38 @@ class RequestDeleteView(generics.DestroyAPIView):
     permission_classes = (IsSuperuser, )
 
 
+class NewRequestsView(generics.ListAPIView):
+    """Список заявок со статусом 'Новая'"""
+    queryset = Request.objects.filter(
+        status__name='Новая'
+    )
+    serializer_class = RequestShortInfoSerializer
+    permission_classes = (AllowAny, )
+
+
+class ActiveRequestsView(generics.ListAPIView):
+    """Список заявок со статусом 'Новая'"""
+    queryset = Request.objects.filter(
+        status__name__in=['В работе', 'На проверке']
+    )
+    serializer_class = RequestShortInfoSerializer
+    permission_classes = (AllowAny, )
+
+
+class RequestTasksView(generics.ListAPIView):
+    """Список задач для заявки"""
+    def get_queryset(self):
+        request_id = self.kwargs.get('pk')
+        return RequestTask.objects.filter(
+            request_id=request_id
+        )
+    # queryset = RequestTask.objects.filter(
+    #     request_id=
+    # )
+    serializer_class = RequestTaskInfoSerializer
+    permission_classes = (AllowAny, )
+
+
 class TestView(APIView):
     def get(self, request):
         return Response(

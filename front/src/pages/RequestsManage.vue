@@ -33,7 +33,8 @@
 
       <div class="request-card">
         <h4 v-if="this.activeRequestId === -1">Ни одна заявка не выбрана</h4>
-        <RequestCard v-else :request-id="this.activeRequestId"></RequestCard>
+        <RequestCard v-else :key="this.activeRequestId">
+        </RequestCard>
       </div>
     </div>
   </div>
@@ -171,13 +172,6 @@ export default {
   border-radius: 12px;
   padding: 10px;
 
-}
-
-.request-photo img {
-  width: 100%;
-  height: 100%;
-  border-radius: 11px;
-  object-fit: cover;
 }
 
 .active-button {

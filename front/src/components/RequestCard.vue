@@ -1,5 +1,5 @@
 <template>
-  <h4>Информация о заявке № {{ activeRequestId }}</h4>
+  <h4>Информация о заявке № {{ this.activeRequestId }}</h4>
   <div class="request-card-content">
     <div class="request-card-up">
       <div class="request-card-info-block custom-scroll">
@@ -10,69 +10,25 @@
         <span>
           <b>Дата:</b> {{ this.requestData['date'].split(' ')[0] }} в {{ this.requestData['date'].split(' ')[1] }}
         </span>
-        <span><b>Статус:</b> {{ requestData['status'] }}</span>
-        <span><b>Житель:</b> {{ requestData['resident'] }}</span>
-        <span><b>Адрес:</b> {{ requestData['adress'] }}</span>
+        <span><b>Статус:</b> {{ this.requestData['status'] }}</span>
+        <span><b>Житель:</b> {{ this.requestData['resident'] }}</span>
+        <span><b>Адрес:</b> {{ this.requestData['address'] }}</span>
       </div>
       <div class="request-card-photo-block">
         <b>Прикреплённая фотография:</b><br>
-        <h6 hidden="">Житель не прикрепил фотографию</h6>
-        <div class="request-photo">
-          <img src="@/assets/hige.jpg" alt="problem-photo">
+        <h6 v-if="this.requestData['photo'] === null">Житель не прикрепил фотографию</h6>
+        <div v-else class="request-photo">
+          <img :src="this.requestData['photo']" alt="problem-photo">
         </div>
 
       </div>
     </div>
     <div class="request-card-tasks-block">
       <h4>Назначенные задачи</h4>
-      <h5 hidden="hidden">Нет назначенных задач</h5>
-      <div class="task-card-headers">
-        <span class="task-card-empl">Сотрудник</span>
-        <span class="task-card-task">Услуга</span>
-        <span class="task-card-stat">Статус</span>
-      </div>
-      <div class="tasks-list custom-scroll">
-        <div class="task-card">
-          <span class="task-card-empl">Сотрудник</span>
-          <span class="task-card-task">Услуга</span>
-          <span class="task-card-stat">Статус</span>
-          <div class="delete-task-button">
-            <img class="delete-task-button-img" src="@/assets/Close.svg" alt="del-task">
-          </div>
-        </div>
-        <div class="task-card">
-          <span class="task-card-empl">Сотрудник</span>
-          <span class="task-card-task">Услуга</span>
-          <span class="task-card-stat">Статус</span>
-          <div class="delete-task-button">
-            <img class="delete-task-button-img" src="@/assets/Close.svg" alt="del-task">
-          </div>
-        </div>
-        <div class="task-card">
-          <span class="task-card-empl">Сотрудник</span>
-          <span class="task-card-task">Услуга</span>
-          <span class="task-card-stat">Статус</span>
-          <div class="delete-task-button">
-            <img class="delete-task-button-img" src="@/assets/Close.svg" alt="del-task">
-          </div>
-        </div>
-        <div class="task-card">
-          <span class="task-card-empl">Сотрудник</span>
-          <span class="task-card-task">Услуга</span>
-          <span class="task-card-stat">Статус</span>
-          <div class="delete-task-button">
-            <img class="delete-task-button-img" src="@/assets/Close.svg" alt="del-task">
-          </div>
-        </div>
-        <div class="task-card">
-          <span class="task-card-empl">Сотрудник</span>
-          <span class="task-card-task">Услуга</span>
-          <span class="task-card-stat">Статус</span>
-          <div class="delete-task-button">
-            <img class="delete-task-button-img" src="@/assets/Close.svg" alt="del-task">
-          </div>
-        </div>
-      </div>
+      <h5 v-if="requestTasks.length === 0">Нет назначенных задач</h5>
+      <RequestTasksList v-else
+                        :key="this.requestData['pk']">
+      </RequestTasksList>
       <div class="create-task-button">Создать задачу</div>
     </div>
   </div>
@@ -84,9 +40,9 @@ import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 import RequestsList from "@/components/RequestsList.vue";
 import ShortRequestCard from "@/components/ShortRequestCard.vue";
 import MyButton from "@/components/UI/MyButton.vue";
+import RequestTasksList from "@/components/RequestTasksList.vue";
 
 export default {
-  // props: ['requestId'],
   computed: {
     store() {
       return store
@@ -99,13 +55,13 @@ export default {
     }),
     ...mapGetters({})
   },
-  components: {},
+  components: {RequestTasksList},
   data() {
     return {}
   },
   created() {
-    this.loadRequestTasks(this.requestId);
-    this.loadRequestData(this.requestId)
+    this.loadRequestTasks(this.activeRequestId);
+    this.loadRequestData(this.activeRequestId)
   },
   methods: {
     ...mapMutations({}),
@@ -113,9 +69,6 @@ export default {
       loadRequestTasks: 'requests/loadRequestTasks',
       loadRequestData: 'requests/loadRequestData'
     }),
-    changeSection(section) {
-
-    },
   }
 }
 </script>
@@ -160,72 +113,16 @@ export default {
   overflow: hidden;
 }
 
+.request-photo img {
+  width: 100%;
+  height: 100%;
+  border-radius: 11px;
+  object-fit: cover;
+}
+
 .request-card-tasks-block {
   //border: 1px solid blue;
   height: 49%;
-}
-
-.tasks-list {
-  //border: 1px solid blue;
-  display: flex;
-  flex-direction: column;
-  height: 55%;
-  overflow-y: auto;
-  padding-right: 3px;
-  margin-top: 3px;
-  border-radius: 12px;
-}
-
-.task-card-empl {
-  width: 30%
-}
-
-.task-card-task {
-  width: 44%
-}
-
-.task-card-stat {
-  width: 21%
-}
-
-.task-card {
-  //border: 1px solid red;
-  border-radius: 10px;
-  margin-top: 7px;
-  padding: 3px 10px;
-  display: flex;
-  background-color: rgb(139, 182, 177, 0.4);
-}
-
-.delete-task-button {
-  width: 23px;
-  //border: 1px solid red;
-  display: flex;
-  vertical-align: middle;
-  background-color: rgb(109, 197, 195, 0.4);
-  border-radius: 11px;
-}
-
-.delete-task-button:hover {
-  width: 23px;
-  display: flex;
-  vertical-align: middle;
-  background-color: rgb(109, 197, 195, 0.9);
-  border-radius: 11px;
-}
-
-.delete-task-button-img {
-  width: 100%;
-}
-
-.task-card-headers {
-  //border: 1px solid red;
-  border-radius: 10px;
-  margin-top: 7px;
-  padding: 3px 10px;
-  width: 99%;
-  display: flex;
-  background-color: rgb(109, 197, 195, 0.4);
 }
 
 .create-task-button {

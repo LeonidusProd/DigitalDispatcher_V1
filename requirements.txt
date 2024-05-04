@@ -10,3 +10,4 @@ requests
 drf-yasg
 drf-yasg[validation]
 setuptools
+django-cors-headers

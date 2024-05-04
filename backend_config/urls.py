@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.conf.urls.static import static
 
 from backend_config import settings
-from yasg import urlpatterns as doc_urls
+from .yasg import urlpatterns as doc_urls
 
 
 urlpatterns = [

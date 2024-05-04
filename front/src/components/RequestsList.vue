@@ -3,12 +3,12 @@
   <h6 v-if="requests.length === 0">Нет заявок</h6>
   <div v-else class="requests-list-scroll custom-scroll" id="requests-list">
     <ShortRequestCard v-for="request in requests"
-                      :id=request.id
+                      :id=request.pk
                       :date=request.date
-                      :adress=request.adress
+                      :address=request.address
                       :info=request.info
-                      @click=makeActive(request.id)
-                      :class="{'active-button': this.activeRequestId === request.id}">
+                      @click=makeActive(request.pk)
+                      :class="{'active-button': this.activeRequestId === request.pk}">
     </ShortRequestCard>
 
     <!--    <ShortRequestCard date="Заявка от 23.04.2024 в 16:00"-->
@@ -42,9 +42,11 @@ export default {
       setActiveSection: "requests/setActiveSection",
       setActiveRequestId: "requests/setActiveRequestId"
     }),
-    ...mapActions({}),
-    makeActive(id) {
-      this.setActiveRequestId(id)
+    ...mapActions({
+      loadRequestData: 'requests/loadRequestData'
+    }),
+    makeActive(pk) {
+      this.setActiveRequestId(pk)
     },
   }
 }
