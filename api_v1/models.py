@@ -233,6 +233,12 @@ class Employee(models.Model):
         else:
             return f'{self.surname} {self.name} {self.patronymic}'
 
+    def get_full_SNP(self):
+        if self.patronymic:
+            return f'{self.surname} {self.name} {self.patronymic}'
+        else:
+            return f'{self.surname} {self.name}'
+
     def get_respectful_treatment(self):
         if self.patronymic:
             return f'{self.name} {self.patronymic}'

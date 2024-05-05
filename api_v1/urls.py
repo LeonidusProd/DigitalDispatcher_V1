@@ -112,6 +112,9 @@ urlpatterns = [
     path('requests/new', views.NewRequestsView.as_view(), name='new_requests'),
     path('requests/active', views.ActiveRequestsView.as_view(), name='active_requests'),
     path('request/<int:pk>/tasks', views.RequestTasksView.as_view(), name='request_tasks'),
+    path('task/delete/<int:pk>', views.TaskDeleteView.as_view(), name='delete_task'),
+    path('task/create', views.TaskCreateView.as_view(), name='create_task'),
+    path('service/employees/', views.ServiceEmployeesView.as_view(), name='service_employees_list'),
     # request/<int:pk> Для информации о заявке, доработать созданный
     # path('auth/', include('rest_framework.urls')),
 ]

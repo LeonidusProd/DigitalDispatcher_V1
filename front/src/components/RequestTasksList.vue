@@ -1,5 +1,7 @@
 <template>
-  <div class="task-card-headers">
+  <h5 v-if="requestTasks.length === 0">Нет назначенных задач</h5>
+  <div v-else>
+    <div class="task-card-headers">
     <span class="task-card-empl">Сотрудник</span>
     <span class="task-card-task">Задача</span>
     <span class="task-card-stat">Статус</span>
@@ -9,8 +11,10 @@
                      :pk="task.pk"
                      :employee="task.employee"
                      :task="task.task"
-                     :status="task.status">
+                     :status="task.status"
+                     @deleteTask="$emit('deleteTask')">
     </RequestTaskCard>
+  </div>
   </div>
 </template>
 
@@ -21,6 +25,7 @@ import RequestsList from "@/components/RequestsList.vue";
 import ShortRequestCard from "@/components/ShortRequestCard.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import RequestTaskCard from "@/components/RequestTaskCard.vue";
+import { getCurrentInstance } from 'vue';
 
 export default {
   // props: ['pk'],
@@ -29,8 +34,9 @@ export default {
       return store
     },
     ...mapState({
-      // activeRequestId: state => state.requests.activeRequestId,
+      activeRequestId: state => state.requests.activeRequestId,
       requestTasks: state => state.requests.requestTasks,
+      taskListKey: state => state.requests.taskListKey,
       // requestData: state => state.requests.requestData,
       // requests: state => state.requests.requests,
     }),
@@ -41,17 +47,21 @@ export default {
     return {}
   },
   created() {
-    // this.loadRequestTasks(key);
+    this.loadRequestTasks(this.activeRequestId);
     // this.loadRequestData(this.requestId)
   },
   methods: {
-    ...mapMutations({}),
+    ...mapMutations({
+      setTaskListKey: "requests/setTaskListKey",
+    }),
     ...mapActions({
       loadRequestTasks: 'requests/loadRequestTasks',
       // loadRequestData: 'requests/loadRequestData'
     }),
-    changeSection(section) {
-
+    reRender() {
+      console.log('reRender')
+      // this.$emit('deleteTask')
+      this.setTaskListKey(this.taskListKey + 1)
     },
   }
 }

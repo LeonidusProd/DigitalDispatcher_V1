@@ -361,7 +361,7 @@ class ServiceLstMngCrtDelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Service
-        fields = '__all__'
+        fields = ['pk', 'name', 'description', 'position']
 
 
 class ServiceDetSerializer(serializers.ModelSerializer):
@@ -402,6 +402,7 @@ class RequestDetSerializer(serializers.ModelSerializer):
     status = serializers.SlugRelatedField(slug_field='name', read_only=True)
     address = serializers.SerializerMethodField(method_name='get_address')
     resident = serializers.SerializerMethodField(method_name='get_resident')
+    office_id = serializers.SerializerMethodField(method_name='get_office_id')
 
     def get_info(self, obj):
         return obj.text
@@ -422,9 +423,12 @@ class RequestDetSerializer(serializers.ModelSerializer):
     def get_resident(self, obj):
         return obj.resident.__str__()
 
+    def get_office_id(self, obj):
+        return obj.address.complex.office.pk
+
     class Meta:
         model = Request
-        fields = ['pk', 'info', 'date', 'status', 'resident', 'address', 'complex', 'photo']
+        fields = ['pk', 'info', 'date', 'status', 'resident', 'address', 'complex', 'photo', 'office_id']
 
 
 class RequestShortInfoSerializer(serializers.ModelSerializer):
@@ -461,3 +465,21 @@ class RequestTaskInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = RequestTask
         fields = ['pk', 'employee', 'task', 'status']
+
+
+class RequestTaskDelSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RequestTask
+        fields = '__all__'
+
+
+class ServiseEmployeesSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField(method_name='get_name')
+
+    def get_name(self, obj):
+        return obj.get_full_SNP()
+
+    class Meta:
+        model = Employee
+        fields = ['pk', 'name']

@@ -7,16 +7,24 @@
       <img class="delete-task-button-img"
            src="@/assets/Close.svg"
            alt="del-task"
-           @click="">
+           @click="deleteTask(pk)">
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   props: ['pk', 'employee', 'task', 'status'],
   methods: {
+    async deleteTask(pk) {
+      console.log("Delete task pk" + pk)
+      // http://localhost:8000/api/v1/task/delete/
+      await axios.delete(`http://localhost:8000/api/v1/task/delete/${pk}`)
 
+      this.$emit('deleteTask')
+    }
   }
 }
 </script>

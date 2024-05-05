@@ -623,6 +623,36 @@ class TestView(APIView):
         )
 
 
+class TaskDeleteView(generics.DestroyAPIView):
+    """Удаление задачи заявки"""
+    queryset = RequestTask.objects.all()
+    serializer_class = RequestTaskDelSerializer
+    permission_classes = (AllowAny, )
+
+
+class TaskCreateView(generics.CreateAPIView):
+    """Создание задачи заявки"""
+    queryset = RequestTask.objects.all()
+    serializer_class = RequestTaskDelSerializer
+    permission_classes = (AllowAny, )
+
+
+class ServiceEmployeesView(generics.ListAPIView):
+    """Список сотрудников, подходящих для задачи"""
+    def get_queryset(self):
+        data = self.request.query_params
+        print(data)
+        return Employee.objects.filter(
+            position_id=data.get('position_pk'),
+            office_id=data.get('office_pk')
+        )
+    # queryset = RequestTask.objects.filter(
+    #     request_id=
+    # )
+    serializer_class = ServiseEmployeesSerializer
+    permission_classes = (AllowAny, )
+
+
 # class ComplexList(ListAPIView):
 #     queryset = HousingComplex.objects.all()
 #     serializer_class = HousingComplexSerializer

@@ -57,6 +57,7 @@ export default {
       activeRequestId: state => state.requests.activeRequestId,
       activeSection: state => state.requests.activeSection,
       requests: state => state.requests.requests,
+      taskListKey: state => state.requests.taskListKey,
     }),
     ...mapGetters({})
   },
@@ -89,8 +90,6 @@ export default {
         this.loadActiveRequests()
       }
       this.setActiveRequestId(-1)
-      // store.commit('setActiveRequestId', -1)
-      // console.log(this.activeIndex)
     },
   }
 }

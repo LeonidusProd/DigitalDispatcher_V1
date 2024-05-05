@@ -23,13 +23,17 @@
 
       </div>
     </div>
-    <div class="request-card-tasks-block">
+    <div class="request-card-tasks-block" id="request_card_tasks_block">
       <h4>Назначенные задачи</h4>
-      <h5 v-if="requestTasks.length === 0">Нет назначенных задач</h5>
-      <RequestTasksList v-else
-                        :key="this.requestData['pk']">
+      <RequestTasksList :key="taskListKey"
+                        @deleteTask="reloadTasks()">
       </RequestTasksList>
-      <div class="create-task-button">Создать задачу</div>
+      <div class="create-task-button" @click="this.showDialog = true">Создать задачу</div>
+      <CreateTaskPopup
+          :show="this.showDialog"
+          @closeDialog="this.showDialog = false"
+          @saveTask="saveTask"
+      ></CreateTaskPopup>
     </div>
   </div>
 </template>
@@ -41,6 +45,8 @@ import RequestsList from "@/components/RequestsList.vue";
 import ShortRequestCard from "@/components/ShortRequestCard.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import RequestTasksList from "@/components/RequestTasksList.vue";
+import {getCurrentInstance} from "vue";
+import CreateTaskPopup from "@/components/CreateTaskPopup.vue";
 
 export default {
   computed: {
@@ -52,23 +58,48 @@ export default {
       requestTasks: state => state.requests.requestTasks,
       requestData: state => state.requests.requestData,
       requests: state => state.requests.requests,
+      taskListKey: state => state.requests.taskListKey,
     }),
     ...mapGetters({})
   },
-  components: {RequestTasksList},
+  components: {CreateTaskPopup, RequestTasksList},
   data() {
-    return {}
+    return {
+      showDialog: false
+    }
   },
   created() {
     this.loadRequestTasks(this.activeRequestId);
     this.loadRequestData(this.activeRequestId)
   },
   methods: {
-    ...mapMutations({}),
+    ...mapMutations({
+      setTaskListKey: "requests/setTaskListKey",
+    }),
     ...mapActions({
       loadRequestTasks: 'requests/loadRequestTasks',
-      loadRequestData: 'requests/loadRequestData'
+      loadRequestData: 'requests/loadRequestData',
+      createTask: 'requests/createTask',
     }),
+    reloadTasks() {
+      // console.log(this.taskListKey);
+      // this.taskListKey += 1;
+      // console.log(this.taskListKey);
+      this.loadRequestTasks(this.activeRequestId);
+      this.setTaskListKey(this.taskListKey + 1)
+      // getCurrentInstance().proxy.$forceUpdate();
+
+    },
+    saveTask(servicePk, employeePk) {
+      this.createTask({
+        requestPk: this.activeRequestId,
+        servicePk: servicePk,
+        employeePk: employeePk,
+        status: 1
+      })
+      this.reloadTasks()
+      this.showDialog = false
+    },
   }
 }
 </script>
