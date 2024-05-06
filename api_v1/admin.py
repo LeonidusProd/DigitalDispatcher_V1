@@ -298,3 +298,4 @@ class RequestTaskAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ExecutionStatus)
+admin.site.register(BotsSettings)

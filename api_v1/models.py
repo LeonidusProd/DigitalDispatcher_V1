@@ -301,3 +301,12 @@ class RequestTask(models.Model):
     class Meta:
         verbose_name = 'Задача'
         verbose_name_plural = 'Задачи'
+
+
+class BotsSettings(models.Model):
+    residentBotToken = models.TextField(null=False, verbose_name='Токен бота жителей')
+    staffBotToken = models.TextField(null=False, verbose_name='Токен бота мастеров')
+
+    class Meta:
+        verbose_name = 'Токены ботов'
+        verbose_name_plural = 'Токены ботов'

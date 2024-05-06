@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import ShortRequestCard from "@/components/ShortRequestCard.vue";
+import ShortRequestCard from "@/components/RequestManage/ShortRequestCard.vue";
 import store from "@/store";
 import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 

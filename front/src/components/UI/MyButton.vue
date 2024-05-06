@@ -1,24 +1,44 @@
 <template>
-  <button class="my-btn my-btn-primary">
+<!--  <button class="my-btn my-btn-primary">-->
+<!--    <slot></slot>-->
+<!--  </button>-->
+  <div class="my-button">
     <slot></slot>
-  </button>
+  </div>
 </template>
 
 <script>
 export default {
   name: 'my-button',
-  props: {
-    modelValue: [String, Number]
-  },
-  methods: {
-    updateInput(event) {
-      this.$emit('update:modelValue', event.target.value)
-    }
-  }
 }
 </script>
 
 <style scoped>
+.my-button {
+  display: flex;
+  flex-direction: column;
+  //width: 150px;
+  background-color: rgb(139, 182, 177, 0.4);
+  margin-top: 10px;
+  height: 40px;
+  border-radius: 20px;
+  justify-content: space-evenly;
+  text-align: center;
+}
+
+.my-button:hover {
+  display: flex;
+  flex-direction: column;
+  //width: 150px;
+  background-color: rgb(109, 197, 195, 0.4);
+  margin-top: 10px;
+  height: 40px;
+  border-radius: 20px;
+  justify-content: space-evenly;
+  text-align: center;
+  cursor: default;
+}
+
 .my-btn {
   margin-top: 5px;
   text-decoration: none;

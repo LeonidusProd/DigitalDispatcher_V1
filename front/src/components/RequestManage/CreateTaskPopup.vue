@@ -18,23 +18,24 @@
           <h5 v-if="showEmploeesSelect">Сотрудник:</h5>
           <MySelect v-if="showEmploeesSelect"
                     :options="this.serviceEmployees"
-                    @selectChanged="employeeChanged"></MySelect>
-          <div v-if="showSaveButton"
-               @click="$emit('saveTask', this.servicePk, this.employeePk)"
-               class="save-button">
+                    @selectChanged="employeeChanged">
+          </MySelect>
+
+          <my-button v-if="showSaveButton"
+                     @click="saveTask">
             Сохранить
-          </div>
+          </my-button>
         </div>
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
 import MySelect from "@/components/UI/MySelect.vue";
 import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 import store from "@/store";
+import MyButton from "@/components/UI/MyButton.vue";
 
 export default {
   computed: {
@@ -49,7 +50,7 @@ export default {
     }),
     ...mapGetters({})
   },
-  components: {MySelect},
+  components: {MyButton, MySelect},
   props: {
     show: {
       type: Boolean,
@@ -95,7 +96,13 @@ export default {
       console.log('EmployeePk: ' + this.employeePk)
       this.showSaveButton = true
     },
-
+    saveTask() {
+      this.$emit('saveTask', this.servicePk, this.employeePk)
+      this.servicePk = -1
+      this.employeePk = -1
+      this.showSaveButton = false
+      this.showEmploeesSelect = false
+    },
   }
 }
 </script>
@@ -167,30 +174,5 @@ export default {
 
 .close-dialog-button-img {
   width: 100%;
-}
-
-.save-button {
-  display: flex;
-  flex-direction: column;
-  width: 150px;
-  background-color: rgb(139, 182, 177, 0.4);
-  margin-top: 10px;
-  height: 40px;
-  border-radius: 20px;
-  justify-content: space-evenly;
-  text-align: center;
-}
-
-.save-button:hover {
-  display: flex;
-  flex-direction: column;
-  width: 150px;
-  background-color: rgb(109, 197, 195, 0.4);
-  margin-top: 10px;
-  height: 40px;
-  border-radius: 20px;
-  justify-content: space-evenly;
-  text-align: center;
-  cursor: default;
 }
 </style>

@@ -1,31 +1,31 @@
 <template>
   <h5 v-if="requestTasks.length === 0">Нет назначенных задач</h5>
-  <div v-else>
+  <div v-else class="task-cards">
     <div class="task-card-headers">
-    <span class="task-card-empl">Сотрудник</span>
-    <span class="task-card-task">Задача</span>
-    <span class="task-card-stat">Статус</span>
-  </div>
-  <div class="tasks-list custom-scroll">
-    <RequestTaskCard v-for="task in this.requestTasks"
-                     :pk="task.pk"
-                     :employee="task.employee"
-                     :task="task.task"
-                     :status="task.status"
-                     @deleteTask="$emit('deleteTask')">
-    </RequestTaskCard>
-  </div>
+      <span class="task-card-empl">Сотрудник</span>
+      <span class="task-card-task">Задача</span>
+      <span class="task-card-stat">Статус</span>
+    </div>
+    <div class="tasks-list custom-scroll">
+      <RequestTaskCard v-for="task in this.requestTasks"
+                       :pk="task.pk"
+                       :employee="task.employee"
+                       :task="task.task"
+                       :status="task.status"
+                       @deleteTask="$emit('deleteTask')">
+      </RequestTaskCard>
+    </div>
   </div>
 </template>
 
 <script>
 import store from "@/store";
 import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
-import RequestsList from "@/components/RequestsList.vue";
-import ShortRequestCard from "@/components/ShortRequestCard.vue";
+import RequestsList from "@/components/RequestManage/RequestsList.vue";
+import ShortRequestCard from "@/components/RequestManage/ShortRequestCard.vue";
 import MyButton from "@/components/UI/MyButton.vue";
-import RequestTaskCard from "@/components/RequestTaskCard.vue";
-import { getCurrentInstance } from 'vue';
+import RequestTaskCard from "@/components/RequestManage/RequestTaskCard.vue";
+import {getCurrentInstance} from 'vue';
 
 export default {
   // props: ['pk'],
@@ -68,15 +68,23 @@ export default {
 </script>
 
 <style scoped>
+.task-cards {
+  //display: flex;
+  //flex-direction: column;
+  height: 84%;
+  //border: 1px solid white;
+}
+
 .tasks-list {
   //border: 1px solid blue;
   display: flex;
   flex-direction: column;
-  height: 55%;
   overflow-y: auto;
   padding-right: 3px;
   margin-top: 3px;
   border-radius: 12px;
+  height: 140px;
+  //min-height: 65%;
 }
 
 .task-card-empl {
@@ -97,6 +105,9 @@ export default {
   margin-top: 7px;
   padding: 3px 10px;
   width: 99%;
+  height: 32px;
+  //height: 15%;
+  //min-height: 15%;
   display: flex;
   background-color: rgb(109, 197, 195, 0.4);
 }

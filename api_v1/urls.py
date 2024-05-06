@@ -115,6 +115,10 @@ urlpatterns = [
     path('task/delete/<int:pk>', views.TaskDeleteView.as_view(), name='delete_task'),
     path('task/create', views.TaskCreateView.as_view(), name='create_task'),
     path('service/employees/', views.ServiceEmployeesView.as_view(), name='service_employees_list'),
+
+    # path('bottokens/', views.BotTokensView.as_view(), name='bottokens'),
+    path('bottokens/manage/<int:pk>', views.BotTokensUpdateView.as_view(), name='bottokens_manage'),
+
     # request/<int:pk> Для информации о заявке, доработать созданный
     # path('auth/', include('rest_framework.urls')),
 ]

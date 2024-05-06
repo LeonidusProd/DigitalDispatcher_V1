@@ -97,7 +97,7 @@ class StreetDeleteView(generics.DestroyAPIView):
 class BuildingListView(generics.ListAPIView):
     """Список всех адресов"""
     queryset = Building.objects.all()
-    serializer_class = BuildingLstMngCrtDelSerializer
+    serializer_class = BuildingLstSerializer
     permission_classes = (AllowAny, )
 
 
@@ -202,14 +202,14 @@ class OfficeCreateView(generics.CreateAPIView):
     """Добавление новой управляющей компании"""
     queryset = Office.objects.all()
     serializer_class = OfficeLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 class OfficeDeleteView(generics.DestroyAPIView):
     """Удаление управляющей компании"""
     queryset = Office.objects.all()
     serializer_class = OfficeLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 #####################################################################
@@ -650,6 +650,20 @@ class ServiceEmployeesView(generics.ListAPIView):
     #     request_id=
     # )
     serializer_class = ServiseEmployeesSerializer
+    permission_classes = (AllowAny, )
+
+
+# class BotTokensView(generics.ListAPIView):
+#     """Токены ботов"""
+#     queryset = BotsSettings.objects.all()
+#     serializer_class = BotTokensSerializer
+#     permission_classes = (AllowAny, )
+
+
+class BotTokensUpdateView(generics.RetrieveUpdateAPIView):
+    """Обновление и получение токенов ботов"""
+    queryset = BotsSettings.objects.all()
+    serializer_class = BotTokensSerializer
     permission_classes = (AllowAny, )
 
 

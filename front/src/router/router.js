@@ -1,6 +1,7 @@
 import LoginPage from "@/pages/LoginPage.vue";
 import {createRouter, createWebHistory} from "vue-router";
 import RequestsManage from "@/pages/RequestsManage.vue";
+import Settings from "@/pages/Settings.vue";
 
 
 const routes = [
@@ -11,6 +12,10 @@ const routes = [
     {
         path: '/requests',
         component: RequestsManage
+    },
+    {
+        path: '/settings',
+        component: Settings
     },
 ]
 

@@ -24,16 +24,24 @@
       </div>
     </div>
     <div class="request-card-tasks-block" id="request_card_tasks_block">
-      <h4>Назначенные задачи</h4>
-      <RequestTasksList :key="taskListKey"
-                        @deleteTask="reloadTasks()">
-      </RequestTasksList>
-      <div class="create-task-button" @click="this.showDialog = true">Создать задачу</div>
-      <CreateTaskPopup
-          :show="this.showDialog"
-          @closeDialog="this.showDialog = false"
-          @saveTask="saveTask"
-      ></CreateTaskPopup>
+      <div class="tasks-list-block">
+        <h4>Назначенные задачи</h4>
+        <RequestTasksList :key="taskListKey"
+                          @deleteTask="reloadTasks()">
+        </RequestTasksList>
+
+        <CreateTaskPopup
+            :show="this.showDialog"
+            @closeDialog="this.showDialog = false"
+            @saveTask="saveTask">
+        </CreateTaskPopup>
+      </div>
+      <div class="tasks-button-block">
+        <my-button @click="this.showDialog = true"
+                   class="create-task-button">
+          Создать задачу
+        </my-button>
+      </div>
     </div>
   </div>
 </template>
@@ -41,12 +49,12 @@
 <script>
 import store from "@/store";
 import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
-import RequestsList from "@/components/RequestsList.vue";
-import ShortRequestCard from "@/components/ShortRequestCard.vue";
+import RequestsList from "@/components/RequestManage/RequestsList.vue";
+import ShortRequestCard from "@/components/RequestManage/ShortRequestCard.vue";
 import MyButton from "@/components/UI/MyButton.vue";
-import RequestTasksList from "@/components/RequestTasksList.vue";
+import RequestTasksList from "@/components/RequestManage/RequestTasksList.vue";
 import {getCurrentInstance} from "vue";
-import CreateTaskPopup from "@/components/CreateTaskPopup.vue";
+import CreateTaskPopup from "@/components/RequestManage/CreateTaskPopup.vue";
 
 export default {
   computed: {
@@ -62,7 +70,7 @@ export default {
     }),
     ...mapGetters({})
   },
-  components: {CreateTaskPopup, RequestTasksList},
+  components: {MyButton, CreateTaskPopup, RequestTasksList},
   data() {
     return {
       showDialog: false
@@ -154,28 +162,13 @@ export default {
 .request-card-tasks-block {
   //border: 1px solid blue;
   height: 49%;
+  max-height: 49%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .create-task-button {
-  display: flex;
-  background-color: rgb(139, 182, 177, 0.4);
-  margin-top: 10px;
-  height: 40px;
-  border-radius: 20px;
-  padding-left: 20px;
-  align-items: center;
-  width: 200px;
-}
-
-.create-task-button:hover {
-  display: flex;
-  background-color: rgb(109, 197, 195, 0.4);
-  margin-top: 10px;
-  height: 40px;
-  border-radius: 20px;
-  padding-left: 20px;
-  align-items: center;
-  cursor: default;
   width: 200px;
 }
 
@@ -198,5 +191,22 @@ export default {
 /* Цвет ползунка при наведении */
 .custom-scroll::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+.tasks-list-block {
+  display: flex;
+  flex-direction: column;
+  height: 80%;
+  //border: 1px solid black;
+}
+
+.tasks-button-block {
+  height: 19%;
+  //height: 40px;
+  display: flex;
+  flex-direction: row;
+  //align-items: center;
+
+  //border: 1px solid blue;
 }
 </style>

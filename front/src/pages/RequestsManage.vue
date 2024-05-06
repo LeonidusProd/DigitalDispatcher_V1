@@ -6,20 +6,20 @@
           <img class="logo-img" src="@/assets/Лого%20текст%20снизу.svg" alt="logo">
         </div>
         <div class="menu-block">
-          <div class="menu-button"
-               @click="changeSection('newRequests')"
-               :class="{'active-button':this.activeSection === 'newRequests'}">
+          <my-button @click="changeSection('newRequests')"
+                     :class="{'active-button':this.activeSection === 'newRequests'}">
             Новые заявки
-          </div>
-          <div class="menu-button"
-               @click="changeSection('activeRequests')"
-               :class="{'active-button':this.activeSection === 'activeRequests'}">
+          </my-button>
+          <my-button @click="changeSection('activeRequests')"
+                     :class="{'active-button':this.activeSection === 'activeRequests'}">
             Активные заявки
-          </div>
+          </my-button>
         </div>
       </div>
       <div class="down-block">
-        <my-button class="exit-button">Выход</my-button>
+        <my-button @click="">
+          Выход
+        </my-button>
       </div>
     </div>
 
@@ -42,11 +42,11 @@
 
 <script>
 import MyButton from "@/components/UI/MyButton.vue";
-import ShortRequestCard from "@/components/ShortRequestCard.vue";
-import RequestsList from "@/components/RequestsList.vue";
+import ShortRequestCard from "@/components/RequestManage/ShortRequestCard.vue";
+import RequestsList from "@/components/RequestManage/RequestsList.vue";
 import store from "@/store";
 import {mapState, mapMutations, mapActions, mapGetters} from 'vuex'
-import RequestCard from "@/components/RequestCard.vue";
+import RequestCard from "@/components/RequestManage/RequestCard.vue";
 
 export default {
   computed: {
@@ -121,27 +121,6 @@ export default {
   width: 50%;
 }
 
-.menu-button {
-  display: flex;
-  background-color: rgb(139, 182, 177, 0.4);
-  margin-top: 10px;
-  height: 40px;
-  border-radius: 20px;
-  padding-left: 20px;
-  align-items: center;
-}
-
-.menu-button:hover {
-  display: flex;
-  background-color: rgb(109, 197, 195, 0.4);
-  margin-top: 10px;
-  height: 40px;
-  border-radius: 20px;
-  padding-left: 20px;
-  align-items: center;
-  cursor: default;
-}
-
 .down-block {
   width: 100%;
 }
@@ -179,11 +158,5 @@ export default {
 
 .active-button:hover {
   background-color: rgb(79, 212, 213);
-}
-
-.exit-button {
-  width: 100%;
-  border-radius: 20px;
-  height: 40px;
 }
 </style>

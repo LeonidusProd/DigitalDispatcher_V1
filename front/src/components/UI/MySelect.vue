@@ -33,9 +33,9 @@ export default {
   font-weight: 400;
   line-height: 1.5;
   color: #212523;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+  //-webkit-appearance: none;
+  //-moz-appearance: none;
+  //appearance: none;
   background-color: #fff;
   background-clip: padding-box;
   border: 2px solid #a9a89f;

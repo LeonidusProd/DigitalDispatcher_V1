@@ -68,6 +68,16 @@ class BuildingLstMngCrtDelSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class BuildingLstSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField(method_name='get_name')
+
+    def get_name(self, obj): return str(obj.__str__())
+
+    class Meta:
+        model = Building
+        fields = ['pk', 'name']
+
+
 class BuildingDetSerializer(serializers.ModelSerializer):
     city_name = serializers.SerializerMethodField(method_name='get_city_name')
     street_name = serializers.SerializerMethodField(method_name='get_street_name')
@@ -131,7 +141,7 @@ class WorkScheduleLstSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WorkSchedule
-        fields = ['id', 'name', 'work_days']
+        fields = ['pk', 'name', 'work_days']
 
 
 class WorkScheduleDetMngSerializer(serializers.ModelSerializer):
@@ -161,7 +171,7 @@ class OfficeLstMngCrtDelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Office
-        fields = '__all__'
+        fields = ['pk', 'name', 'address', 'work_schedule']
 
 
 class OfficeDetSerializer(serializers.ModelSerializer):
@@ -483,3 +493,10 @@ class ServiseEmployeesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = ['pk', 'name']
+
+
+class BotTokensSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BotsSettings
+        fields = '__all__'
