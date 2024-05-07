@@ -111,20 +111,38 @@ export default {
     },
     async createSchedule(data) {
       try {
-        // await axios.post(
-        //     'http://localhost:8000/api/v1/office/create/',
-        //     {
-        //       name: data.name,
-        //       address: data.address,
-        //       work_schedule: data.work_schedule
-        //     }
-        // )
+        const response = (await axios.post(
+            'http://localhost:8000/api/v1/schedule/create/',
+            {
+              name: data.scheduleName,
+            }
+        ))
+        let newSchedulePk = response.data.id
+        console.log(response)
+        await this.configWorkDays(newSchedulePk, data.days)
       } catch (e) {
         alert('Сервер не доступен')
       }
-      this.reloadSchedules()
+      // this.reloadSchedules()
+    },
+    async configWorkDays(newSchedulePk, days) {
+      try {
+
+
+
+        // const response = (await axios.post(
+        //     'http://localhost:8000/api/v1/schedule/create/',
+        //     {
+        //       name: data.scheduleName,
+        //     }
+        // ))
+      } catch (e) {
+        alert('Сервер не доступен')
+      }
+      // this.reloadSchedules()
     },
     saveSchedule(data) {
+      console.log(data)
       this.createSchedule(data)
       this.showScheduleDialog = false
     },

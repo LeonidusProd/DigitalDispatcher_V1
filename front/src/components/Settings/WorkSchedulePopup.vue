@@ -21,10 +21,162 @@
           </MyInput>
 
           <h5>Расписание</h5>
-          <MyCheckbox :checked="this.mondayIsWork"
-                      @update:checked="mondayIsWork = $event"
-                      :label="'Понедельник рабочий'">
-          </MyCheckbox>
+          <div class="work-days">
+            <div class="work-day">
+              <MyCheckbox :checked="mondayIsWork"
+                          @update:checked="mondayIsWork = $event"
+                          :label="'Понедельник рабочий'"
+                          :id=1>
+              </MyCheckbox>
+              <div class="time-inputs" v-if="mondayIsWork">
+                <MyInput :placeholder="'С'"
+                         :model-value="this.mondayStartTime"
+                         @input="this.mondayStartTime = $event.target.value"
+                         class="time-input"
+                         type="time">
+                </MyInput>
+                <p><b>-</b></p>
+                <MyInput :placeholder="'До'"
+                         :model-value="this.mondayEndTime"
+                         @input="this.mondayEndTime = $event.target.value"
+                         class="time-input"
+                         type="time">
+                </MyInput>
+              </div>
+            </div>
+            <div class="work-day">
+              <MyCheckbox :checked="tuesdayIsWork"
+                          @update:checked="tuesdayIsWork = $event"
+                          :label="'Вторник рабочий'"
+                          :id=2>
+              </MyCheckbox>
+              <div class="time-inputs" v-if="tuesdayIsWork">
+                <MyInput :placeholder="'С'"
+                         :model-value="this.tuesdayStartTime"
+                         @input="this.tuesdayStartTime = $event.target.value"
+                         class="time-input"
+                         type="time">
+                </MyInput>
+                <p><b>-</b></p>
+                <MyInput :placeholder="'До'"
+                         :model-value="this.tuesdayEndTime"
+                         @input="this.tuesdayEndTime = $event.target.value"
+                         class="time-input"
+                         type="time">
+                </MyInput>
+              </div>
+            </div>
+            <div class="work-day">
+              <MyCheckbox :checked="this.wednesdayIsWork"
+                          @update:checked="wednesdayIsWork = $event"
+                          :label="'Среда рабочий'"
+                          :id=3>
+              </MyCheckbox>
+              <div class="time-inputs" v-if="this.wednesdayIsWork">
+                <MyInput :placeholder="'С'"
+                         :model-value="this.wednesdayStartTime"
+                         @input="this.wednesdayStartTime = $event.target.value"
+                         class="time-input"
+                         type="time">
+                </MyInput>
+                <p><b>-</b></p>
+                <MyInput :placeholder="'До'"
+                         :model-value="this.wednesdayEndTime"
+                         @input="this.wednesdayEndTime = $event.target.value"
+                         class="time-input"
+                         type="time">
+                </MyInput>
+              </div>
+            </div>
+            <div class="work-day">
+              <MyCheckbox :checked="this.thursdayIsWork"
+                          @update:checked="thursdayIsWork = $event"
+                          :label="'Четверг рабочий'"
+                          :id=4>
+              </MyCheckbox>
+              <div class="time-inputs" v-if="this.thursdayIsWork">
+                <MyInput :placeholder="'С'"
+                         :model-value="this.thursdayStartTime"
+                         @input="this.thursdayStartTime = $event.target.value"
+                         class="time-input"
+                         type="time">
+                </MyInput>
+                <p><b>-</b></p>
+                <MyInput :placeholder="'До'"
+                         :model-value="this.thursdayEndTime"
+                         @input="this.thursdayEndTime = $event.target.value"
+                         class="time-input"
+                         type="time">
+                </MyInput>
+              </div>
+            </div>
+            <div class="work-day">
+              <MyCheckbox :checked="this.fridayIsWork"
+                          @update:checked="fridayIsWork = $event"
+                          :label="'Пятница рабочий'"
+                          :id=5>
+              </MyCheckbox>
+              <div class="time-inputs" v-if="this.fridayIsWork">
+                <MyInput :placeholder="'С'"
+                         :model-value="this.fridayStartTime"
+                         @input="this.fridayStartTime = $event.target.value"
+                         class="time-input"
+                         type="time">
+                </MyInput>
+                <p><b>-</b></p>
+                <MyInput :placeholder="'До'"
+                         :model-value="this.fridayEndTime"
+                         @input="this.fridayEndTime = $event.target.value"
+                         class="time-input"
+                         type="time">
+                </MyInput>
+              </div>
+            </div>
+            <div class="work-day">
+              <MyCheckbox :checked="this.saturdayIsWork"
+                          @update:checked="saturdayIsWork = $event"
+                          :label="'Суббота рабочий'"
+                          :id=6>
+              </MyCheckbox>
+              <div class="time-inputs" v-if="this.saturdayIsWork">
+                <MyInput :placeholder="'С'"
+                         :model-value="this.saturdayStartTime"
+                         @input="this.saturdayStartTime = $event.target.value"
+                         class="time-input"
+                         type="time">
+                </MyInput>
+                <p><b>-</b></p>
+                <MyInput :placeholder="'До'"
+                         :model-value="this.saturdayEndTime"
+                         @input="this.saturdayEndTime = $event.target.value"
+                         class="time-input"
+                         type="time">
+                </MyInput>
+              </div>
+            </div>
+            <div class="work-day">
+              <MyCheckbox :checked="this.sundayIsWork"
+                          @update:checked="sundayIsWork = $event"
+                          :label="'Воскресенье рабочий'"
+                          :id=7>
+              </MyCheckbox>
+              <div class="time-inputs" v-if="this.sundayIsWork">
+                <MyInput :placeholder="'С'"
+                         :model-value="this.sundayStartTime"
+                         @input="this.sundayStartTime = $event.target.value"
+                         class="time-input"
+                         type="time">
+                </MyInput>
+                <p><b>-</b></p>
+                <MyInput :placeholder="'До'"
+                         :model-value="this.sundayEndTime"
+                         @input="this.sundayEndTime = $event.target.value"
+                         class="time-input"
+                         type="time">
+                </MyInput>
+              </div>
+            </div>
+          </div>
 
           <MyButton @click="saveSchedule">
             Сохранить
@@ -53,54 +205,88 @@ export default {
   data() {
     return {
       scheduleName: '',
+
       mondayIsWork: false,
-      // selectedAddress: -1,
-      // addresses: [],
-      // selectedworkSchedule: -1,
-      // workSchedules: [],
+      tuesdayIsWork: false,
+      wednesdayIsWork: false,
+      thursdayIsWork: false,
+      fridayIsWork: false,
+      saturdayIsWork: false,
+      sundayIsWork: false,
+
+      mondayStartTime: '',
+      tuesdayStartTime: '',
+      wednesdayStartTime: '',
+      thursdayStartTime: '',
+      fridayStartTime: '',
+      saturdayStartTime: '',
+      sundayStartTime: '',
+
+      mondayEndTime: '',
+      tuesdayEndTime: '',
+      wednesdayEndTime: '',
+      thursdayEndTime: '',
+      fridayEndTime: '',
+      saturdayEndTime: '',
+      sundayEndTime: '',
     }
   },
-  mounted() {
-    // this.loadAddresses()
-    // this.loadWorkSchedules()
-  },
   methods: {
-    async loadAddresses() {
-      try {
-        const response = (await axios.get('http://localhost:8000/api/v1/address/'))
-        this.addresses = response.data
-      } catch (e) {
-        alert('Сервер не доступен')
-      }
-    },
-    async loadWorkSchedules() {
-      try {
-        const response = (await axios.get('http://localhost:8000/api/v1/schedule/'))
-        this.workSchedules = response.data
-      } catch (e) {
-        alert('Сервер не доступен')
-      }
-    },
-    addressChanged(addressPk) {
-      this.selectedAddress = addressPk
-    },
-    workScheduleChanged(workSchedulePk) {
-      this.selectedworkSchedule = workSchedulePk
-    },
     closeDialog() {
       this.$emit('closeScheduleDialog')
     },
     saveSchedule() {
-      // if (this.officeName !== '' && this.selectedAddress !== -1 && this.selectedworkSchedule !== -1) {
-      //   this.$emit('saveSchedule', {
-      //     name: this.officeName,
-      //     address: this.selectedAddress,
-      //     work_schedule: this.selectedworkSchedule
-      //   })
-      //   this.officeName = ''
-      //   this.servicePk = -1
-      //   this.employeePk = -1
-      // }
+      let days = [];
+
+      if (this.mondayIsWork && this.mondayStartTime !== '' && this.mondayEndTime !== '') {
+        days.push({dayId: 1, start: this.mondayStartTime, end: this.mondayEndTime})
+      }
+      if (this.tuesdayIsWork && this.tuesdayStartTime !== '' && this.tuesdayEndTime !== '') {
+        days.push({dayId: 2, start: this.tuesdayStartTime, end: this.tuesdayEndTime})
+      }
+      if (this.wednesdayIsWork && this.wednesdayStartTime !== '' && this.wednesdayEndTime !== '') {
+        days.push({dayId: 3, start: this.wednesdayStartTime, end: this.wednesdayEndTime})
+      }
+      if (this.thursdayIsWork && this.thursdayStartTime !== '' && this.thursdayEndTime !== '') {
+        days.push({dayId: 4, start: this.thursdayStartTime, end: this.thursdayEndTime})
+      }
+      if (this.fridayIsWork && this.fridayStartTime !== '' && this.fridayEndTime !== '') {
+        days.push({dayId: 5, start: this.fridayStartTime, end: this.fridayEndTime})
+      }
+      if (this.saturdayIsWork && this.saturdayStartTime !== '' && this.saturdayEndTime !== '') {
+        days.push({dayId: 6, start: this.saturdayStartTime, end: this.saturdayEndTime})
+      }
+      if (this.sundayIsWork && this.sundayStartTime !== '' && this.sundayEndTime !== '') {
+        days.push({dayId: 7, start: this.sundayStartTime, end: this.sundayEndTime})
+      }
+
+      this.$emit('saveSchedule', {
+        scheduleName: this.scheduleName,
+        days: days
+      })
+
+      this.scheduleName = ''
+      this.mondayIsWork = false
+      this.tuesdayIsWork = false
+      this.wednesdayIsWork = false
+      this.thursdayIsWork = false
+      this.fridayIsWork = false
+      this.saturdayIsWork = false
+      this.sundayIsWork = false
+      this.mondayStartTime = ''
+      this.tuesdayStartTime = ''
+      this.wednesdayStartTime = ''
+      this.thursdayStartTime = ''
+      this.fridayStartTime = ''
+      this.saturdayStartTime = ''
+      this.sundayStartTime = ''
+      this.mondayEndTime = ''
+      this.tuesdayEndTime = ''
+      this.wednesdayEndTime = ''
+      this.thursdayEndTime = ''
+      this.fridayEndTime = ''
+      this.saturdayEndTime = ''
+      this.sundayEndTime = ''
     },
   }
 }
@@ -122,7 +308,7 @@ export default {
   background: white;
   border-radius: 12px;
   min-height: 320px;
-  min-width: 600px;
+  min-width: 625px;
   padding: 20px;
   display: flex;
 }
@@ -148,6 +334,31 @@ export default {
   width: 100%;
   padding: 20px;
 }
+
+.work-days {
+  display: flex;
+  flex-direction: column;
+}
+
+.work-day {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  min-height: 40px;
+}
+
+.time-inputs {
+  display: flex;
+  flex-direction: row;
+}
+
+.time-input {
+  width: 100px;
+  margin-right: 30px;
+  margin-left: 30px;
+}
+
 
 .close-dialog-button {
   height: 30px;

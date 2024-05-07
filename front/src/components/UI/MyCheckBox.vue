@@ -3,19 +3,21 @@
          class="my-checkbox"
          :checked="checked"
          @change="updateCheckbox"
-         id="my-checkbox">
-  <label for="my-checkbox">{{ this.label }}</label>
+         :id="id">
+  <label :for="id">{{ this.label }}</label>
 </template>
 
 <script>
 export default {
   name: 'my-checkbox',
   props: {
+    id: [Number],
     checked: [Boolean],
     label: [String]
   },
   methods: {
     updateCheckbox(event) {
+      console.log(this.label + ' Checkbox clicked: ' + event.target.checked)
       this.$emit('update:checked', event.target.checked)
     }
   }

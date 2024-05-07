@@ -150,7 +150,7 @@ class WorkScheduleManageView(generics.RetrieveUpdateAPIView):
     """Изменение информации о графике работы """
     queryset = WorkSchedule.objects.all()
     serializer_class = WorkScheduleDetMngSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 class WorkDayManageView(generics.RetrieveUpdateAPIView):
@@ -164,7 +164,7 @@ class WorkScheduleCreateView(generics.CreateAPIView):
     """Добавление нового графика работы"""
     queryset = WorkSchedule.objects.all()
     serializer_class = WorkScheduleCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 class WorkScheduleDeleteView(generics.DestroyAPIView):
