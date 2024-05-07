@@ -94,12 +94,12 @@ class WorkDay(models.Model):
     start_time = models.TimeField(null=True, blank=True, verbose_name='Время начала работы')
     end_time = models.TimeField(null=True, blank=True, verbose_name='Время конца работы')
 
-    def __str__(self):
-        if self.is_not_working:
-            end = ' не рабочий'
-        else:
-            end = f' c {self.start_time} до {self.end_time}'
-        return f'{self.schedule.name}: {self.get_day_of_week_display}{end}'
+    # def __str__(self):
+    #     if self.is_not_working:
+    #         end = ' не рабочий'
+    #     else:
+    #         end = f' c {self.start_time} до {self.end_time}'
+    #     return f'{self.schedule.name}: {self.get_day_of_week_display}{end}'
 
     def short_str(self):
         if self.is_not_working:

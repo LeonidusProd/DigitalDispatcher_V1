@@ -1,33 +1,33 @@
 <template>
-  <h5 v-if="false">Список УК пуст</h5>
+  <h5 v-if="false">Список графиков пуст</h5>
 
-  <div v-else class="office-cards">
-    <div class="office-list custom-scroll">
-      <OfficeCard v-for="office in this.officesList"
-                  :pk="office.pk"
-                  :office-name="office.name"
-                  @deleteOffice="$emit('deleteOffice')">
-      </OfficeCard>
+  <div v-else class="schedule-cards">
+    <div class="schedule-list custom-scroll">
+      <WorkScheduleCard v-for="schedule in this.schedulesList"
+                  :pk="schedule.pk"
+                  :schedule-name="schedule.name"
+                  @deleteSchedule="$emit('deleteSchedule')">
+      </WorkScheduleCard>
     </div>
   </div>
 </template>
 
 <script>
-import OfficeCard from "@/components/Settings/OfficeCard.vue";
+import WorkScheduleCard from "@/components/Settings/WorkScheduleCard.vue";
 
 export default {
-  components: {OfficeCard},
+  components: {WorkScheduleCard},
   props:{
-    officesList: [Array]
+    schedulesList: [Array]
   }
 }
 </script>
 
 <style scoped>
-.office-cards {
+.schedule-cards {
   height: 150px;
 }
-.office-list {
+.schedule-list {
   display: flex;
   flex-direction: column;
   overflow-y: auto;

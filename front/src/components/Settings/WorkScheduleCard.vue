@@ -1,12 +1,12 @@
 <template>
-  <div class="office-card">
-    <span>{{ this.officeName }}</span>
+  <div class="schedule-card">
+    <span>{{ this.scheduleName }}</span>
 
-    <div class="delete-office-button">
-      <img class="delete-office-button-img"
+    <div class="delete-schedule-button">
+      <img class="delete-schedule-button-img"
            src="@/assets/Close.svg"
            alt="del-office"
-           @click="deleteOffice(this.pk)">
+           @click="deleteSchedule(this.pk)">
     </div>
   </div>
 </template>
@@ -15,18 +15,18 @@
 import axios from "axios";
 
 export default {
-  props: ['pk', 'officeName'],
+  props: ['pk', 'scheduleName'],
   methods: {
-    async deleteOffice(pk) {
-      await axios.delete(`http://localhost:8000/api/v1/office/delete/${pk}`)
-      this.$emit('deleteOffice')
+    async deleteSchedule(pk) {
+      await axios.delete(`http://localhost:8000/api/v1/schedule/delete/${pk}`)
+      this.$emit('deleteSchedule')
     }
   }
 }
 </script>
 
 <style scoped>
-.office-card {
+.schedule-card {
   border-radius: 10px;
   margin-top: 7px;
   padding: 3px 10px;
@@ -34,21 +34,21 @@ export default {
   background-color: rgb(139, 182, 177, 0.4);
   justify-content: space-between;
 }
-.delete-office-button {
+.delete-schedule-button {
   width: 23px;
   display: flex;
   vertical-align: middle;
   background-color: rgb(109, 197, 195, 0.4);
   border-radius: 11px;
 }
-.delete-office-button:hover {
+.delete-schedule-button:hover {
   width: 23px;
   display: flex;
   vertical-align: middle;
   background-color: rgb(109, 197, 195, 0.9);
   border-radius: 11px;
 }
-.delete-office-button-img {
+.delete-schedule-button-img {
   width: 100%;
 }
 </style>

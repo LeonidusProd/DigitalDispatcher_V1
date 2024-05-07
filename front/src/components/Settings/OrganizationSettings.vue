@@ -4,24 +4,46 @@
       <div class="office-block">
         <div>
           <h3>Управляющие компании</h3>
+
           <OfficesList :key="this.officesListKey"
                        @deleteOffice="loadOffices"
                        :offices-list="this.officesList">
 
           </OfficesList>
         </div>
+
         <my-button @click="this.showOfficeDialog = true">
           Добавить УК
         </my-button>
+
         <create-office-popup :show="this.showOfficeDialog"
-                             @closeDialog="this.showOfficeDialog = false"
-                             @saveOffice="saveOffice">
+                             @saveOffice="saveOffice"
+                             @closeOfficeDialog="this.showOfficeDialog = false">
         </create-office-popup>
       </div>
-
     </div>
 
     <div class="right-side">
+      <div class="schedule-block">
+        <div>
+          <h3>Графики работы</h3>
+
+          <WorkScheduleList :key="this.scheduleListKey"
+                       @deleteSchedule="loadSchedules"
+                       :schedules-list="this.schedulesList">
+
+          </WorkScheduleList>
+        </div>
+
+        <my-button @click="this.showScheduleDialog = true">
+          Добавить график работы
+        </my-button>
+
+        <WorkSchedulePopup :show="this.showScheduleDialog"
+                             @saveSchedule="saveSchedule"
+                             @closeScheduleDialog="this.showScheduleDialog = false">
+        </WorkSchedulePopup>
+      </div>
 
     </div>
   </div>
@@ -30,21 +52,28 @@
 <script>
 import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
-import OfficesList from "@/components/Settings/OfficesList.vue";
 import CreateOfficePopup from "@/components/Settings/CreateOfficePopup.vue";
 import axios from "axios";
+import WorkScheduleList from "@/components/Settings/WorkScheduleList.vue";
+import WorkSchedulePopup from "@/components/Settings/WorkSchedulePopup.vue";
+import OfficesList from "@/components/Settings/OfficesList.vue";
 
 export default {
-  components: {CreateOfficePopup, MyButton, OfficesList, MyInput},
+  components: {OfficesList, WorkSchedulePopup, WorkScheduleList, CreateOfficePopup, MyButton, MyInput},
   data() {
     return {
       officesList: [],
       officesListKey: 1,
       showOfficeDialog: false,
+
+      schedulesList: [],
+      scheduleListKey: 1,
+      showScheduleDialog: false,
     }
   },
-  mounted() {
-    this.loadOffices()
+  created() {
+    this.loadOffices();
+    this.loadSchedules()
   },
   methods: {
     async loadOffices() {
@@ -64,15 +93,44 @@ export default {
       } catch (e) {
         alert('Сервер не доступен')
       }
+      this.reloadOffices()
     },
     saveOffice(data) {
       this.createOffice(data)
-      this.reloadOffices()
+      this.showOfficeDialog = false
     },
     reloadOffices() {
       this.loadOffices();
-      this.officesListKey += 1
+      this.officesListKey = this.officesListKey + 1
+    },
 
+    async loadSchedules() {
+      const response = (await axios.get(`http://localhost:8000/api/v1/schedule/`))
+      this.schedulesList = response.data
+      console.log(this.schedulesList)
+    },
+    async createSchedule(data) {
+      try {
+        // await axios.post(
+        //     'http://localhost:8000/api/v1/office/create/',
+        //     {
+        //       name: data.name,
+        //       address: data.address,
+        //       work_schedule: data.work_schedule
+        //     }
+        // )
+      } catch (e) {
+        alert('Сервер не доступен')
+      }
+      this.reloadSchedules()
+    },
+    saveSchedule(data) {
+      this.createSchedule(data)
+      this.showScheduleDialog = false
+    },
+    reloadSchedules() {
+      this.loadSchedules();
+      this.scheduleListKey = this.scheduleListKey + 1
     },
   },
 }
@@ -83,8 +141,8 @@ export default {
 .inside-container {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  border: 1px solid black;
+  //justify-content: space-between;
+  //border: 1px solid black;
   height: 100%;
   width: 100%;
 }
@@ -94,21 +152,31 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: start;
-  border: 1px solid blue;
+  margin-right: 20px;
+  //border: 1px solid blue;
 }
 
 .right-side {
-  width: 63%;
+  //width: 63%;
+  width: 35%;
   display: flex;
   flex-direction: column;
-  justify-content: end;
-  align-items: end;
-  border: 1px solid red;
+  //justify-content: end;
+  //align-items: end;
+  //border: 1px solid red;
 }
 
 .office-block {
   height: 40%;
-  border: 1px solid green;
+  //border: 1px solid green;
+  justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-block {
+  height: 40%;
+  //border: 1px solid green;
   justify-content: space-between;
   display: flex;
   flex-direction: column;

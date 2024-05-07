@@ -171,7 +171,7 @@ class WorkScheduleDeleteView(generics.DestroyAPIView):
     """Удаление графика работы"""
     queryset = WorkSchedule.objects.all()
     serializer_class = WorkScheduleCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 #####################################################################

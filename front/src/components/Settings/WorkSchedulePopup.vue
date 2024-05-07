@@ -3,7 +3,7 @@
     <div class="dialog-content">
       <div class="create-task-content">
         <div class="up-block">
-          <h3>Добавление УК</h3>
+          <h3>Добавление графика работы</h3>
 
           <div class="close-dialog-button">
             <img class="close-dialog-button-img"
@@ -14,23 +14,19 @@
         </div>
 
         <div class="down-block">
-          <h5>Название УК</h5>
-          <MyInput :placeholder="'Название УК'"
-                   :model-value="this.officeName"
-                   @input="this.officeName = $event.target.value">
+          <h5>Название графика работы</h5>
+          <MyInput :placeholder="'Название графика работы'"
+                   :model-value="this.scheduleName"
+                   @input="this.scheduleName = $event.target.value">
           </MyInput>
 
-          <h5>Адрес УК</h5>
-          <MySelect :options="this.addresses"
-                    @selectChanged="addressChanged">
-          </MySelect>
+          <h5>Расписание</h5>
+          <MyCheckbox :checked="this.mondayIsWork"
+                      @update:checked="mondayIsWork = $event"
+                      :label="'Понедельник рабочий'">
+          </MyCheckbox>
 
-          <h5>График работы</h5>
-          <MySelect :options="this.workSchedules"
-                    @selectChanged="workScheduleChanged">
-          </MySelect>
-
-          <MyButton @click="saveOffice">
+          <MyButton @click="saveSchedule">
             Сохранить
           </MyButton>
         </div>
@@ -44,9 +40,10 @@ import MyButton from "@/components/UI/MyButton.vue";
 import MySelect from "@/components/UI/MySelect.vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import axios from "axios";
+import MyCheckbox from "@/components/UI/MyCheckBox.vue";
 
 export default {
-  components: {MyButton, MySelect, MyInput},
+  components: {MyCheckbox, MyButton, MySelect, MyInput},
   props: {
     show: {
       type: Boolean,
@@ -55,16 +52,17 @@ export default {
   },
   data() {
     return {
-      officeName: '',
-      selectedAddress: -1,
-      addresses: [],
-      selectedworkSchedule: -1,
-      workSchedules: [],
+      scheduleName: '',
+      mondayIsWork: false,
+      // selectedAddress: -1,
+      // addresses: [],
+      // selectedworkSchedule: -1,
+      // workSchedules: [],
     }
   },
   mounted() {
-    this.loadAddresses()
-    this.loadWorkSchedules()
+    // this.loadAddresses()
+    // this.loadWorkSchedules()
   },
   methods: {
     async loadAddresses() {
@@ -90,19 +88,19 @@ export default {
       this.selectedworkSchedule = workSchedulePk
     },
     closeDialog() {
-      this.$emit('closeOfficeDialog')
+      this.$emit('closeScheduleDialog')
     },
-    saveOffice() {
-      if (this.officeName !== '' && this.selectedAddress !== -1 && this.selectedworkSchedule !== -1) {
-        this.$emit('saveOffice', {
-          name: this.officeName,
-          address: this.selectedAddress,
-          work_schedule: this.selectedworkSchedule
-        })
-        this.officeName = ''
-        this.servicePk = -1
-        this.employeePk = -1
-      }
+    saveSchedule() {
+      // if (this.officeName !== '' && this.selectedAddress !== -1 && this.selectedworkSchedule !== -1) {
+      //   this.$emit('saveSchedule', {
+      //     name: this.officeName,
+      //     address: this.selectedAddress,
+      //     work_schedule: this.selectedworkSchedule
+      //   })
+      //   this.officeName = ''
+      //   this.servicePk = -1
+      //   this.employeePk = -1
+      // }
     },
   }
 }
@@ -118,21 +116,24 @@ export default {
   position: fixed;
   display: flex;
 }
+
 .dialog-content {
   margin: auto;
   background: white;
   border-radius: 12px;
   min-height: 320px;
-  width: 400px;
+  min-width: 600px;
   padding: 20px;
   display: flex;
 }
+
 .create-task-content {
   width: 100%;
   background: rgb(169, 168, 159, 0.2);
   border-radius: 10px;
   padding: 10px;
 }
+
 .up-block {
   height: 30px;
   width: 100%;
@@ -141,11 +142,13 @@ export default {
   padding-left: 20px;
   padding-right: 20px;
 }
+
 .down-block {
   height: 90%;
   width: 100%;
   padding: 20px;
 }
+
 .close-dialog-button {
   height: 30px;
   width: 30px;
@@ -154,6 +157,7 @@ export default {
   background-color: rgb(109, 197, 195, 0.4);
   border-radius: 11px;
 }
+
 .close-dialog-button:hover {
   height: 30px;
   width: 30px;
@@ -162,6 +166,7 @@ export default {
   background-color: rgb(109, 197, 195, 0.9);
   border-radius: 11px;
 }
+
 .close-dialog-button-img {
   width: 100%;
 }

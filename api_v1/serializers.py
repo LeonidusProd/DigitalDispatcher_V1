@@ -137,6 +137,7 @@ class WorkScheduleLstSerializer(serializers.ModelSerializer):
     def get_work_days(self, obj):
         work_days = obj.work_days.all().order_by('day_of_week')
         serializer = WorkDayShortLstSerializer(work_days, many=True)
+        # serializer = WorkDayFullLstSerializer(work_days, many=True)
         return serializer.data
 
     class Meta:
