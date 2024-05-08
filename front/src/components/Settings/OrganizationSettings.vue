@@ -13,14 +13,14 @@
           </SettingsListView>
         </div>
 
-        <my-button @click="this.showOfficeDialog = true">
+        <MyButton @click="this.showOfficeDialog = true">
           Добавить УК
-        </my-button>
+        </MyButton>
 
-        <create-office-popup :show="this.showOfficeDialog"
-                             @saveOffice="saveOffice"
-                             @closeOfficeDialog="this.showOfficeDialog = false">
-        </create-office-popup>
+        <CreateOfficePopup :show="this.showOfficeDialog"
+                           @saveOffice="saveOffice"
+                           @closeOfficeDialog="this.showOfficeDialog = false">
+        </CreateOfficePopup>
       </div>
 
       <div class="service-block">
@@ -34,9 +34,9 @@
           </SettingsListView>
         </div>
 
-        <my-button @click="this.showServiceDialog = true">
+        <MyButton @click="this.showServiceDialog = true">
           Добавить типовую задачу
-        </my-button>
+        </MyButton>
 
         <CreateServicePopup :show="this.showServiceDialog"
                             @saveService="saveService"
@@ -58,37 +58,35 @@
           </SettingsListView>
         </div>
 
-        <my-button @click="this.showScheduleDialog = true">
+        <MyButton @click="this.showScheduleDialog = true">
           Добавить график работы
-        </my-button>
+        </MyButton>
 
-        <WorkSchedulePopup :show="this.showScheduleDialog"
-                           @saveSchedule="saveSchedule"
-                           @closeScheduleDialog="this.showScheduleDialog = false">
-        </WorkSchedulePopup>
+        <CreateWorkSchedulePopup :show="this.showScheduleDialog"
+                                 @saveSchedule="saveSchedule"
+                                 @closeScheduleDialog="this.showScheduleDialog = false">
+        </CreateWorkSchedulePopup>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import MyInput from "@/components/UI/MyInput.vue";
-import MyButton from "@/components/UI/MyButton.vue";
-import CreateOfficePopup from "@/components/Settings/CreateOfficePopup.vue";
 import axios from "axios";
-import WorkSchedulePopup from "@/components/Settings/WorkSchedulePopup.vue";
-import CreateServicePopup from "@/components/Settings/CreateServicePopup.vue";
 import SettingsListView from "@/components/Settings/SettingsListView.vue";
+import CreateOfficePopup from "@/components/Settings/CreateOfficePopup.vue";
+import CreateWorkSchedulePopup from "@/components/Settings/CreateWorkSchedulePopup.vue";
+import CreateServicePopup from "@/components/Settings/CreateServicePopup.vue";
+import MyButton from "@/components/UI/MyButton.vue";
 
 
 export default {
   components: {
+    MyButton,
     SettingsListView,
     CreateServicePopup,
-    WorkSchedulePopup,
+    CreateWorkSchedulePopup,
     CreateOfficePopup,
-    MyButton,
-    MyInput
   },
   data() {
     return {
