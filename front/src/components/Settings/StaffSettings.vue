@@ -1,72 +1,73 @@
 <template>
   <div class="inside-container">
-    <div class="left-side">
-<!--      <div class="office-block">-->
-<!--        <div>-->
-<!--          <h3>Управляющие компании</h3>-->
+    <div class="outer-block">
+      <div class="inner-block">
+        <div>
+          <h3>Отделы</h3>
 
-<!--          <SettingsListView :key="this.officesListKey"-->
-<!--                            :empty-header="'Список УК пуст'"-->
-<!--                            :elements-list="this.officesList"-->
-<!--                            :model-name="'office'"-->
-<!--                            @deleteElement="loadOffices">-->
-<!--          </SettingsListView>-->
-<!--        </div>-->
+          <SettingsListView :key="this.departmentsListKey"
+                            :empty-header="'Список отделов пуст'"
+                            :elements-list="this.departmentsList"
+                            :model-name="'department'"
+                            @deleteElement="loadDepartments">
+          </SettingsListView>
+        </div>
 
-<!--        <MyButton @click="this.showOfficeDialog = true">-->
-<!--          Добавить УК-->
-<!--        </MyButton>-->
+        <MyButton @click="this.showDepartmentDialog = true">
+          Добавить отдел
+        </MyButton>
 
-<!--        <CreateOfficePopup :show="this.showOfficeDialog"-->
-<!--                             @saveOffice="saveOffice"-->
-<!--                             @closeOfficeDialog="this.showOfficeDialog = false">-->
-<!--        </CreateOfficePopup>-->
-<!--      </div>-->
+        <CreateDepartmentPopup :show="this.showDepartmentDialog"
+                               @saveDepartment="saveDepartment"
+                               @closeDepartmentDialog="this.showDepartmentDialog = false">
+        </CreateDepartmentPopup>
+      </div>
 
-<!--      <div class="service-block">-->
-<!--        <div>-->
-<!--          <h3>Типовые задачи</h3>-->
-<!--          <SettingsListView :key="this.serviceListKey"-->
-<!--                            :empty-header="'Список типовых задач пуст'"-->
-<!--                            :elements-list="this.servicesList"-->
-<!--                            :model-name="'service'"-->
-<!--                            @deleteElement="loadServices">-->
-<!--          </SettingsListView>-->
-<!--        </div>-->
+      <div class="inner-block">
+        <div>
+          <h3>Должности</h3>
 
-<!--        <MyButton @click="this.showServiceDialog = true">-->
-<!--          Добавить типовую задачу-->
-<!--        </MyButton>-->
+          <SettingsListView :key="this.positionsListKey"
+                            :empty-header="'Список должностей пуст'"
+                            :elements-list="this.positionsList"
+                            :model-name="'position'"
+                            @deleteElement="loadPositions">
+          </SettingsListView>
+        </div>
 
-<!--        <CreateServicePopup :show="this.showServiceDialog"-->
-<!--                            @saveService="saveService"-->
-<!--                            @closeServiceDialog="this.showServiceDialog = false">-->
-<!--        </CreateServicePopup>-->
-<!--      </div>-->
+        <MyButton @click="this.showPositionDialog = true">
+          Добавить должность
+        </MyButton>
+
+        <CreatePositionPopup :show="this.showPositionDialog"
+                             @save="savePosition"
+                             @closeDialog="this.showPositionDialog = false">
+        </CreatePositionPopup>
+      </div>
     </div>
 
-    <div class="right-side">
-<!--      <div class="schedule-block">-->
-<!--        <div>-->
-<!--          <h3>Графики работы</h3>-->
+    <div class="outer-block">
+      <div class="inner-block">
+        <div>
+          <h3>Сотрудники</h3>
 
-<!--          <SettingsListView :key="this.scheduleListKey"-->
-<!--                            :empty-header="'Список графиков пуст'"-->
-<!--                            :elements-list="this.schedulesList"-->
-<!--                            :model-name="'schedule'"-->
-<!--                            @deleteElement="loadSchedules">-->
-<!--          </SettingsListView>-->
-<!--        </div>-->
+          <SettingsListView :key="this.employeesListKey"
+                            :empty-header="'Список сотрудников пуст'"
+                            :elements-list="this.employeesList"
+                            :model-name="'employee'"
+                            @deleteElement="loadEmployees">
+          </SettingsListView>
+        </div>
 
-<!--        <MyButton @click="this.showScheduleDialog = true">-->
-<!--          Добавить график работы-->
-<!--        </MyButton>-->
+        <MyButton @click="this.showEmployeeDialog = true">
+          Добавить сотрудника
+        </MyButton>
 
-<!--        <CreateWorkSchedulePopup :show="this.showScheduleDialog"-->
-<!--                           @saveSchedule="saveSchedule"-->
-<!--                           @closeScheduleDialog="this.showScheduleDialog = false">-->
-<!--        </CreateWorkSchedulePopup>-->
-<!--      </div>-->
+        <CreateEmployeePopup :show="this.showEmployeeDialog"
+                             @save="saveEmployee"
+                             @closeDialog="this.showEmployeeDialog = false">
+        </CreateEmployeePopup>
+      </div>
     </div>
   </div>
 </template>
@@ -76,137 +77,126 @@ import axios from "axios";
 import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import SettingsListView from "@/components/Settings/SettingsListView.vue";
+import CreateDepartmentPopup from "@/components/Settings/CreateDepartmentPopup.vue";
+import CreatePositionPopup from "@/components/Settings/CreatePositionPopup.vue";
+import CreateEmployeePopup from "@/components/Settings/CreateEmployeePopup.vue";
 
 
 export default {
   components: {
+    CreateEmployeePopup,
+    CreatePositionPopup,
+    CreateDepartmentPopup,
     SettingsListView,
     MyButton,
     MyInput
   },
   data() {
     return {
-      // officesList: [],
-      // officesListKey: 1,
-      // showOfficeDialog: false,
-      //
-      // schedulesList: [],
-      // scheduleListKey: 1,
-      // showScheduleDialog: false,
-      //
-      // servicesList: [],
-      // serviceListKey: 1,
-      // showServiceDialog: false,
+      departmentsList: [],
+      departmentsListKey: 1,
+      showDepartmentDialog: false,
+
+      positionsList: [],
+      positionsListKey: 1,
+      showPositionDialog: false,
+
+      employeesList: [],
+      employeesListKey: 1,
+      showEmployeeDialog: false,
     }
   },
   created() {
-    // this.loadOffices();
-    // this.loadSchedules();
-    // this.loadServices();
+    this.loadDepartments();
+    this.loadPositions();
+    this.loadEmployees();
   },
   methods: {
-    // async loadOffices() {
-    //   const response = (await axios.get(`http://localhost:8000/api/v1/office/`))
-    //   this.officesList = response.data
-    // },
-    // async createOffice(data) {
-    //   try {
-    //     await axios.post(
-    //         'http://localhost:8000/api/v1/office/create/',
-    //         {
-    //           name: data.name,
-    //           address: data.address,
-    //           work_schedule: data.work_schedule
-    //         }
-    //     )
-    //   } catch (e) {
-    //     alert('Сервер не доступен')
-    //   }
-    //   this.reloadOffices()
-    // },
-    // saveOffice(data) {
-    //   this.createOffice(data)
-    //   this.showOfficeDialog = false
-    // },
-    // reloadOffices() {
-    //   this.loadOffices();
-    //   this.officesListKey = this.officesListKey + 1
-    // },
-    //
-    // async loadSchedules() {
-    //   const response = (await axios.get(`http://localhost:8000/api/v1/schedule/`))
-    //   this.schedulesList = response.data
-    // },
-    // async createSchedule(data) {
-    //   try {
-    //     const response = (await axios.post(
-    //         'http://localhost:8000/api/v1/schedule/create/',
-    //         {
-    //           name: data.scheduleName,
-    //         }
-    //     ))
-    //     let newSchedulePk = response.data.id
-    //     await this.configWorkDays(newSchedulePk, data.days)
-    //   } catch (e) {
-    //     alert('Сервер не доступен')
-    //   }
-    //   this.reloadSchedules()
-    // },
-    // async configWorkDays(newSchedulePk, days) {
-    //   try {
-    //     const response = (await axios.get(`http://localhost:8000/api/v1/schedule/${newSchedulePk}`))
-    //     let workDays = response.data.work_days
-    //
-    //     for (let day in days) {
-    //       await axios.put(
-    //           `http://localhost:8000/api/v1/schedule/workday/manage/${workDays[days[day].dayId - 1].id}`,
-    //           {
-    //             is_not_working: false,
-    //             start_time: days[day].start,
-    //             end_time: days[day].end,
-    //           }
-    //       )
-    //     }
-    //   } catch (e) {
-    //     alert('Сервер не доступен')
-    //   }
-    // },
-    // saveSchedule(data) {
-    //   this.createSchedule(data)
-    //   this.showScheduleDialog = false
-    // },
-    // reloadSchedules() {
-    //   this.loadSchedules();
-    //   this.scheduleListKey = this.scheduleListKey + 1
-    // },
-    //
-    // async loadServices() {
-    //   const response = (await axios.get(`http://localhost:8000/api/v1/service/`))
-    //   this.servicesList = response.data
-    // },
-    // async createService(data) {
-    //   try {
-    //     await axios.post(
-    //         'http://localhost:8000/api/v1/service/create/',
-    //         {
-    //           name: data.name,
-    //           description: data.description,
-    //           position: data.position
-    //         }
-    //     )
-    //   } catch (e) {
-    //     alert('Сервер не доступен')
-    //   }
-    //   this.reloadServices()
-    // },
-    // saveService(data) {
-    //   this.createService(data)
-    //   this.showServiceDialog = false
-    // },
-    // reloadServices() {
-    //   this.loadServices();
-    //   this.servicesList = this.servicesList + 1
-    // },
+    async loadDepartments() {
+      const response = (await axios.get(`http://localhost:8000/api/v1/department/`))
+      this.departmentsList = response.data
+    },
+    async createDepartment(data) {
+      try {
+        await axios.post(
+            'http://localhost:8000/api/v1/department/create/',
+            {
+              name: data.name,
+            }
+        )
+      } catch (e) {
+        alert('Сервер не доступен')
+      }
+      this.reloadDepartments()
+    },
+    saveDepartment(data) {
+      this.createDepartment(data)
+      this.showDepartmentDialog = false
+    },
+    reloadDepartments() {
+      this.loadDepartments();
+      this.departmentsListKey += 1
+    },
+
+    async loadPositions() {
+      const response = (await axios.get(`http://localhost:8000/api/v1/position/`))
+      this.positionsList = response.data
+    },
+    async createPosition(data) {
+      try {
+        await axios.post(
+            'http://localhost:8000/api/v1/position/create/',
+            {
+              name: data.name,
+              department: data.department
+            }
+        )
+      } catch (e) {
+        alert('Сервер не доступен')
+      }
+      this.reloadPositions()
+    },
+    savePosition(data) {
+      this.createPosition(data)
+      this.showPositionDialog = false
+    },
+    reloadPositions() {
+      this.loadPositions();
+      this.positionsListKey += 1
+    },
+
+    async loadEmployees() {
+      const response = (await axios.get(`http://localhost:8000/api/v1/employee/`))
+      this.employeesList = response.data
+    },
+    async createEmployee(data) {
+      try {
+        await axios.post(
+            'http://localhost:8000/api/v1/employee/create/',
+            {
+              surname: this.surname,
+              name: this.name,
+              patronymic: this.patronymic,
+              phone: this.phone,
+              email: this.email,
+              selectedOffice: this.selectedOffice,
+              selectedPosition: this.selectedPosition,
+              tgId: this.tgId,
+            }
+        )
+      } catch (e) {
+        alert('Сервер не доступен')
+      }
+      this.reloadEmployees()
+    },
+    saveEmployee(data) {
+      this.createEmployee(data)
+      this.showEmployeeDialog = false
+    },
+    reloadEmployees() {
+      this.loadEmployees();
+      this.employeesListKey += 1
+    },
   },
 }
 
@@ -220,7 +210,7 @@ export default {
   width: 100%;
 }
 
-.left-side {
+.outer-block {
   width: 35%;
   display: flex;
   flex-direction: column;
@@ -228,27 +218,7 @@ export default {
   margin-right: 20px;
 }
 
-.right-side {
-  width: 35%;
-  display: flex;
-  flex-direction: column;
-}
-
-.office-block {
-  height: 45%;
-  justify-content: space-between;
-  display: flex;
-  flex-direction: column;
-}
-
-.service-block {
-  height: 45%;
-  justify-content: space-between;
-  display: flex;
-  flex-direction: column;
-}
-
-.schedule-block {
+.inner-block {
   height: 45%;
   justify-content: space-between;
   display: flex;

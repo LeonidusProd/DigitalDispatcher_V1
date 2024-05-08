@@ -1,7 +1,7 @@
 <template>
   <div class="inside-container">
-    <div class="left-side">
-      <div class="office-block">
+    <div class="outer-block">
+      <div class="inner-block">
         <div>
           <h3>Управляющие компании</h3>
 
@@ -23,7 +23,7 @@
         </CreateOfficePopup>
       </div>
 
-      <div class="service-block">
+      <div class="inner-block">
         <div>
           <h3>Типовые задачи</h3>
           <SettingsListView :key="this.serviceListKey"
@@ -45,8 +45,8 @@
       </div>
     </div>
 
-    <div class="right-side">
-      <div class="schedule-block">
+    <div class="outer-block">
+      <div class="inner-block">
         <div>
           <h3>Графики работы</h3>
 
@@ -224,7 +224,7 @@ export default {
   width: 100%;
 }
 
-.left-side {
+.outer-block {
   width: 35%;
   display: flex;
   flex-direction: column;
@@ -232,27 +232,7 @@ export default {
   margin-right: 20px;
 }
 
-.right-side {
-  width: 35%;
-  display: flex;
-  flex-direction: column;
-}
-
-.office-block {
-  height: 45%;
-  justify-content: space-between;
-  display: flex;
-  flex-direction: column;
-}
-
-.service-block {
-  height: 45%;
-  justify-content: space-between;
-  display: flex;
-  flex-direction: column;
-}
-
-.schedule-block {
+.inner-block {
   height: 45%;
   justify-content: space-between;
   display: flex;

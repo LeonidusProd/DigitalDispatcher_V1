@@ -297,7 +297,7 @@ class ExecutionStatusUltimateSerializer(serializers.ModelSerializer):
 class DepartmentUltimateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
-        fields = '__all__'
+        fields = ['pk', 'name']
 
 
 #####################################################################
@@ -348,7 +348,18 @@ class EmployeeFullDetSerializer(serializers.ModelSerializer):
 class EmployeeShortLstSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
-        fields = ['id', 'name', 'surname', 'patronymic']
+        fields = ['pk', 'name', 'surname', 'patronymic']
+
+
+class EmployeeSpecSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField(method_name='get_name')
+
+    def get_name(self, obj):
+        return f'{obj.surname} {obj.name} {obj.patronymic}'.strip()
+
+    class Meta:
+        model = Employee
+        fields = ['pk', 'name']
 
 
 class EmployeeShortDetSerializer(serializers.ModelSerializer):

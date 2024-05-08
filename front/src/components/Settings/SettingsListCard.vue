@@ -24,8 +24,12 @@ export default {
   },
   methods: {
     async deleteElement(pk) {
-      await axios.delete(`${this.baseURL}/${this.modelName}/delete/${pk}`)
-      this.$emit('deleteElement')
+      try {
+        await axios.delete(`${this.baseURL}/${this.modelName}/delete/${pk}`)
+        this.$emit('deleteElement')
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
 }
@@ -42,6 +46,7 @@ export default {
   background-color: rgb(139, 182, 177, 0.4);
   justify-content: space-between;
 }
+
 .delete-button {
   width: 23px;
   display: flex;
@@ -49,6 +54,7 @@ export default {
   background-color: rgb(109, 197, 195, 0.4);
   border-radius: 11px;
 }
+
 .delete-button:hover {
   width: 23px;
   display: flex;
@@ -56,6 +62,7 @@ export default {
   background-color: rgb(109, 197, 195, 0.9);
   border-radius: 11px;
 }
+
 .delete-button-img {
   width: 100%;
 }

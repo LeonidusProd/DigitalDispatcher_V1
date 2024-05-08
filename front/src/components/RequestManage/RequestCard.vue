@@ -8,7 +8,7 @@
                 {{ this.requestData['info'] }}
               </span>
         <span>
-          <b>Дата:</b> {{ this.requestData['date'].split(' ')[0] }} в {{ this.requestData['date'].split(' ')[1] }}
+<!--          <b>Дата:</b> {{ this.requestData['date'].split(' ')[0] }} в {{ this.requestData['date'].split(' ')[1] }}-->
         </span>
         <span><b>Статус:</b> {{ this.requestData['status'] }}</span>
         <span><b>Житель:</b> {{ this.requestData['resident'] }}</span>

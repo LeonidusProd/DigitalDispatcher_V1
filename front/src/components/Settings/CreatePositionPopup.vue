@@ -1,0 +1,145 @@
+<template>
+  <div class="dialog" v-if="show">
+    <div class="dialog-content">
+      <div class="create-task-content">
+        <div class="up-block">
+          <h3>Добавление должности</h3>
+
+          <div class="close-dialog-button">
+            <img class="close-dialog-button-img"
+                 src="@/assets/Close.svg"
+                 alt="close-dialog"
+                 @click="$emit('closeDialog')">
+          </div>
+        </div>
+
+        <div class="down-block">
+          <h5>Название должности</h5>
+          <MyInput :placeholder="'Название должности'"
+                   :model-value="this.positionName"
+                   @input="this.positionName = $event.target.value">
+          </MyInput>
+
+          <h5>Отдел</h5>
+          <MySelect :options="this.departments"
+                    @selectChanged="departmentChanged">
+          </MySelect>
+
+          <MyButton @click="savePosition">
+            Сохранить
+          </MyButton>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import MyButton from "@/components/UI/MyButton.vue";
+import MySelect from "@/components/UI/MySelect.vue";
+import MyInput from "@/components/UI/MyInput.vue";
+import axios from "axios";
+
+export default {
+  components: {MyButton, MySelect, MyInput},
+  props: {
+    show: {
+      type: Boolean,
+      default: false
+    },
+  },
+  data() {
+    return {
+      positionName: '',
+      selectedDepartment: -1,
+      departments: [],
+    }
+  },
+  mounted() {
+    this.loadDepartments()
+  },
+  methods: {
+    async loadDepartments() {
+      try {
+        const response = (await axios.get('http://localhost:8000/api/v1/department/'))
+        this.departments = response.data
+      } catch (e) {
+        alert('Сервер не доступен')
+      }
+    },
+    departmentChanged(departmentPk) {
+      this.selectedDepartment = departmentPk
+    },
+    savePosition() {
+      if (this.positionName !== '' && this.selectedDepartment !== -1) {
+        this.$emit('save', {
+          name: this.positionName,
+          department: this.selectedDepartment
+        })
+        this.positionName = ''
+        this.selectedDepartment = -1
+      }
+    },
+  }
+}
+</script>
+
+<style scoped>
+.dialog {
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background: rgb(0, 0, 0, 0.5);
+  position: fixed;
+  display: flex;
+  z-index: 1000;
+}
+.dialog-content {
+  margin: auto;
+  background: white;
+  border-radius: 12px;
+  min-height: 320px;
+  width: 500px;
+  padding: 20px;
+  display: flex;
+}
+.create-task-content {
+  width: 100%;
+  background: rgb(169, 168, 159, 0.2);
+  border-radius: 10px;
+  padding: 10px;
+}
+.up-block {
+  height: 30px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.down-block {
+  height: 90%;
+  width: 100%;
+  padding: 20px;
+}
+.close-dialog-button {
+  height: 30px;
+  width: 30px;
+  display: flex;
+  vertical-align: middle;
+  background-color: rgb(109, 197, 195, 0.4);
+  border-radius: 11px;
+}
+.close-dialog-button:hover {
+  height: 30px;
+  width: 30px;
+  display: flex;
+  vertical-align: middle;
+  background-color: rgb(109, 197, 195, 0.9);
+  border-radius: 11px;
+}
+.close-dialog-button-img {
+  width: 100%;
+}
+</style>

@@ -33,6 +33,8 @@ export default {
   background-clip: padding-box;
   border: 2px solid #a9a89f;
   border-radius: 10px;
+  margin-bottom: 10px;
+
 }
 .my-input:focus {
   color: #212523;

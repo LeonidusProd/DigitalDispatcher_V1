@@ -406,14 +406,14 @@ class DepartmentCreateView(generics.CreateAPIView):
     """Добавление нового отдела"""
     queryset = Department.objects.all()
     serializer_class = DepartmentUltimateSerializer
-    permission_classes = (IsSuperuser, IsStaff, )
+    permission_classes = (AllowAny, )
 
 
 class DepartmentDeleteView(generics.DestroyAPIView):
     """Удаление отдела"""
     queryset = Department.objects.all()
     serializer_class = DepartmentUltimateSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 #####################################################################
@@ -444,14 +444,14 @@ class PositionCreateView(generics.CreateAPIView):
     """Добавление новой должности"""
     queryset = Position.objects.all()
     serializer_class = PositionLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, IsStaff, )
+    permission_classes = (AllowAny, )
 
 
 class PositionDeleteView(generics.DestroyAPIView):
     """Удаление должности"""
     queryset = Position.objects.all()
     serializer_class = PositionLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 #####################################################################
@@ -460,7 +460,7 @@ class PositionDeleteView(generics.DestroyAPIView):
 class EmployeeShortListView(generics.ListAPIView):
     """Список всех сотрудников (без конфиденциальных данных)"""
     queryset = Employee.objects.all()
-    serializer_class = EmployeeShortLstSerializer
+    serializer_class = EmployeeSpecSerializer
     permission_classes = (AllowAny, )
 
 
@@ -496,14 +496,14 @@ class EmployeeCreateView(generics.CreateAPIView):
     """Добавление нового сотрудника"""
     queryset = Employee.objects.all()
     serializer_class = EmployeeFullLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 class EmployeeDeleteView(generics.DestroyAPIView):
     """Удаление сотрудника"""
     queryset = Employee.objects.all()
     serializer_class = EmployeeFullLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 #####################################################################
