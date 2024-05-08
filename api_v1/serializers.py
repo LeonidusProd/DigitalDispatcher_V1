@@ -306,7 +306,7 @@ class DepartmentUltimateSerializer(serializers.ModelSerializer):
 class PositionLstMngCrtDelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Position
-        fields = '__all__'
+        fields = ['pk', 'name', 'department']
 
 
 class PositionDetSerializer(serializers.ModelSerializer):

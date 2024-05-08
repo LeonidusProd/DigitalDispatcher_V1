@@ -1,9 +1,9 @@
 <template>
   <div class="dialog" v-if="show">
     <div class="dialog-content">
-      <div class="create-task-content">
+      <div class="create-service-content">
         <div class="up-block">
-          <h3>Добавление УК</h3>
+          <h3>Добавление типовой задачи</h3>
 
           <div class="close-dialog-button">
             <img class="close-dialog-button-img"
@@ -14,23 +14,25 @@
         </div>
 
         <div class="down-block">
-          <h5>Название УК</h5>
-          <MyInput :placeholder="'Название УК'"
-                   :model-value="this.officeName"
-                   @input="this.officeName = $event.target.value">
+          <h5>Название задачи</h5>
+          <MyInput :placeholder="'Название задачи'"
+                   :model-value="this.serviceName"
+                   @input="this.serviceName = $event.target.value">
           </MyInput>
 
-          <h5>Адрес УК</h5>
-          <MySelect :options="this.addresses"
-                    @selectChanged="addressChanged">
+          <h5>Описание задачи</h5>
+          <MyTextarea :placeholder="'Описание задачи'"
+                      :model-value="this.serviceDescription"
+                      @input="this.serviceDescription = $event.target.value"
+                      class="service-description">
+          </MyTextarea>
+
+          <h5>Требуемая должность</h5>
+          <MySelect :options="this.positions"
+                    @selectChanged="positionChanged">
           </MySelect>
 
-          <h5>График работы</h5>
-          <MySelect :options="this.workSchedules"
-                    @selectChanged="workScheduleChanged">
-          </MySelect>
-
-          <MyButton @click="saveOffice">
+          <MyButton @click="saveService">
             Сохранить
           </MyButton>
         </div>
@@ -44,9 +46,10 @@ import MyButton from "@/components/UI/MyButton.vue";
 import MySelect from "@/components/UI/MySelect.vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import axios from "axios";
+import MyTextarea from "@/components/UI/MyTextarea.vue";
 
 export default {
-  components: {MyButton, MySelect, MyInput},
+  components: {MyTextarea, MyButton, MySelect, MyInput},
   props: {
     show: {
       type: Boolean,
@@ -55,53 +58,44 @@ export default {
   },
   data() {
     return {
-      officeName: '',
-      selectedAddress: -1,
-      addresses: [],
-      selectedworkSchedule: -1,
-      workSchedules: [],
+      serviceName: '',
+      serviceDescription: '',
+      positions: [],
+      selectedPosition: -1,
     }
   },
   mounted() {
-    this.loadAddresses()
-    this.loadWorkSchedules()
+    this.loadPositions()
   },
   methods: {
-    async loadAddresses() {
+    async loadPositions() {
       try {
-        const response = (await axios.get('http://localhost:8000/api/v1/address/'))
-        this.addresses = response.data
+        const response = (await axios.get('http://localhost:8000/api/v1/position/'))
+        this.positions = response.data
       } catch (e) {
         alert('Сервер не доступен')
       }
+      console.log('positions: ')
+      console.log(this.positions)
     },
-    async loadWorkSchedules() {
-      try {
-        const response = (await axios.get('http://localhost:8000/api/v1/schedule/'))
-        this.workSchedules = response.data
-      } catch (e) {
-        alert('Сервер не доступен')
-      }
-    },
-    addressChanged(addressPk) {
-      this.selectedAddress = addressPk
-    },
-    workScheduleChanged(workSchedulePk) {
-      this.selectedworkSchedule = workSchedulePk
+    positionChanged(positionPk) {
+      // console.log('1234567897654================')
+      // console.log(positionPk)
+      this.selectedPosition = positionPk
     },
     closeDialog() {
-      this.$emit('closeOfficeDialog')
+      this.$emit('closeServiceDialog')
     },
-    saveOffice() {
-      if (this.officeName !== '' && this.selectedAddress !== -1 && this.selectedworkSchedule !== -1) {
-        this.$emit('saveOffice', {
-          name: this.officeName,
-          address: this.selectedAddress,
-          work_schedule: this.selectedworkSchedule
+    saveService() {
+      if (this.serviceName !== '' && this.serviceDescription !== '' && this.selectedPosition !== -1) {
+        this.$emit('saveService', {
+          name: this.serviceName,
+          description: this.serviceDescription,
+          position: this.selectedPosition
         })
-        this.officeName = ''
-        this.servicePk = -1
-        this.employeePk = -1
+        this.serviceName = ''
+        this.serviceDescription = ''
+        this.selectedPosition = -1
       }
     },
   }
@@ -119,21 +113,24 @@ export default {
   display: flex;
   z-index: 1000;
 }
+
 .dialog-content {
   margin: auto;
   background: white;
   border-radius: 12px;
   min-height: 320px;
-  width: 400px;
+  min-width: 600px;
   padding: 20px;
   display: flex;
 }
-.create-task-content {
+
+.create-service-content {
   width: 100%;
   background: rgb(169, 168, 159, 0.2);
   border-radius: 10px;
   padding: 10px;
 }
+
 .up-block {
   height: 30px;
   width: 100%;
@@ -142,11 +139,17 @@ export default {
   padding-left: 20px;
   padding-right: 20px;
 }
+
 .down-block {
   height: 90%;
   width: 100%;
   padding: 20px;
 }
+
+.service-description {
+  height: 150px;
+}
+
 .close-dialog-button {
   height: 30px;
   width: 30px;
@@ -155,6 +158,7 @@ export default {
   background-color: rgb(109, 197, 195, 0.4);
   border-radius: 11px;
 }
+
 .close-dialog-button:hover {
   height: 30px;
   width: 30px;
@@ -163,6 +167,7 @@ export default {
   background-color: rgb(109, 197, 195, 0.9);
   border-radius: 11px;
 }
+
 .close-dialog-button-img {
   width: 100%;
 }

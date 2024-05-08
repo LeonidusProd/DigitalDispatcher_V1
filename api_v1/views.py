@@ -157,7 +157,7 @@ class WorkDayManageView(generics.RetrieveUpdateAPIView):
     """Изменение информации о рабочем дне"""
     queryset = WorkDay.objects.all()
     serializer_class = WorkDayFullLstSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 class WorkScheduleCreateView(generics.CreateAPIView):
@@ -534,14 +534,14 @@ class ServiceCreateView(generics.CreateAPIView):
     """Добавление новой типовой задачи"""
     queryset = Service.objects.all()
     serializer_class = ServiceLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, IsStaff, )
+    permission_classes = (AllowAny, )
 
 
 class ServiceDeleteView(generics.DestroyAPIView):
     """Удаление типовой задачи"""
     queryset = Service.objects.all()
     serializer_class = ServiceLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 #####################################################################

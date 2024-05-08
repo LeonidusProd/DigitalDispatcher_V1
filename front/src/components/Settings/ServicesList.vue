@@ -1,33 +1,33 @@
 <template>
-  <h5 v-if="false">Список УК пуст</h5>
+  <h5 v-if="false">Список типовых задач пуст</h5>
 
-  <div v-else class="office-cards">
-    <div class="office-list custom-scroll">
-      <OfficeCard v-for="office in this.officesList"
-                  :pk="office.pk"
-                  :office-name="office.name"
-                  @deleteOffice="$emit('deleteOffice')">
-      </OfficeCard>
+  <div v-else class="service-cards">
+    <div class="service-list custom-scroll">
+      <ServiceCard v-for="service in this.servicesList"
+                  :pk="service.pk"
+                  :service-name="service.name"
+                  @deleteService="$emit('deleteService')">
+      </ServiceCard>
     </div>
   </div>
 </template>
 
 <script>
-import OfficeCard from "@/components/Settings/OfficeCard.vue";
+import ServiceCard from "@/components/Settings/ServiceCard.vue";
 
 export default {
-  components: {OfficeCard},
+  components: {ServiceCard},
   props:{
-    officesList: [Array]
+    servicesList: [Array]
   }
 }
 </script>
 
 <style scoped>
-.office-cards {
+.service-cards {
   height: 150px;
 }
-.office-list {
+.service-list {
   display: flex;
   flex-direction: column;
   overflow-y: auto;

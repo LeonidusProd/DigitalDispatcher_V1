@@ -301,6 +301,7 @@ export default {
   background: rgb(0, 0, 0, 0.5);
   position: fixed;
   display: flex;
+  z-index: 1000;
 }
 
 .dialog-content {

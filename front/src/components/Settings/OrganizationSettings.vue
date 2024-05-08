@@ -5,11 +5,12 @@
         <div>
           <h3>Управляющие компании</h3>
 
-          <OfficesList :key="this.officesListKey"
-                       @deleteOffice="loadOffices"
-                       :offices-list="this.officesList">
-
-          </OfficesList>
+          <SettingsListView :key="this.officesListKey"
+                            :empty-header="'Список УК пуст'"
+                            :elements-list="this.officesList"
+                            :model-name="'office'"
+                            @deleteElement="loadOffices">
+          </SettingsListView>
         </div>
 
         <my-button @click="this.showOfficeDialog = true">
@@ -21,6 +22,27 @@
                              @closeOfficeDialog="this.showOfficeDialog = false">
         </create-office-popup>
       </div>
+
+      <div class="service-block">
+        <div>
+          <h3>Типовые задачи</h3>
+          <SettingsListView :key="this.serviceListKey"
+                            :empty-header="'Список типовых задач пуст'"
+                            :elements-list="this.servicesList"
+                            :model-name="'service'"
+                            @deleteElement="loadServices">
+          </SettingsListView>
+        </div>
+
+        <my-button @click="this.showServiceDialog = true">
+          Добавить типовую задачу
+        </my-button>
+
+        <CreateServicePopup :show="this.showServiceDialog"
+                            @saveService="saveService"
+                            @closeServiceDialog="this.showServiceDialog = false">
+        </CreateServicePopup>
+      </div>
     </div>
 
     <div class="right-side">
@@ -28,11 +50,12 @@
         <div>
           <h3>Графики работы</h3>
 
-          <WorkScheduleList :key="this.scheduleListKey"
-                       @deleteSchedule="loadSchedules"
-                       :schedules-list="this.schedulesList">
-
-          </WorkScheduleList>
+          <SettingsListView :key="this.scheduleListKey"
+                            :empty-header="'Список графиков пуст'"
+                            :elements-list="this.schedulesList"
+                            :model-name="'schedule'"
+                            @deleteElement="loadSchedules">
+          </SettingsListView>
         </div>
 
         <my-button @click="this.showScheduleDialog = true">
@@ -40,11 +63,10 @@
         </my-button>
 
         <WorkSchedulePopup :show="this.showScheduleDialog"
-                             @saveSchedule="saveSchedule"
-                             @closeScheduleDialog="this.showScheduleDialog = false">
+                           @saveSchedule="saveSchedule"
+                           @closeScheduleDialog="this.showScheduleDialog = false">
         </WorkSchedulePopup>
       </div>
-
     </div>
   </div>
 </template>
@@ -54,12 +76,20 @@ import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import CreateOfficePopup from "@/components/Settings/CreateOfficePopup.vue";
 import axios from "axios";
-import WorkScheduleList from "@/components/Settings/WorkScheduleList.vue";
 import WorkSchedulePopup from "@/components/Settings/WorkSchedulePopup.vue";
-import OfficesList from "@/components/Settings/OfficesList.vue";
+import CreateServicePopup from "@/components/Settings/CreateServicePopup.vue";
+import SettingsListView from "@/components/Settings/SettingsListView.vue";
+
 
 export default {
-  components: {OfficesList, WorkSchedulePopup, WorkScheduleList, CreateOfficePopup, MyButton, MyInput},
+  components: {
+    SettingsListView,
+    CreateServicePopup,
+    WorkSchedulePopup,
+    CreateOfficePopup,
+    MyButton,
+    MyInput
+  },
   data() {
     return {
       officesList: [],
@@ -69,11 +99,16 @@ export default {
       schedulesList: [],
       scheduleListKey: 1,
       showScheduleDialog: false,
+
+      servicesList: [],
+      serviceListKey: 1,
+      showServiceDialog: false,
     }
   },
   created() {
     this.loadOffices();
-    this.loadSchedules()
+    this.loadSchedules();
+    this.loadServices();
   },
   methods: {
     async loadOffices() {
@@ -107,7 +142,6 @@ export default {
     async loadSchedules() {
       const response = (await axios.get(`http://localhost:8000/api/v1/schedule/`))
       this.schedulesList = response.data
-      console.log(this.schedulesList)
     },
     async createSchedule(data) {
       try {
@@ -118,37 +152,66 @@ export default {
             }
         ))
         let newSchedulePk = response.data.id
-        console.log(response)
         await this.configWorkDays(newSchedulePk, data.days)
       } catch (e) {
         alert('Сервер не доступен')
       }
-      // this.reloadSchedules()
+      this.reloadSchedules()
     },
     async configWorkDays(newSchedulePk, days) {
       try {
+        const response = (await axios.get(`http://localhost:8000/api/v1/schedule/${newSchedulePk}`))
+        let workDays = response.data.work_days
 
-
-
-        // const response = (await axios.post(
-        //     'http://localhost:8000/api/v1/schedule/create/',
-        //     {
-        //       name: data.scheduleName,
-        //     }
-        // ))
+        for (let day in days) {
+          await axios.put(
+              `http://localhost:8000/api/v1/schedule/workday/manage/${workDays[days[day].dayId - 1].id}`,
+              {
+                is_not_working: false,
+                start_time: days[day].start,
+                end_time: days[day].end,
+              }
+          )
+        }
       } catch (e) {
         alert('Сервер не доступен')
       }
-      // this.reloadSchedules()
     },
     saveSchedule(data) {
-      console.log(data)
       this.createSchedule(data)
       this.showScheduleDialog = false
     },
     reloadSchedules() {
       this.loadSchedules();
       this.scheduleListKey = this.scheduleListKey + 1
+    },
+
+    async loadServices() {
+      const response = (await axios.get(`http://localhost:8000/api/v1/service/`))
+      this.servicesList = response.data
+    },
+    async createService(data) {
+      try {
+        await axios.post(
+            'http://localhost:8000/api/v1/service/create/',
+            {
+              name: data.name,
+              description: data.description,
+              position: data.position
+            }
+        )
+      } catch (e) {
+        alert('Сервер не доступен')
+      }
+      this.reloadServices()
+    },
+    saveService(data) {
+      this.createService(data)
+      this.showServiceDialog = false
+    },
+    reloadServices() {
+      this.loadServices();
+      this.servicesList = this.servicesList + 1
     },
   },
 }
@@ -159,8 +222,6 @@ export default {
 .inside-container {
   display: flex;
   flex-direction: row;
-  //justify-content: space-between;
-  //border: 1px solid black;
   height: 100%;
   width: 100%;
 }
@@ -169,38 +230,34 @@ export default {
   width: 35%;
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: space-between;
   margin-right: 20px;
-  //border: 1px solid blue;
 }
 
 .right-side {
-  //width: 63%;
   width: 35%;
   display: flex;
   flex-direction: column;
-  //justify-content: end;
-  //align-items: end;
-  //border: 1px solid red;
 }
 
 .office-block {
-  height: 40%;
-  //border: 1px solid green;
+  height: 45%;
+  justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+}
+
+.service-block {
+  height: 45%;
   justify-content: space-between;
   display: flex;
   flex-direction: column;
 }
 
 .schedule-block {
-  height: 40%;
-  //border: 1px solid green;
+  height: 45%;
   justify-content: space-between;
   display: flex;
   flex-direction: column;
-}
-
-.save-button {
-  width: 200px;
 }
 </style>

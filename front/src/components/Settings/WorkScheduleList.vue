@@ -34,7 +34,7 @@ export default {
   padding-right: 3px;
   margin-top: 3px;
   border-radius: 12px;
-  height: 140px;
+  height: 170px;
 }
 .custom-scroll::-webkit-scrollbar {
   width: 5px;
