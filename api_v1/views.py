@@ -43,14 +43,26 @@ class CityCreateView(generics.CreateAPIView):
     """Добавление нового города"""
     queryset = City.objects.all()
     serializer_class = CityLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, IsStaff, )
+    permission_classes = (AllowAny, )
 
 
 class CityDeleteView(generics.DestroyAPIView):
     """Удаление города"""
     queryset = City.objects.all()
     serializer_class = CityLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
+
+
+class CityStreetsListView(generics.ListAPIView):
+    """Список улиц города"""
+
+    def get_queryset(self):
+        data = self.request.query_params
+        return Street.objects.filter(
+            city_id=self.kwargs.get('pk')
+        )
+    serializer_class = StreetLstMngCrtDelSerializer
+    permission_classes = (AllowAny,)
 
 
 #####################################################################
@@ -81,14 +93,14 @@ class StreetCreateView(generics.CreateAPIView):
     """Добавление новой улицы"""
     queryset = Street.objects.all()
     serializer_class = StreetLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 class StreetDeleteView(generics.DestroyAPIView):
     """Удаление улицы"""
     queryset = Street.objects.all()
     serializer_class = StreetLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 #####################################################################
@@ -119,14 +131,14 @@ class BuildingCreateView(generics.CreateAPIView):
     """Добавление нового адреса"""
     queryset = Building.objects.all()
     serializer_class = BuildingLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 class BuildingDeleteView(generics.DestroyAPIView):
     """Удаление адреса"""
     queryset = Building.objects.all()
     serializer_class = BuildingLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 #####################################################################
@@ -240,14 +252,14 @@ class HousingComplexCreateView(generics.CreateAPIView):
     """Добавление нового жилого комплекса"""
     queryset = HousingComplex.objects.all()
     serializer_class = HousingComplexLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 class HousingComplexDeleteView(generics.DestroyAPIView):
     """Удаление жилого комплекса"""
     queryset = HousingComplex.objects.all()
     serializer_class = HousingComplexLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 #####################################################################

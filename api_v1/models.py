@@ -31,6 +31,9 @@ class Street(models.Model):
     def short_str(self):
         return f'ул. {self.name}'
 
+    def short_str_with_city(self):
+        return f'{self.city.short_str()}, ул. {self.name}'
+
     class Meta:
         verbose_name = 'Улица'
         verbose_name_plural = 'Улицы'
@@ -52,6 +55,12 @@ class Building(models.Model):
         if self.corpus:
             corp = f'/{self.corpus}'
         return f'{self.street.short_str()}, д. {self.number}{corp}'
+
+    def short_str_with_city(self):
+        corp = ''
+        if self.corpus:
+            corp = f'/{self.corpus}'
+        return f'{self.street.short_str_with_city()}, д. {self.number}{corp}'
 
     class Meta:
         verbose_name = 'Адрес'

@@ -16,7 +16,7 @@ Del - Delete
 class CityLstMngCrtDelSerializer(serializers.ModelSerializer):
     class Meta:
         model = City
-        fields = '__all__'
+        fields = ['pk', 'name']
 
 
 class CityDetSerializer(serializers.ModelSerializer):
@@ -40,7 +40,7 @@ class CityDetSerializer(serializers.ModelSerializer):
 class StreetLstMngCrtDelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Street
-        fields = '__all__'
+        fields = ['pk', 'city', 'name']
 
 
 class StreetDetSerializer(serializers.ModelSerializer):
@@ -71,7 +71,7 @@ class BuildingLstMngCrtDelSerializer(serializers.ModelSerializer):
 class BuildingLstSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(method_name='get_name')
 
-    def get_name(self, obj): return str(obj.__str__())
+    def get_name(self, obj): return str(obj.short_str_with_city())
 
     class Meta:
         model = Building
@@ -198,7 +198,7 @@ class HousingComplexLstMngCrtDelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HousingComplex
-        fields = '__all__'
+        fields = ['pk', 'name', 'office']
 
 
 class HousingComplexDetSerializer(serializers.ModelSerializer):

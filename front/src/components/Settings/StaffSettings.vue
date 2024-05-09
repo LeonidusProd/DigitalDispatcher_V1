@@ -174,18 +174,19 @@ export default {
         await axios.post(
             'http://localhost:8000/api/v1/employee/create/',
             {
-              surname: this.surname,
-              name: this.name,
-              patronymic: this.patronymic,
-              phone: this.phone,
-              email: this.email,
-              selectedOffice: this.selectedOffice,
-              selectedPosition: this.selectedPosition,
-              tgId: this.tgId,
+              surname: data.surname,
+              name: data.name,
+              patronymic: data.patronymic,
+              phone: data.phone,
+              email: data.email,
+              office: data.selectedOffice,
+              position: data.selectedPosition,
+              tg_id: data.tgId,
             }
         )
       } catch (e) {
         alert('Сервер не доступен')
+        console.log(e)
       }
       this.reloadEmployees()
     },
