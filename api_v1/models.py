@@ -160,7 +160,7 @@ class House(models.Model):
     address = models.ForeignKey(Building, on_delete=models.CASCADE, null=False, verbose_name='Адрес')
 
     def __str__(self):
-        return f'{self.complex.__str__()}: {self.address.__str__()}'
+        return f'{self.complex.__str__()}: {self.address.short_str_with_city()}'
 
     class Meta:
         verbose_name = 'Жилой дом'

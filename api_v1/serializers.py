@@ -218,10 +218,14 @@ class HousingComplexDetSerializer(serializers.ModelSerializer):
 
 
 class HouseLstMngCrtDelSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField(method_name='get_name')
+
+    def get_name(self, obj):
+        return str(obj.__str__())
 
     class Meta:
         model = House
-        fields = '__all__'
+        fields = ['pk', 'name', 'complex', 'address']
 
 
 class HouseDetSerializer(serializers.ModelSerializer):

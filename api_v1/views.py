@@ -290,14 +290,14 @@ class HouseCreateView(generics.CreateAPIView):
     """Добавление нового жилого дома"""
     queryset = House.objects.all()
     serializer_class = HouseLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 class HouseDeleteView(generics.DestroyAPIView):
     """Удаление жилого дома"""
     queryset = House.objects.all()
     serializer_class = HouseLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = (AllowAny, )
 
 
 #####################################################################
