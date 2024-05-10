@@ -5,9 +5,10 @@ from django.conf.urls.static import static
 from backend_config import settings
 from .yasg import urlpatterns as doc_urls
 
-
 urlpatterns = [
-    path('auth/', include('rest_framework.urls')),
+    # path('api-auth/', include('rest_framework.urls')),
+    # path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
     path('api/v1/', include('api_v1.urls'), name='api_v1'),
     path('admin/', admin.site.urls, name='admin'),
 ]

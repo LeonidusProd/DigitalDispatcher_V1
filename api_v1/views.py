@@ -1,8 +1,8 @@
-from django.http import HttpResponse
-from django.shortcuts import render
+# from django.http import HttpResponse
+# from django.shortcuts import render
 from rest_framework import generics, viewsets
-from rest_framework.response import Response
-from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from .permissions import *
 from rest_framework import status
@@ -18,112 +18,11 @@ AllowAny - Любой пользователь
 """
 
 
-class CityListView(generics.ListAPIView):
-    """Список всех городов"""
-    queryset = City.objects.all()
-    serializer_class = CityLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class CityDetailView(generics.RetrieveAPIView):
-    """Полная информация о городе"""
-    queryset = City.objects.all()
-    serializer_class = CityDetSerializer
-    permission_classes = (AllowAny, )
-
-
-class CityManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации о городе"""
-    queryset = City.objects.all()
-    serializer_class = CityLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
-
-
-class CityCreateView(generics.CreateAPIView):
-    """Добавление нового города"""
-    queryset = City.objects.all()
-    serializer_class = CityLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class CityDeleteView(generics.DestroyAPIView):
-    """Удаление города"""
-    queryset = City.objects.all()
-    serializer_class = CityLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class CityStreetsListView(generics.ListAPIView):
-    """Список улиц города"""
-
-    def get_queryset(self):
-        data = self.request.query_params
-        return Street.objects.filter(
-            city_id=self.kwargs.get('pk')
-        )
-    serializer_class = StreetLstMngCrtDelSerializer
-    permission_classes = (AllowAny,)
-
-
-#####################################################################
-
-
-class StreetListView(generics.ListAPIView):
-    """Список всех улиц"""
-    queryset = Street.objects.all()
-    serializer_class = StreetLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class StreetDetailView(generics.RetrieveAPIView):
-    """Полная информация об улице"""
-    queryset = Street.objects.all()
-    serializer_class = StreetDetSerializer
-    permission_classes = (AllowAny, )
-
-
-class StreetManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации об улице"""
-    queryset = Street.objects.all()
-    serializer_class = StreetLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
-
-
-class StreetCreateView(generics.CreateAPIView):
-    """Добавление новой улицы"""
-    queryset = Street.objects.all()
-    serializer_class = StreetLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class StreetDeleteView(generics.DestroyAPIView):
-    """Удаление улицы"""
-    queryset = Street.objects.all()
-    serializer_class = StreetLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-#####################################################################
-
-
+# Используемые
 class BuildingListView(generics.ListAPIView):
     """Список всех адресов"""
     queryset = Building.objects.all()
     serializer_class = BuildingLstSerializer
-    permission_classes = (AllowAny, )
-
-
-class BuildingDetailView(generics.RetrieveAPIView):
-    """Полная информация об адресе"""
-    queryset = Building.objects.all()
-    serializer_class = BuildingDetSerializer
-    permission_classes = (AllowAny, )
-
-
-class BuildingManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации об адресе"""
-    queryset = Building.objects.all()
-    serializer_class = BuildingLstMngCrtDelSerializer
     permission_classes = (IsSuperuser, )
 
 
@@ -131,118 +30,50 @@ class BuildingCreateView(generics.CreateAPIView):
     """Добавление нового адреса"""
     queryset = Building.objects.all()
     serializer_class = BuildingLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (IsSuperuser, )
 
 
 class BuildingDeleteView(generics.DestroyAPIView):
     """Удаление адреса"""
     queryset = Building.objects.all()
     serializer_class = BuildingLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-#####################################################################
-
-
-class WorkScheduleListView(generics.ListAPIView):
-    """Список всех графиков работы"""
-    queryset = WorkSchedule.objects.all()
-    serializer_class = WorkScheduleLstSerializer
-    permission_classes = (AllowAny, )
-
-
-class WorkScheduleDetailView(generics.RetrieveAPIView):
-    """Полная информация о графике работы"""
-    queryset = WorkSchedule.objects.all()
-    serializer_class = WorkScheduleDetMngSerializer
-    permission_classes = (AllowAny, )
-
-
-class WorkScheduleManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации о графике работы """
-    queryset = WorkSchedule.objects.all()
-    serializer_class = WorkScheduleDetMngSerializer
-    permission_classes = (AllowAny, )
-
-
-class WorkDayManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации о рабочем дне"""
-    queryset = WorkDay.objects.all()
-    serializer_class = WorkDayFullLstSerializer
-    permission_classes = (AllowAny, )
-
-
-class WorkScheduleCreateView(generics.CreateAPIView):
-    """Добавление нового графика работы"""
-    queryset = WorkSchedule.objects.all()
-    serializer_class = WorkScheduleCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class WorkScheduleDeleteView(generics.DestroyAPIView):
-    """Удаление графика работы"""
-    queryset = WorkSchedule.objects.all()
-    serializer_class = WorkScheduleCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-#####################################################################
-
-
-class OfficeListView(generics.ListAPIView):
-    """Список всех управляющих компаний"""
-    queryset = Office.objects.all()
-    serializer_class = OfficeLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class OfficeDetailView(generics.RetrieveAPIView):
-    """Полная информация об управляющей компании"""
-    queryset = Office.objects.all()
-    serializer_class = OfficeDetSerializer
-    permission_classes = (AllowAny, )
-
-
-class OfficeManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации об управляющей компании"""
-    queryset = Office.objects.all()
-    serializer_class = OfficeLstMngCrtDelSerializer
     permission_classes = (IsSuperuser, )
 
 
-class OfficeCreateView(generics.CreateAPIView):
-    """Добавление новой управляющей компании"""
-    queryset = Office.objects.all()
-    serializer_class = OfficeLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
+class BotTokensUpdateView(generics.RetrieveUpdateAPIView):
+    """Обновление и получение токенов ботов"""
+    queryset = BotsSettings.objects.all()
+    serializer_class = BotTokensSerializer
+    permission_classes = (IsSuperuser, )
 
 
-class OfficeDeleteView(generics.DestroyAPIView):
-    """Удаление управляющей компании"""
-    queryset = Office.objects.all()
-    serializer_class = OfficeLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
+class CityListView(generics.ListAPIView):
+    """Список всех городов"""
+    queryset = City.objects.all()
+    serializer_class = CityLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
 
 
-#####################################################################
+class CityStreetsListView(generics.ListAPIView):
+    """Список улиц города"""
+
+    def get_queryset(self):
+        return Street.objects.filter(
+            city_id=self.kwargs.get('pk')
+        )
+    serializer_class = StreetLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser,)
+
+
+class CityCreateView(generics.CreateAPIView):
+    """Добавление нового города"""
+    queryset = City.objects.all()
+    serializer_class = CityLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
 
 
 class HousingComplexListView(generics.ListAPIView):
     """Список всех жилых комплексов"""
-    queryset = HousingComplex.objects.all()
-    serializer_class = HousingComplexLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class HousingComplexDetailView(generics.RetrieveAPIView):
-    """Полная информация о жилом комплексе"""
-    queryset = HousingComplex.objects.all()
-    serializer_class = HousingComplexDetSerializer
-    permission_classes = (AllowAny, )
-
-
-class HousingComplexManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации о жилом комплексе"""
     queryset = HousingComplex.objects.all()
     serializer_class = HousingComplexLstMngCrtDelSerializer
     permission_classes = (IsSuperuser, )
@@ -252,163 +83,18 @@ class HousingComplexCreateView(generics.CreateAPIView):
     """Добавление нового жилого комплекса"""
     queryset = HousingComplex.objects.all()
     serializer_class = HousingComplexLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (IsSuperuser, )
 
 
 class HousingComplexDeleteView(generics.DestroyAPIView):
     """Удаление жилого комплекса"""
     queryset = HousingComplex.objects.all()
     serializer_class = HousingComplexLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-#####################################################################
-
-
-class HouseListView(generics.ListAPIView):
-    """Список всех жилых домов"""
-    queryset = House.objects.all()
-    serializer_class = HouseLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class HouseDetailView(generics.RetrieveAPIView):
-    """Полная информация о жилом доме"""
-    queryset = House.objects.all()
-    serializer_class = HouseDetSerializer
-    permission_classes = (AllowAny, )
-
-
-class HouseManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации о жилом доме"""
-    queryset = House.objects.all()
-    serializer_class = HouseLstMngCrtDelSerializer
     permission_classes = (IsSuperuser, )
-
-
-class HouseCreateView(generics.CreateAPIView):
-    """Добавление нового жилого дома"""
-    queryset = House.objects.all()
-    serializer_class = HouseLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class HouseDeleteView(generics.DestroyAPIView):
-    """Удаление жилого дома"""
-    queryset = House.objects.all()
-    serializer_class = HouseLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-#####################################################################
-
-
-class ResidentShortListView(generics.ListAPIView):
-    """Список всех жителей (без конфиденциальных данных)"""
-    queryset = Resident.objects.all()
-    serializer_class = ResidentShortLstSerializer
-    permission_classes = (AllowAny, )
-
-
-class ResidentShortDetailView(generics.RetrieveAPIView):
-    """Полная информация о жителе (без конфиденциальных данных)"""
-    queryset = Resident.objects.all()
-    serializer_class = ResidentShortDetSerializer
-    permission_classes = (AllowAny, )
-
-
-class ResidentFullListView(generics.ListAPIView):
-    """Список всех жителей (с конфиденциальными данными)"""
-    queryset = Resident.objects.all()
-    serializer_class = ResidentFullLstMngCrtDelSerializer
-    permission_classes = (IsStaff, )
-
-
-class ResidentFullDetailView(generics.RetrieveAPIView):
-    """Полная информация о жителе (с конфиденциальными данными)"""
-    queryset = Resident.objects.all()
-    serializer_class = ResidentFullDetSerializer
-    permission_classes = (IsStaff, )
-
-
-class ResidentManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации о жителе"""
-    queryset = Resident.objects.all()
-    serializer_class = ResidentFullLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
-
-
-class ResidentCreateView(generics.CreateAPIView):
-    """Добавление нового жителя"""
-    queryset = Resident.objects.all()
-    serializer_class = ResidentFullLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
-
-
-class ResidentDeleteView(generics.DestroyAPIView):
-    """Удаление жителя"""
-    queryset = Resident.objects.all()
-    serializer_class = ResidentFullLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
-
-
-#####################################################################
-
-
-class ExecutionStatusListView(generics.ListAPIView):
-    """Список всех статусов выполнения"""
-    queryset = ExecutionStatus.objects.all()
-    serializer_class = ExecutionStatusUltimateSerializer
-    permission_classes = (AllowAny, )
-
-
-class ExecutionStatusDetailView(generics.RetrieveAPIView):
-    """Полная информация о статусе выполнения"""
-    queryset = ExecutionStatus.objects.all()
-    serializer_class = ExecutionStatusUltimateSerializer
-    permission_classes = (AllowAny, )
-
-
-class ExecutionStatusManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации о статусе выполнения"""
-    queryset = ExecutionStatus.objects.all()
-    serializer_class = ExecutionStatusUltimateSerializer
-    permission_classes = (IsSuperuser, )
-
-
-class ExecutionStatusCreateView(generics.CreateAPIView):
-    """Добавление нового статуса выполнения"""
-    queryset = ExecutionStatus.objects.all()
-    serializer_class = ExecutionStatusUltimateSerializer
-    permission_classes = (IsSuperuser, IsStaff, )
-
-
-class ExecutionStatusDeleteView(generics.DestroyAPIView):
-    """Удаление статуса выполнения"""
-    queryset = ExecutionStatus.objects.all()
-    serializer_class = ExecutionStatusUltimateSerializer
-    permission_classes = (IsSuperuser, )
-
-
-#####################################################################
 
 
 class DepartmentListView(generics.ListAPIView):
     """Список всех отделов"""
-    queryset = Department.objects.all()
-    serializer_class = DepartmentUltimateSerializer
-    permission_classes = (AllowAny, )
-
-
-class DepartmentDetailView(generics.RetrieveAPIView):
-    """Полная информация об отделе"""
-    queryset = Department.objects.all()
-    serializer_class = DepartmentUltimateSerializer
-    permission_classes = (AllowAny, )
-
-
-class DepartmentManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации об отделе"""
     queryset = Department.objects.all()
     serializer_class = DepartmentUltimateSerializer
     permission_classes = (IsSuperuser, )
@@ -418,35 +104,81 @@ class DepartmentCreateView(generics.CreateAPIView):
     """Добавление нового отдела"""
     queryset = Department.objects.all()
     serializer_class = DepartmentUltimateSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (IsSuperuser, )
 
 
 class DepartmentDeleteView(generics.DestroyAPIView):
     """Удаление отдела"""
     queryset = Department.objects.all()
     serializer_class = DepartmentUltimateSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (IsSuperuser, )
 
 
-#####################################################################
+class EmployeeShortListView(generics.ListAPIView):
+    """Список всех сотрудников (без конфиденциальных данных)"""
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSpecSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class EmployeeCreateView(generics.CreateAPIView):
+    """Добавление нового сотрудника"""
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeFullLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class EmployeeDeleteView(generics.DestroyAPIView):
+    """Удаление сотрудника"""
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeFullLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class HouseListView(generics.ListAPIView):
+    """Список всех жилых домов"""
+    queryset = House.objects.all()
+    serializer_class = HouseLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class HouseCreateView(generics.CreateAPIView):
+    """Добавление нового жилого дома"""
+    queryset = House.objects.all()
+    serializer_class = HouseLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class HouseDeleteView(generics.DestroyAPIView):
+    """Удаление жилого дома"""
+    queryset = House.objects.all()
+    serializer_class = HouseLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class OfficeListView(generics.ListAPIView):
+    """Список всех управляющих компаний"""
+    queryset = Office.objects.all()
+    serializer_class = OfficeLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class OfficeCreateView(generics.CreateAPIView):
+    """Добавление новой управляющей компании"""
+    queryset = Office.objects.all()
+    serializer_class = OfficeLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class OfficeDeleteView(generics.DestroyAPIView):
+    """Удаление управляющей компании"""
+    queryset = Office.objects.all()
+    serializer_class = OfficeLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
 
 
 class PositionListView(generics.ListAPIView):
     """Список всех должностей"""
-    queryset = Position.objects.all()
-    serializer_class = PositionLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class PositionDetailView(generics.RetrieveAPIView):
-    """Полная информация о должности"""
-    queryset = Position.objects.all()
-    serializer_class = PositionDetSerializer
-    permission_classes = (AllowAny, )
-
-
-class PositionManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации о должности"""
     queryset = Position.objects.all()
     serializer_class = PositionLstMngCrtDelSerializer
     permission_classes = (IsSuperuser, )
@@ -456,141 +188,13 @@ class PositionCreateView(generics.CreateAPIView):
     """Добавление новой должности"""
     queryset = Position.objects.all()
     serializer_class = PositionLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (IsSuperuser, )
 
 
 class PositionDeleteView(generics.DestroyAPIView):
     """Удаление должности"""
     queryset = Position.objects.all()
     serializer_class = PositionLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-#####################################################################
-
-
-class EmployeeShortListView(generics.ListAPIView):
-    """Список всех сотрудников (без конфиденциальных данных)"""
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeSpecSerializer
-    permission_classes = (AllowAny, )
-
-
-class EmployeeShortDetailView(generics.RetrieveAPIView):
-    """Полная информация о сотруднике (без конфиденциальных данных)"""
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeShortDetSerializer
-    permission_classes = (AllowAny, )
-
-
-class EmployeeFullListView(generics.ListAPIView):
-    """Список всех сотрудников (с конфиденциальными данными)"""
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeFullLstMngCrtDelSerializer
-    permission_classes = (IsStaff, )
-
-
-class EmployeeFullDetailView(generics.RetrieveAPIView):
-    """Полная информация о сотруднике (с конфиденциальными данными)"""
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeFullDetSerializer
-    permission_classes = (IsStaff, )
-
-
-class EmployeeManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации о сотруднике"""
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeFullLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
-
-
-class EmployeeCreateView(generics.CreateAPIView):
-    """Добавление нового сотрудника"""
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeFullLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class EmployeeDeleteView(generics.DestroyAPIView):
-    """Удаление сотрудника"""
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeFullLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-#####################################################################
-
-
-class ServiceListView(generics.ListAPIView):
-    """Список всех типовых задач"""
-    queryset = Service.objects.all()
-    serializer_class = ServiceLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class ServiceDetailView(generics.RetrieveAPIView):
-    """Полная информация о типовой задаче"""
-    queryset = Service.objects.all()
-    serializer_class = ServiceDetSerializer
-    permission_classes = (AllowAny, )
-
-
-class ServiceManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации о типовой задаче"""
-    queryset = Service.objects.all()
-    serializer_class = ServiceLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
-
-
-class ServiceCreateView(generics.CreateAPIView):
-    """Добавление новой типовой задачи"""
-    queryset = Service.objects.all()
-    serializer_class = ServiceLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class ServiceDeleteView(generics.DestroyAPIView):
-    """Удаление типовой задачи"""
-    queryset = Service.objects.all()
-    serializer_class = ServiceLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-#####################################################################
-
-
-class RequestListView(generics.ListAPIView):
-    """Список всех заявок"""
-    queryset = Request.objects.all()
-    serializer_class = RequestLstMngCrtDelSerializer
-    permission_classes = (AllowAny, )
-
-
-class RequestDetailView(generics.RetrieveAPIView):
-    """Полная информация о заявке"""
-    queryset = Request.objects.all()
-    serializer_class = RequestDetSerializer
-    permission_classes = (AllowAny, )
-
-
-class RequestManageView(generics.RetrieveUpdateAPIView):
-    """Изменение информации о заявке"""
-    queryset = Request.objects.all()
-    serializer_class = RequestLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
-
-
-class RequestCreateView(generics.CreateAPIView):
-    """Добавление новой заявки"""
-    queryset = Request.objects.all()
-    serializer_class = RequestLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, IsStaff, )
-
-
-class RequestDeleteView(generics.DestroyAPIView):
-    """Удаление заявки"""
-    queryset = Request.objects.all()
-    serializer_class = RequestLstMngCrtDelSerializer
     permission_classes = (IsSuperuser, )
 
 
@@ -600,7 +204,7 @@ class NewRequestsView(generics.ListAPIView):
         status__name='Новая'
     )
     serializer_class = RequestShortInfoSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (IsSuperuser, IsStaff, )
 
 
 class ActiveRequestsView(generics.ListAPIView):
@@ -609,7 +213,14 @@ class ActiveRequestsView(generics.ListAPIView):
         status__name__in=['В работе', 'На проверке']
     )
     serializer_class = RequestShortInfoSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (IsSuperuser, IsStaff, )
+
+
+class RequestDetailView(generics.RetrieveAPIView):
+    """Полная информация о заявке"""
+    queryset = Request.objects.all()
+    serializer_class = RequestDetSerializer
+    permission_classes = (IsSuperuser, IsStaff, )
 
 
 class RequestTasksView(generics.ListAPIView):
@@ -619,34 +230,57 @@ class RequestTasksView(generics.ListAPIView):
         return RequestTask.objects.filter(
             request_id=request_id
         )
-    # queryset = RequestTask.objects.filter(
-    #     request_id=
-    # )
     serializer_class = RequestTaskInfoSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (IsSuperuser, IsStaff, )
 
 
-class TestView(APIView):
-    def get(self, request):
-        return Response(
-            {
-                'test_data': 'This is test data'
-            }
-        )
+class WorkScheduleListView(generics.ListAPIView):
+    """Список всех графиков работы"""
+    queryset = WorkSchedule.objects.all()
+    serializer_class = WorkScheduleLstSerializer
+    permission_classes = (IsSuperuser, )
 
 
-class TaskDeleteView(generics.DestroyAPIView):
-    """Удаление задачи заявки"""
-    queryset = RequestTask.objects.all()
-    serializer_class = RequestTaskDelSerializer
-    permission_classes = (AllowAny, )
+class WorkScheduleDetailView(generics.RetrieveAPIView):
+    """Полная информация о графике работы"""
+    queryset = WorkSchedule.objects.all()
+    serializer_class = WorkScheduleDetMngSerializer
+    permission_classes = (IsSuperuser, )
 
 
-class TaskCreateView(generics.CreateAPIView):
-    """Создание задачи заявки"""
-    queryset = RequestTask.objects.all()
-    serializer_class = RequestTaskDelSerializer
-    permission_classes = (AllowAny, )
+class WorkDayManageView(generics.RetrieveUpdateAPIView):
+    """Изменение информации о рабочем дне"""
+    queryset = WorkDay.objects.all()
+    serializer_class = WorkDayFullLstSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class WorkScheduleCreateView(generics.CreateAPIView):
+    """Добавление нового графика работы"""
+    queryset = WorkSchedule.objects.all()
+    serializer_class = WorkScheduleCrtDelSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class WorkScheduleDeleteView(generics.DestroyAPIView):
+    """Удаление графика работы"""
+    queryset = WorkSchedule.objects.all()
+    serializer_class = WorkScheduleCrtDelSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class StreetCreateView(generics.CreateAPIView):
+    """Добавление новой улицы"""
+    queryset = Street.objects.all()
+    serializer_class = StreetLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class ServiceListView(generics.ListAPIView):
+    """Список всех типовых задач"""
+    queryset = Service.objects.all()
+    serializer_class = ServiceLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, IsStaff, )
 
 
 class ServiceEmployeesView(generics.ListAPIView):
@@ -658,26 +292,361 @@ class ServiceEmployeesView(generics.ListAPIView):
             position_id=data.get('position_pk'),
             office_id=data.get('office_pk')
         )
-    # queryset = RequestTask.objects.filter(
-    #     request_id=
-    # )
     serializer_class = ServiseEmployeesSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (IsSuperuser, IsStaff, )
 
 
+class ServiceCreateView(generics.CreateAPIView):
+    """Добавление новой типовой задачи"""
+    queryset = Service.objects.all()
+    serializer_class = ServiceLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class ServiceDeleteView(generics.DestroyAPIView):
+    """Удаление типовой задачи"""
+    queryset = Service.objects.all()
+    serializer_class = ServiceLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class TaskCreateView(generics.CreateAPIView):
+    """Создание задачи заявки"""
+    queryset = RequestTask.objects.all()
+    serializer_class = RequestTaskDelSerializer
+    permission_classes = (IsSuperuser, IsStaff, )
+
+
+class TaskDeleteView(generics.DestroyAPIView):
+    """Удаление задачи заявки"""
+    queryset = RequestTask.objects.all()
+    serializer_class = RequestTaskDelSerializer
+    permission_classes = (IsSuperuser, IsStaff, )
+
+
+# Не используются в настоящий момент
+# class CityDetailView(generics.RetrieveAPIView):
+#     """Полная информация о городе"""
+#     queryset = City.objects.all()
+#     serializer_class = CityDetSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class CityManageView(generics.RetrieveUpdateAPIView):
+#     """Изменение информации о городе"""
+#     queryset = City.objects.all()
+#     serializer_class = CityLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, )
+#
+#
+# class CityDeleteView(generics.DestroyAPIView):
+#     """Удаление города"""
+#     queryset = City.objects.all()
+#     serializer_class = CityLstMngCrtDelSerializer
+#     permission_classes = (AllowAny, )
+#
+# #####################################################################
+#
+# class StreetListView(generics.ListAPIView):
+#     """Список всех улиц"""
+#     queryset = Street.objects.all()
+#     serializer_class = StreetLstMngCrtDelSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class StreetDetailView(generics.RetrieveAPIView):
+#     """Полная информация об улице"""
+#     queryset = Street.objects.all()
+#     serializer_class = StreetDetSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class StreetManageView(generics.RetrieveUpdateAPIView):
+#     """Изменение информации об улице"""
+#     queryset = Street.objects.all()
+#     serializer_class = StreetLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, )
+#
+#
+# class StreetDeleteView(generics.DestroyAPIView):
+#     """Удаление улицы"""
+#     queryset = Street.objects.all()
+#     serializer_class = StreetLstMngCrtDelSerializer
+#     permission_classes = (AllowAny, )
+#
+# #####################################################################
+#
+# class BuildingDetailView(generics.RetrieveAPIView):
+#     """Полная информация об адресе"""
+#     queryset = Building.objects.all()
+#     serializer_class = BuildingDetSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class BuildingManageView(generics.RetrieveUpdateAPIView):
+#     """Изменение информации об адресе"""
+#     queryset = Building.objects.all()
+#     serializer_class = BuildingLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, )
+#
+# #####################################################################
+#
+# class WorkScheduleManageView(generics.RetrieveUpdateAPIView):
+#     """Изменение информации о графике работы """
+#     queryset = WorkSchedule.objects.all()
+#     serializer_class = WorkScheduleDetMngSerializer
+#     permission_classes = (AllowAny, )
+#
+# #####################################################################
+#
+# class OfficeDetailView(generics.RetrieveAPIView):
+#     """Полная информация об управляющей компании"""
+#     queryset = Office.objects.all()
+#     serializer_class = OfficeDetSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class OfficeManageView(generics.RetrieveUpdateAPIView):
+#     """Изменение информации об управляющей компании"""
+#     queryset = Office.objects.all()
+#     serializer_class = OfficeLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, )
+#
+# #####################################################################
+#
+# class HousingComplexDetailView(generics.RetrieveAPIView):
+#     """Полная информация о жилом комплексе"""
+#     queryset = HousingComplex.objects.all()
+#     serializer_class = HousingComplexDetSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class HousingComplexManageView(generics.RetrieveUpdateAPIView):
+#     """Изменение информации о жилом комплексе"""
+#     queryset = HousingComplex.objects.all()
+#     serializer_class = HousingComplexLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, )
+#
+# #####################################################################
+#
+# class HouseDetailView(generics.RetrieveAPIView):
+#     """Полная информация о жилом доме"""
+#     queryset = House.objects.all()
+#     serializer_class = HouseDetSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class HouseManageView(generics.RetrieveUpdateAPIView):
+#     """Изменение информации о жилом доме"""
+#     queryset = House.objects.all()
+#     serializer_class = HouseLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, )
+#
+# #####################################################################
+#
+# class ResidentShortListView(generics.ListAPIView):
+#     """Список всех жителей (без конфиденциальных данных)"""
+#     queryset = Resident.objects.all()
+#     serializer_class = ResidentShortLstSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class ResidentShortDetailView(generics.RetrieveAPIView):
+#     """Полная информация о жителе (без конфиденциальных данных)"""
+#     queryset = Resident.objects.all()
+#     serializer_class = ResidentShortDetSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class ResidentFullListView(generics.ListAPIView):
+#     """Список всех жителей (с конфиденциальными данными)"""
+#     queryset = Resident.objects.all()
+#     serializer_class = ResidentFullLstMngCrtDelSerializer
+#     permission_classes = (IsStaff, )
+#
+#
+# class ResidentFullDetailView(generics.RetrieveAPIView):
+#     """Полная информация о жителе (с конфиденциальными данными)"""
+#     queryset = Resident.objects.all()
+#     serializer_class = ResidentFullDetSerializer
+#     permission_classes = (IsStaff, )
+#
+#
+# class ResidentManageView(generics.RetrieveUpdateAPIView):
+#     """Изменение информации о жителе"""
+#     queryset = Resident.objects.all()
+#     serializer_class = ResidentFullLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, )
+#
+#
+# class ResidentCreateView(generics.CreateAPIView):
+#     """Добавление нового жителя"""
+#     queryset = Resident.objects.all()
+#     serializer_class = ResidentFullLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, )
+#
+#
+# class ResidentDeleteView(generics.DestroyAPIView):
+#     """Удаление жителя"""
+#     queryset = Resident.objects.all()
+#     serializer_class = ResidentFullLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, )
+#
+# #####################################################################
+#
+# class ExecutionStatusListView(generics.ListAPIView):
+#     """Список всех статусов выполнения"""
+#     queryset = ExecutionStatus.objects.all()
+#     serializer_class = ExecutionStatusUltimateSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class ExecutionStatusDetailView(generics.RetrieveAPIView):
+#     """Полная информация о статусе выполнения"""
+#     queryset = ExecutionStatus.objects.all()
+#     serializer_class = ExecutionStatusUltimateSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class ExecutionStatusManageView(generics.RetrieveUpdateAPIView):
+#     """Изменение информации о статусе выполнения"""
+#     queryset = ExecutionStatus.objects.all()
+#     serializer_class = ExecutionStatusUltimateSerializer
+#     permission_classes = (IsSuperuser, )
+#
+#
+# class ExecutionStatusCreateView(generics.CreateAPIView):
+#     """Добавление нового статуса выполнения"""
+#     queryset = ExecutionStatus.objects.all()
+#     serializer_class = ExecutionStatusUltimateSerializer
+#     permission_classes = (IsSuperuser, IsStaff, )
+#
+#
+# class ExecutionStatusDeleteView(generics.DestroyAPIView):
+#     """Удаление статуса выполнения"""
+#     queryset = ExecutionStatus.objects.all()
+#     serializer_class = ExecutionStatusUltimateSerializer
+#     permission_classes = (IsSuperuser, )
+#
+# #####################################################################
+#
+# class DepartmentDetailView(generics.RetrieveAPIView):
+#     """Полная информация об отделе"""
+#     queryset = Department.objects.all()
+#     serializer_class = DepartmentUltimateSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class DepartmentManageView(generics.RetrieveUpdateAPIView):
+#     """Изменение информации об отделе"""
+#     queryset = Department.objects.all()
+#     serializer_class = DepartmentUltimateSerializer
+#     permission_classes = (IsSuperuser, )
+#
+# #####################################################################
+#
+# class PositionDetailView(generics.RetrieveAPIView):
+#     """Полная информация о должности"""
+#     queryset = Position.objects.all()
+#     serializer_class = PositionDetSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class PositionManageView(generics.RetrieveUpdateAPIView):
+#     """Изменение информации о должности"""
+#     queryset = Position.objects.all()
+#     serializer_class = PositionLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, )
+#
+# #####################################################################
+#
+# class EmployeeShortDetailView(generics.RetrieveAPIView):
+#     """Полная информация о сотруднике (без конфиденциальных данных)"""
+#     queryset = Employee.objects.all()
+#     serializer_class = EmployeeShortDetSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class EmployeeFullListView(generics.ListAPIView):
+#     """Список всех сотрудников (с конфиденциальными данными)"""
+#     queryset = Employee.objects.all()
+#     serializer_class = EmployeeFullLstMngCrtDelSerializer
+#     permission_classes = (IsStaff, )
+#
+#
+# class EmployeeFullDetailView(generics.RetrieveAPIView):
+#     """Полная информация о сотруднике (с конфиденциальными данными)"""
+#     queryset = Employee.objects.all()
+#     serializer_class = EmployeeFullDetSerializer
+#     permission_classes = (IsStaff, )
+#
+#
+# class EmployeeManageView(generics.RetrieveUpdateAPIView):
+#     """Изменение информации о сотруднике"""
+#     queryset = Employee.objects.all()
+#     serializer_class = EmployeeFullLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, )
+#
+# #####################################################################
+#
+# class ServiceDetailView(generics.RetrieveAPIView):
+#     """Полная информация о типовой задаче"""
+#     queryset = Service.objects.all()
+#     serializer_class = ServiceDetSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class ServiceManageView(generics.RetrieveUpdateAPIView):
+#     """Изменение информации о типовой задаче"""
+#     queryset = Service.objects.all()
+#     serializer_class = ServiceLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, )
+#
+# #####################################################################
+#
+# class RequestListView(generics.ListAPIView):
+#     """Список всех заявок"""
+#     queryset = Request.objects.all()
+#     serializer_class = RequestLstMngCrtDelSerializer
+#     permission_classes = (AllowAny, )
+#
+#
+# class RequestManageView(generics.RetrieveUpdateAPIView):
+#     """Изменение информации о заявке"""
+#     queryset = Request.objects.all()
+#     serializer_class = RequestLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, )
+#
+#
+# class RequestCreateView(generics.CreateAPIView):
+#     """Добавление новой заявки"""
+#     queryset = Request.objects.all()
+#     serializer_class = RequestLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, IsStaff, )
+#
+#
+# class RequestDeleteView(generics.DestroyAPIView):
+#     """Удаление заявки"""
+#     queryset = Request.objects.all()
+#     serializer_class = RequestLstMngCrtDelSerializer
+#     permission_classes = (IsSuperuser, )
+#
+#
+# class TestView(APIView):
+#     def get(self, request):
+#         return Response(
+#             {
+#                 'test_data': 'This is test data'
+#             }
+#         )
+#
+#
 # class BotTokensView(generics.ListAPIView):
 #     """Токены ботов"""
 #     queryset = BotsSettings.objects.all()
 #     serializer_class = BotTokensSerializer
 #     permission_classes = (AllowAny, )
-
-
-class BotTokensUpdateView(generics.RetrieveUpdateAPIView):
-    """Обновление и получение токенов ботов"""
-    queryset = BotsSettings.objects.all()
-    serializer_class = BotTokensSerializer
-    permission_classes = (AllowAny, )
-
+#
 
 # class ComplexList(ListAPIView):
 #     queryset = HousingComplex.objects.all()

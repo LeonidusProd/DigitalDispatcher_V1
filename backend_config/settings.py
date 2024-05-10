@@ -39,10 +39,10 @@ CSRF_TRUSTED_ORIGINS = str(os.environ.get(
     default='https://*.localhost:8000 https://*.127.0.0.1:8000 http://localhost:8000 http://127.0.0.1:8000 https://*.localhost:8080 https://*.127.0.0.1:8080 http://localhost:8080 http://127.0.0.1:8080'
 )).split(" ")
 
-# CORS_ALLOWED_ORIGINS = str(os.environ.get(
-#     "CORS_ALLOWED_ORIGINS",
-#     default='https://*.localhost:8000 https://*.127.0.0.1:8000 http://localhost:8000 http://127.0.0.1:8000 https://*.localhost:8080 https://*.127.0.0.1:8080 http://localhost:8080 http://127.0.0.1:8080'
-# )).split(" ")
+CORS_ALLOWED_ORIGINS = str(os.environ.get(
+    "CORS_ALLOWED_ORIGINS",
+    default='https://*.localhost:8000 https://*.127.0.0.1:8000 http://localhost:8000 http://127.0.0.1:8000 https://*.localhost:8080 https://*.127.0.0.1:8080 http://localhost:8080 http://127.0.0.1:8080'
+)).split(" ")
 
 # CORS_ORIGIN_WHITELIST = [
 #     "http://localhost:8080",
@@ -53,9 +53,9 @@ CSRF_TRUSTED_ORIGINS = str(os.environ.get(
 #     "http://164.90.190.249"
 # ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:8080",
+# ]
 
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -89,6 +89,8 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     'rest_framework',
+    'djoser',
+    'rest_framework.authtoken',
     'corsheaders',
 
     'api_v1.apps.ApiV1Config',
