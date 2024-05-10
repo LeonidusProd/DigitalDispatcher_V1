@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+# from api_v1.CustomTokenCreateSerializer import CustomTokenCreateSerializer
 
 # import environ
 
@@ -200,6 +201,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# DJOSER = {
+#     'SERIALIZERS': {
+#         'token_create': 'api_v1.CustomTokenCreateSerializer.CustomTokenCreateSerializer'
+#     },
+# }
+
+DJOSER = {
+    'SERIALIZERS': {
+        'token': 'api_v1.CustomTokenSerializer.CustomTokenSerializer',
+    }
+}
 
 REST_FRAMEWORK = {
     # The default authentication schemes
