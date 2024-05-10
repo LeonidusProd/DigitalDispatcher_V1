@@ -7,15 +7,20 @@ import Settings from "@/pages/Settings.vue";
 const routes = [
     {
         path: '/',
+        name: 'login',
         component: LoginPage
     },
     {
         path: '/requests',
-        component: RequestsManage
+        name: 'requests',
+        component: RequestsManage,
+        meta: { requiresAuth: true, allowedRoles: ['staff', 'admin'] }
     },
     {
         path: '/settings',
-        component: Settings
+        name: 'settings',
+        component: Settings,
+        meta: { requiresAuth: true, allowedRoles: ['admin'] }
     },
 ]
 
@@ -23,5 +28,28 @@ const router = createRouter({
     routes,
     history: createWebHistory(process.env.BASE_URL)
 })
+
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = localStorage.getItem('auth_token');
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!isAuthenticated) {
+      next({
+        path: '/',
+        query: { redirect: to.fullPath } // сохраняем путь для перенаправления после аутентификации
+      });
+    } else {
+      const userRole = localStorage.getItem('user_role'); // Функция, которая получает роль пользователя
+      const allowedRoles = to.meta.allowedRoles;
+      if (allowedRoles && !allowedRoles.includes(userRole)) {
+        // Если пользователь не имеет необходимой роли, перенаправляем его на главную страницу
+        next('/');
+      } else {
+        next();
+      }
+    }
+  } else {
+    next();
+  }
+});
 
 export default router;

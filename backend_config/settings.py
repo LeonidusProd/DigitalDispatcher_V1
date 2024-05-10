@@ -210,7 +210,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DJOSER = {
     'SERIALIZERS': {
-        'token': 'api_v1.CustomTokenSerializer.CustomTokenSerializer',
+        'token': 'api_v1.customTokenSerializer.CustomTokenSerializer',
     }
 }
 

@@ -13,20 +13,27 @@
           <form>
             <div class="form-group">
               <label for="username">Имя пользователя</label>
-              <!--            <input type="text" class="form-control" id="username" placeholder="Имя пользователя">-->
-              <my-input type="text" id="username" placeholder="Имя пользователя"></my-input>
+              <MyInput type="text"
+                       id="username"
+                       :placeholder="'Имя пользователя'"
+                       :model-value="this.login"
+                       @input="this.login = $event.target.value">
+              </MyInput>
             </div>
 
             <div class="form-group">
               <label for="password">Пароль</label>
-              <my-input type="password" id="password" placeholder="Пароль"></my-input>
-              <!--            <input type="password" class="form-control" id="password" placeholder="Пароль">-->
+              <MyInput type="password"
+                       id="password"
+                       :placeholder="'Пароль'"
+                       :model-value="this.password"
+                       @input="this.password = $event.target.value">
+              </MyInput>
             </div>
 
-            <!--          <button type="submit" class="btn btn-primary">Войти</button>-->
-            <my-button @click="">
+            <MyButton @click="getToken">
               Войти
-            </my-button>
+            </MyButton>
           </form>
         </div>
       </div>
@@ -37,12 +44,48 @@
 <script>
 import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
+import axios from "axios";
 
 export default {
   components: {
     MyButton,
     MyInput
   },
+  data() {
+    return {
+      login: '',
+      password: ''
+    }
+  },
+  methods: {
+    async getToken() {
+      try {
+        const response = (await axios.post(
+            `http://localhost:8000/auth/token/login`,
+            {
+              username: this.login,
+              password: this.password
+            }
+        ))
+        // this.offices = response.data
+        // console.log(response.data)
+        localStorage.setItem('auth_token', response.data.auth_token);
+        localStorage.setItem('user_role', response.data.role);
+        // console.log(localStorage.getItem('auth_token'))
+        // console.log(localStorage.getItem('user_role'))
+        if (localStorage.getItem('user_role') === 'staff') {
+          this.$router.push('/requests');
+        } else if (localStorage.getItem('user_role') === 'admin') {
+          this.$router.push('/settings');
+        } else {
+          alert('У вас нет прав доступа')
+        }
+      } catch (e) {
+        alert('Сервер не доступен')
+        console.log(e)
+      }
+    },
+  }
 }
 </script>
 
