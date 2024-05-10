@@ -1,10 +1,10 @@
 <template>
-  <div class="inside-container">
+  <div class="inside-container"
+       v-if="loadOfficesSucsess && loadSchedulesSucsess && loadServicesSucsess">
     <div class="outer-block">
       <div class="inner-block">
         <div>
           <h3>Управляющие компании</h3>
-
           <SettingsListView :key="this.officesListKey"
                             :empty-header="'Список УК пуст'"
                             :elements-list="this.officesList"
@@ -18,8 +18,8 @@
         </MyButton>
 
         <CreateOfficePopup :show="this.showOfficeDialog"
-                           @saveOffice="saveOffice"
-                           @closeOfficeDialog="this.showOfficeDialog = false">
+                           @save="saveOffice"
+                           @close="this.showOfficeDialog = false">
         </CreateOfficePopup>
       </div>
 
@@ -39,8 +39,8 @@
         </MyButton>
 
         <CreateServicePopup :show="this.showServiceDialog"
-                            @saveService="saveService"
-                            @closeServiceDialog="this.showServiceDialog = false">
+                            @save="saveService"
+                            @close="this.showServiceDialog = false">
         </CreateServicePopup>
       </div>
     </div>
@@ -49,7 +49,6 @@
       <div class="inner-block">
         <div>
           <h3>Графики работы</h3>
-
           <SettingsListView :key="this.scheduleListKey"
                             :empty-header="'Список графиков пуст'"
                             :elements-list="this.schedulesList"
@@ -63,11 +62,16 @@
         </MyButton>
 
         <CreateWorkSchedulePopup :show="this.showScheduleDialog"
-                                 @saveSchedule="saveSchedule"
-                                 @closeScheduleDialog="this.showScheduleDialog = false">
+                                 @save="saveSchedule"
+                                 @close="this.showScheduleDialog = false">
         </CreateWorkSchedulePopup>
       </div>
     </div>
+  </div>
+  <div class="alert" v-else>
+    <h1>Ошибка загрузки данных, попробуйте ещё раз позже</h1>
+    <h4>Ошибка: {{ errorCode }}</h4>
+    <h4>Сообщение: {{ errorMessage }}</h4>
   </div>
 </template>
 
@@ -78,6 +82,7 @@ import CreateOfficePopup from "@/components/Settings/CreateOfficePopup.vue";
 import CreateWorkSchedulePopup from "@/components/Settings/CreateWorkSchedulePopup.vue";
 import CreateServicePopup from "@/components/Settings/CreateServicePopup.vue";
 import MyButton from "@/components/UI/MyButton.vue";
+import {mapState} from "vuex";
 
 
 export default {
@@ -90,6 +95,12 @@ export default {
   },
   data() {
     return {
+      loadOfficesSucsess: true,
+      loadSchedulesSucsess: true,
+      loadServicesSucsess: true,
+      errorMessage: '',
+      errorCode: 0,
+
       officesList: [],
       officesListKey: 1,
       showOfficeDialog: false,
@@ -103,114 +114,90 @@ export default {
       showServiceDialog: false,
     }
   },
-  created() {
+  beforeMount() {
     this.loadOffices();
     this.loadSchedules();
     this.loadServices();
   },
+  computed: {
+    ...mapState({
+      baseURL: state => state.main.baseURL,
+    })
+  },
   methods: {
     async loadOffices() {
-      const response = (await axios.get(`http://localhost:8000/api/v1/office/`))
-      this.officesList = response.data
-    },
-    async createOffice(data) {
       try {
-        await axios.post(
-            'http://localhost:8000/api/v1/office/create/',
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/office/`,
             {
-              name: data.name,
-              address: data.address,
-              work_schedule: data.work_schedule
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
             }
-        )
+        ))
+        this.officesList = response.data
       } catch (e) {
-        alert('Сервер не доступен')
+        this.errorMessage = `УК: ${e.response.data.detail}`
+        this.errorCode = e.response.status
+
+        this.loadOfficesSucsess = false
       }
-      this.reloadOffices()
     },
-    saveOffice(data) {
-      this.createOffice(data)
+    saveOffice() {
+      this.loadOffices()
+      this.officesListKey += 1
       this.showOfficeDialog = false
-    },
-    reloadOffices() {
-      this.loadOffices();
-      this.officesListKey = this.officesListKey + 1
     },
 
     async loadSchedules() {
-      const response = (await axios.get(`http://localhost:8000/api/v1/schedule/`))
-      this.schedulesList = response.data
-    },
-    async createSchedule(data) {
       try {
-        const response = (await axios.post(
-            'http://localhost:8000/api/v1/schedule/create/',
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/schedule/`,
             {
-              name: data.scheduleName,
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
             }
         ))
-        let newSchedulePk = response.data.id
-        await this.configWorkDays(newSchedulePk, data.days)
+        this.schedulesList = response.data
       } catch (e) {
-        alert('Сервер не доступен')
-      }
-      this.reloadSchedules()
-    },
-    async configWorkDays(newSchedulePk, days) {
-      try {
-        const response = (await axios.get(`http://localhost:8000/api/v1/schedule/${newSchedulePk}`))
-        let workDays = response.data.work_days
+        this.errorMessage = `Графики работы: ${e.response.data.detail}`
+        this.errorCode = e.response.status
 
-        for (let day in days) {
-          await axios.put(
-              `http://localhost:8000/api/v1/schedule/workday/manage/${workDays[days[day].dayId - 1].id}`,
-              {
-                is_not_working: false,
-                start_time: days[day].start,
-                end_time: days[day].end,
-              }
-          )
-        }
-      } catch (e) {
-        alert('Сервер не доступен')
+        this.loadSchedulesSucsess = false
       }
+
     },
-    saveSchedule(data) {
-      this.createSchedule(data)
-      this.showScheduleDialog = false
-    },
-    reloadSchedules() {
+    saveSchedule() {
       this.loadSchedules();
-      this.scheduleListKey = this.scheduleListKey + 1
+      this.scheduleListKey += 1
+      this.showScheduleDialog = false
     },
 
     async loadServices() {
-      const response = (await axios.get(`http://localhost:8000/api/v1/service/`))
-      this.servicesList = response.data
-    },
-    async createService(data) {
       try {
-        await axios.post(
-            'http://localhost:8000/api/v1/service/create/',
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/service/`,
             {
-              name: data.name,
-              description: data.description,
-              position: data.position
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
             }
-        )
+        ))
+        this.servicesList = response.data
       } catch (e) {
-        alert('Сервер не доступен')
+        this.errorMessage = `Типовые задачи: ${e.response.data.detail}`
+        this.errorCode = e.response.status
+
+        this.loadServicesSucsess = false
       }
-      this.reloadServices()
+
     },
-    saveService(data) {
-      this.createService(data)
+    saveService() {
+      this.loadServices()
+      this.servicesList += 1
       this.showServiceDialog = false
-    },
-    reloadServices() {
-      this.loadServices();
-      this.servicesList = this.servicesList + 1
-    },
+    }
   },
 }
 

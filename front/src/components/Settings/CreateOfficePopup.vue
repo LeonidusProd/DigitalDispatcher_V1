@@ -9,7 +9,7 @@
             <img class="close-dialog-button-img"
                  src="@/assets/Close.svg"
                  alt="close-dialog"
-                 @click="closeDialog">
+                 @click="this.$emit('close')">
           </div>
         </div>
 
@@ -30,7 +30,7 @@
                     @selectChanged="workScheduleChanged">
           </MySelect>
 
-          <MyButton @click="saveOffice">
+          <MyButton @click="save">
             Сохранить
           </MyButton>
         </div>
@@ -44,6 +44,7 @@ import MyButton from "@/components/UI/MyButton.vue";
 import MySelect from "@/components/UI/MySelect.vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import axios from "axios";
+import {mapState} from "vuex";
 
 export default {
   components: {MyButton, MySelect, MyInput},
@@ -62,43 +63,85 @@ export default {
       workSchedules: [],
     }
   },
-  mounted() {
+  beforeMount() {
     this.loadAddresses()
     this.loadWorkSchedules()
+  },
+  computed: {
+    ...mapState({
+      baseURL: state => state.main.baseURL,
+    })
   },
   methods: {
     async loadAddresses() {
       try {
-        const response = (await axios.get('http://localhost:8000/api/v1/address/'))
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/address/`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
         this.addresses = response.data
       } catch (e) {
-        alert('Сервер не доступен')
+        alert(`Адреса: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
       }
     },
     async loadWorkSchedules() {
       try {
-        const response = (await axios.get('http://localhost:8000/api/v1/schedule/'))
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/schedule/`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
         this.workSchedules = response.data
       } catch (e) {
-        alert('Сервер не доступен')
+        alert(`Графики работы: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
       }
     },
-    addressChanged(addressPk) {
-      this.selectedAddress = addressPk
+    addressChanged(pk) {
+      this.selectedAddress = pk
     },
-    workScheduleChanged(workSchedulePk) {
-      this.selectedworkSchedule = workSchedulePk
+    workScheduleChanged(pk) {
+      this.selectedworkSchedule = pk
     },
-    closeDialog() {
-      this.$emit('closeOfficeDialog')
-    },
-    saveOffice() {
+    async save() {
       if (this.officeName !== '' && this.selectedAddress !== -1 && this.selectedworkSchedule !== -1) {
-        this.$emit('saveOffice', {
-          name: this.officeName,
-          address: this.selectedAddress,
-          work_schedule: this.selectedworkSchedule
-        })
+        try {
+          await axios.post(
+              `${this.baseURL}/api/v1/office/create/`,
+              {
+                name: this.officeName,
+                address: this.selectedAddress,
+                work_schedule: this.selectedworkSchedule
+              },
+              {
+                headers: {
+                  'Authorization': `Token ${localStorage.getItem('auth_token')}`
+                }
+              }
+          )
+        } catch (e) {
+          alert(`Ошибка сохранения\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+          this.$emit('close')
+        }
+
+        this.$emit('save')
         this.officeName = ''
         this.servicePk = -1
         this.employeePk = -1
@@ -119,6 +162,7 @@ export default {
   display: flex;
   z-index: 1000;
 }
+
 .dialog-content {
   margin: auto;
   background: white;
@@ -128,12 +172,14 @@ export default {
   padding: 20px;
   display: flex;
 }
+
 .create-task-content {
   width: 100%;
   background: rgb(169, 168, 159, 0.2);
   border-radius: 10px;
   padding: 10px;
 }
+
 .up-block {
   height: 30px;
   width: 100%;
@@ -142,11 +188,13 @@ export default {
   padding-left: 20px;
   padding-right: 20px;
 }
+
 .down-block {
   height: 90%;
   width: 100%;
   padding: 20px;
 }
+
 .close-dialog-button {
   height: 30px;
   width: 30px;
@@ -155,6 +203,7 @@ export default {
   background-color: rgb(109, 197, 195, 0.4);
   border-radius: 11px;
 }
+
 .close-dialog-button:hover {
   height: 30px;
   width: 30px;
@@ -163,6 +212,7 @@ export default {
   background-color: rgb(109, 197, 195, 0.9);
   border-radius: 11px;
 }
+
 .close-dialog-button-img {
   width: 100%;
 }

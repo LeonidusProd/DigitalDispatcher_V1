@@ -9,7 +9,7 @@
             <img class="close-dialog-button-img"
                  src="@/assets/Close.svg"
                  alt="close-dialog"
-                 @click="$emit('closeDialog')">
+                 @click="$emit('close')">
           </div>
         </div>
 
@@ -24,7 +24,7 @@
                     @selectChanged="complexChanged">
           </MySelect>
 
-          <MyButton @click="saveHouse">
+          <MyButton @click="save">
             Сохранить
           </MyButton>
         </div>
@@ -38,6 +38,7 @@ import MyButton from "@/components/UI/MyButton.vue";
 import MySelect from "@/components/UI/MySelect.vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import axios from "axios";
+import {mapState} from "vuex";
 
 export default {
   components: {MyButton, MySelect, MyInput},
@@ -56,25 +57,52 @@ export default {
       selectedComplex: -1,
     }
   },
-  mounted() {
+  beforeMount() {
     this.loadAddresses();
     this.loadComplexes();
+  },
+  computed: {
+    ...mapState({
+      baseURL: state => state.main.baseURL,
+    })
   },
   methods: {
     async loadAddresses() {
       try {
-        const response = (await axios.get(`http://localhost:8000/api/v1/address/`))
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/address/`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
         this.addresses = response.data
       } catch (e) {
-        alert('Сервер не доступен')
+        alert(`Адреса: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
       }
     },
     async loadComplexes() {
       try {
-        const response = (await axios.get(`http://localhost:8000/api/v1/complex/`))
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/complex/`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
         this.complexes = response.data
       } catch (e) {
-        alert('Сервер не доступен')
+        alert(`ЖК: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
       }
     },
     addressChanged(pk) {
@@ -83,24 +111,33 @@ export default {
     complexChanged(pk) {
       this.selectedComplex = pk
     },
-    async saveHouse() {
+    async save() {
       if (this.selectedAddress !== -1 && this.selectedComplex !== -1) {
         try {
-        await axios.post(
-            'http://localhost:8000/api/v1/house/create/',
-            {
-              complex: this.selectedComplex,
-              address: this.selectedAddress
-            }
-        )
-      } catch (e) {
-        alert('Сервер не доступен')
-      }
+          await axios.post(
+              `${this.baseURL}/api/v1/house/create/`,
+              {
+                complex: this.selectedComplex,
+                address: this.selectedAddress
+              },
+              {
+                headers: {
+                  'Authorization': `Token ${localStorage.getItem('auth_token')}`
+                }
+              }
+          )
+        } catch (e) {
+          alert(`Ошибка сохранения\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
 
-      this.$emit('save')
+          this.$emit('close')
+        }
 
-      this.selectedComplex = -1
-      this.selectedAddress = -1
+        this.$emit('save')
+
+        this.selectedComplex = -1
+        this.selectedAddress = -1
       }
     }
   },
@@ -118,6 +155,7 @@ export default {
   display: flex;
   z-index: 1000;
 }
+
 .dialog-content {
   margin: auto;
   background: white;
@@ -127,12 +165,14 @@ export default {
   padding: 20px;
   display: flex;
 }
+
 .create-task-content {
   width: 100%;
   background: rgb(169, 168, 159, 0.2);
   border-radius: 10px;
   padding: 10px;
 }
+
 .up-block {
   height: 30px;
   width: 100%;
@@ -141,11 +181,13 @@ export default {
   padding-left: 20px;
   padding-right: 20px;
 }
+
 .down-block {
   height: 90%;
   width: 100%;
   padding: 20px;
 }
+
 .close-dialog-button {
   height: 30px;
   width: 30px;
@@ -154,6 +196,7 @@ export default {
   background-color: rgb(109, 197, 195, 0.4);
   border-radius: 11px;
 }
+
 .close-dialog-button:hover {
   height: 30px;
   width: 30px;
@@ -162,6 +205,7 @@ export default {
   background-color: rgb(109, 197, 195, 0.9);
   border-radius: 11px;
 }
+
 .close-dialog-button-img {
   width: 100%;
 }

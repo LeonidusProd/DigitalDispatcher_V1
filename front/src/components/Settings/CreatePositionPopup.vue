@@ -9,7 +9,7 @@
             <img class="close-dialog-button-img"
                  src="@/assets/Close.svg"
                  alt="close-dialog"
-                 @click="$emit('closeDialog')">
+                 @click="this.$emit('close')">
           </div>
         </div>
 
@@ -25,7 +25,7 @@
                     @selectChanged="departmentChanged">
           </MySelect>
 
-          <MyButton @click="savePosition">
+          <MyButton @click="save">
             Сохранить
           </MyButton>
         </div>
@@ -39,6 +39,7 @@ import MyButton from "@/components/UI/MyButton.vue";
 import MySelect from "@/components/UI/MySelect.vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import axios from "axios";
+import {mapState} from "vuex";
 
 export default {
   components: {MyButton, MySelect, MyInput},
@@ -55,27 +56,61 @@ export default {
       departments: [],
     }
   },
-  mounted() {
+  beforeMount() {
     this.loadDepartments()
+  },
+  computed: {
+    ...mapState({
+      baseURL: state => state.main.baseURL,
+    })
   },
   methods: {
     async loadDepartments() {
-      try {
-        const response = (await axios.get('http://localhost:8000/api/v1/department/'))
+       try {
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/department/`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
         this.departments = response.data
       } catch (e) {
-        alert('Сервер не доступен')
+        alert(`Отделы: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
       }
     },
-    departmentChanged(departmentPk) {
-      this.selectedDepartment = departmentPk
+    departmentChanged(pk) {
+      this.selectedDepartment = pk
     },
-    savePosition() {
+    async save() {
       if (this.positionName !== '' && this.selectedDepartment !== -1) {
-        this.$emit('save', {
-          name: this.positionName,
-          department: this.selectedDepartment
-        })
+        try {
+          await axios.post(
+              `${this.baseURL}/api/v1/position/create/`,
+              {
+                name: this.positionName,
+                department: this.selectedDepartment
+              },
+              {
+                headers: {
+                  'Authorization': `Token ${localStorage.getItem('auth_token')}`
+                }
+              }
+          )
+        } catch (e) {
+          alert(`Ошибка сохранения\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+          this.$emit('close')
+        }
+
+        this.$emit('save')
         this.positionName = ''
         this.selectedDepartment = -1
       }

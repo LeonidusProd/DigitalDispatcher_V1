@@ -6,7 +6,7 @@
       <img class="delete-button-img"
            src="@/assets/Close.svg"
            alt="del-sevice"
-           @click="deleteElement(this.pk)">
+           @click="deleteElement">
     </div>
   </div>
 </template>
@@ -23,12 +23,21 @@ export default {
     })
   },
   methods: {
-    async deleteElement(pk) {
+    async deleteElement() {
       try {
-        await axios.delete(`${this.baseURL}/${this.modelName}/delete/${pk}`)
+        await axios.delete(
+            `${this.baseURL}/api/v1/${this.modelName}/delete/${this.pk}`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        )
         this.$emit('deleteElement')
       } catch (e) {
-        console.log(e)
+        alert(`Ошибка удаления записи\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
       }
     }
   }

@@ -1,5 +1,6 @@
 <template>
-  <div class="inside-container">
+  <div class="inside-container"
+       v-if="loadDepartmentsSucsess && loadPositionsSucsess && loadEmployeesSucsess">
     <div class="outer-block">
       <div class="inner-block">
         <div>
@@ -17,9 +18,10 @@
           Добавить отдел
         </MyButton>
 
-        <CreateDepartmentPopup :show="this.showDepartmentDialog"
-                               @saveDepartment="saveDepartment"
-                               @closeDepartmentDialog="this.showDepartmentDialog = false">
+        <CreateDepartmentPopup :key="this.departmentsPopupKey"
+                               :show="this.showDepartmentDialog"
+                               @save="saveDepartment"
+                               @close="this.showDepartmentDialog = false">
         </CreateDepartmentPopup>
       </div>
 
@@ -39,9 +41,10 @@
           Добавить должность
         </MyButton>
 
-        <CreatePositionPopup :show="this.showPositionDialog"
+        <CreatePositionPopup :key="this.positionsPopupKey"
+                             :show="this.showPositionDialog"
                              @save="savePosition"
-                             @closeDialog="this.showPositionDialog = false">
+                             @close="this.showPositionDialog = false">
         </CreatePositionPopup>
       </div>
     </div>
@@ -63,12 +66,18 @@
           Добавить сотрудника
         </MyButton>
 
-        <CreateEmployeePopup :show="this.showEmployeeDialog"
+        <CreateEmployeePopup :key="this.employeesPopupKey"
+                             :show="this.showEmployeeDialog"
                              @save="saveEmployee"
-                             @closeDialog="this.showEmployeeDialog = false">
+                             @close="this.showEmployeeDialog = false">
         </CreateEmployeePopup>
       </div>
     </div>
+  </div>
+  <div class="alert" v-else>
+    <h1>Ошибка загрузки данных, попробуйте ещё раз позже</h1>
+    <h4>Ошибка: {{ errorCode }}</h4>
+    <h4>Сообщение: {{ errorMessage }}</h4>
   </div>
 </template>
 
@@ -80,6 +89,7 @@ import SettingsListView from "@/components/Settings/SettingsListView.vue";
 import CreateDepartmentPopup from "@/components/Settings/CreateDepartmentPopup.vue";
 import CreatePositionPopup from "@/components/Settings/CreatePositionPopup.vue";
 import CreateEmployeePopup from "@/components/Settings/CreateEmployeePopup.vue";
+import {mapState} from "vuex";
 
 
 export default {
@@ -93,112 +103,115 @@ export default {
   },
   data() {
     return {
+      loadDepartmentsSucsess: true,
+      loadPositionsSucsess: true,
+      loadEmployeesSucsess: true,
+      errorMessage: '',
+      errorCode: 0,
+
       departmentsList: [],
       departmentsListKey: 1,
+      departmentsPopupKey: 1,
       showDepartmentDialog: false,
 
       positionsList: [],
       positionsListKey: 1,
+      positionsPopupKey: 1,
       showPositionDialog: false,
 
       employeesList: [],
       employeesListKey: 1,
+      employeesPopupKey: 1,
       showEmployeeDialog: false,
     }
   },
-  created() {
+  beforeMount() {
     this.loadDepartments();
     this.loadPositions();
     this.loadEmployees();
   },
+  computed: {
+    ...mapState({
+      baseURL: state => state.main.baseURL,
+    })
+  },
   methods: {
     async loadDepartments() {
-      const response = (await axios.get(`http://localhost:8000/api/v1/department/`))
-      this.departmentsList = response.data
-    },
-    async createDepartment(data) {
       try {
-        await axios.post(
-            'http://localhost:8000/api/v1/department/create/',
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/department/`,
             {
-              name: data.name,
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
             }
-        )
+        ))
+        this.departmentsList = response.data
       } catch (e) {
-        alert('Сервер не доступен')
+        this.errorMessage = `Отделы: ${e.response.data.detail}`
+        this.errorCode = e.response.status
+
+        this.loadDepartmentsSucsess = false
       }
-      this.reloadDepartments()
+      this.positionsListKey += 1
     },
-    saveDepartment(data) {
-      this.createDepartment(data)
-      this.showDepartmentDialog = false
-    },
-    reloadDepartments() {
-      this.loadDepartments();
+    saveDepartment() {
+      this.loadDepartments()
+      this.positionsPopupKey += 1
       this.departmentsListKey += 1
+      this.showDepartmentDialog = false
     },
 
     async loadPositions() {
-      const response = (await axios.get(`http://localhost:8000/api/v1/position/`))
-      this.positionsList = response.data
-    },
-    async createPosition(data) {
       try {
-        await axios.post(
-            'http://localhost:8000/api/v1/position/create/',
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/position/`,
             {
-              name: data.name,
-              department: data.department
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
             }
-        )
+        ))
+        this.positionsList = response.data
       } catch (e) {
-        alert('Сервер не доступен')
+        this.errorMessage = `Должности: ${e.response.data.detail}`
+        this.errorCode = e.response.status
+
+        this.loadPositionsSucsess = false
       }
-      this.reloadPositions()
+      this.employeesListKey += 1
     },
-    savePosition(data) {
-      this.createPosition(data)
-      this.showPositionDialog = false
-    },
-    reloadPositions() {
-      this.loadPositions();
+    savePosition() {
+      this.loadPositions()
+      this.employeesPopupKey += 1
       this.positionsListKey += 1
+      this.showPositionDialog = false
     },
 
     async loadEmployees() {
-      const response = (await axios.get(`http://localhost:8000/api/v1/employee/`))
-      this.employeesList = response.data
-    },
-    async createEmployee(data) {
       try {
-        await axios.post(
-            'http://localhost:8000/api/v1/employee/create/',
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/employee/`,
             {
-              surname: data.surname,
-              name: data.name,
-              patronymic: data.patronymic,
-              phone: data.phone,
-              email: data.email,
-              office: data.selectedOffice,
-              position: data.selectedPosition,
-              tg_id: data.tgId,
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
             }
-        )
+        ))
+        this.employeesList = response.data
       } catch (e) {
-        alert('Сервер не доступен')
-        console.log(e)
+        this.errorMessage = `УК: ${e.response.data.detail}`
+        this.errorCode = e.response.status
+
+        this.loadEmployeesSucsess = false
       }
-      this.reloadEmployees()
     },
-    saveEmployee(data) {
-      this.createEmployee(data)
-      this.showEmployeeDialog = false
-    },
-    reloadEmployees() {
-      this.loadEmployees();
+    saveEmployee() {
+      this.loadEmployees()
       this.employeesListKey += 1
-    },
-  },
+      this.showEmployeeDialog = false
+    }
+  }
 }
 
 </script>

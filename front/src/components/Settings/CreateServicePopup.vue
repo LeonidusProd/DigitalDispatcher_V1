@@ -9,7 +9,7 @@
             <img class="close-dialog-button-img"
                  src="@/assets/Close.svg"
                  alt="close-dialog"
-                 @click="closeDialog">
+                 @click="this.$emit('close')">
           </div>
         </div>
 
@@ -32,7 +32,7 @@
                     @selectChanged="positionChanged">
           </MySelect>
 
-          <MyButton @click="saveService">
+          <MyButton @click="save">
             Сохранить
           </MyButton>
         </div>
@@ -47,6 +47,7 @@ import MySelect from "@/components/UI/MySelect.vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import axios from "axios";
 import MyTextarea from "@/components/UI/MyTextarea.vue";
+import {mapState} from "vuex";
 
 export default {
   components: {MyTextarea, MyButton, MySelect, MyInput},
@@ -64,35 +65,62 @@ export default {
       selectedPosition: -1,
     }
   },
-  mounted() {
+  beforeMount() {
     this.loadPositions()
+  },
+  computed: {
+    ...mapState({
+      baseURL: state => state.main.baseURL,
+    })
   },
   methods: {
     async loadPositions() {
       try {
-        const response = (await axios.get('http://localhost:8000/api/v1/position/'))
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/position/`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
         this.positions = response.data
       } catch (e) {
-        alert('Сервер не доступен')
+        alert(`Должности: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
       }
-      console.log('positions: ')
-      console.log(this.positions)
     },
-    positionChanged(positionPk) {
-      // console.log('1234567897654================')
-      // console.log(positionPk)
-      this.selectedPosition = positionPk
+    positionChanged(pk) {
+      this.selectedPosition = pk
     },
-    closeDialog() {
-      this.$emit('closeServiceDialog')
-    },
-    saveService() {
+    async save() {
       if (this.serviceName !== '' && this.serviceDescription !== '' && this.selectedPosition !== -1) {
-        this.$emit('saveService', {
-          name: this.serviceName,
-          description: this.serviceDescription,
-          position: this.selectedPosition
-        })
+        try {
+          await axios.post(
+              `${this.baseURL}/api/v1/service/create/`,
+              {
+                name: this.serviceName,
+                description: this.serviceDescription,
+                position: this.selectedPosition
+              },
+              {
+                headers: {
+                  'Authorization': `Token ${localStorage.getItem('auth_token')}`
+                }
+              }
+          )
+        } catch (e) {
+          alert(`Ошибка сохранения\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+          this.$emit('close')
+        }
+
+        this.$emit('save')
         this.serviceName = ''
         this.serviceDescription = ''
         this.selectedPosition = -1

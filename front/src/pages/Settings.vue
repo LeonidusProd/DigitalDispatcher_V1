@@ -6,34 +6,26 @@
           <img class="logo-img" src="@/assets/Лого%20текст%20снизу.svg" alt="logo">
         </div>
         <div class="menu-block">
-          <my-button @click="this.activeSection = 'systemSettings'"
-            :class="{'active-button':this.activeSection === 'systemSettings'}">
+          <MyButton @click="this.activeSection = 'systemSettings'"
+                    :class="{'active-button':this.activeSection === 'systemSettings'}">
             Системные
-          </my-button>
-          <my-button @click="this.activeSection = 'organizationSettings'"
-            :class="{'active-button':this.activeSection === 'organizationSettings'}">
+          </MyButton>
+          <MyButton @click="this.activeSection = 'organizationSettings'"
+                    :class="{'active-button':this.activeSection === 'organizationSettings'}">
             Организация
-          </my-button>
-          <my-button @click="this.activeSection = 'staffSettings'"
-            :class="{'active-button':this.activeSection === 'staffSettings'}">
+          </MyButton>
+          <MyButton @click="this.activeSection = 'staffSettings'"
+                    :class="{'active-button':this.activeSection === 'staffSettings'}">
             Персонал
-          </my-button>
-          <my-button @click="this.activeSection = 'addressSettings'"
-            :class="{'active-button':this.activeSection === 'addressSettings'}">
+          </MyButton>
+          <MyButton @click="this.activeSection = 'addressSettings'"
+                    :class="{'active-button':this.activeSection === 'addressSettings'}">
             Адреса
-          </my-button>
-          <!--          <my-button @click="changeSection('newRequests')"-->
-          <!--                     :class="{'active-button':this.activeSection === 'newRequests'}">-->
-          <!--            Новые заявки-->
-          <!--          </my-button>-->
-          <!--          <my-button @click="changeSection('activeRequests')"-->
-          <!--                     :class="{'active-button':this.activeSection === 'activeRequests'}">-->
-          <!--            Активные заявки-->
-          <!--          </my-button>-->
+          </MyButton>
         </div>
       </div>
       <div class="down-block">
-        <my-button @click="">
+        <my-button @click="loguot">
           Выход
         </my-button>
       </div>
@@ -51,18 +43,6 @@
 
       <AddressSettings v-if="this.activeSection === 'addressSettings'">
       </AddressSettings>
-      <!--      <div class="requests-list">-->
-      <!--        <requests-list-->
-      <!--            :requests=this.requests-->
-      <!--            :request-list-landing="requestListLanding">-->
-      <!--        </requests-list>-->
-      <!--      </div>-->
-
-      <!--      <div class="request-card">-->
-      <!--        <h4 v-if="this.activeRequestId === -1">Ни одна заявка не выбрана</h4>-->
-      <!--        <RequestCard v-else :key="this.activeRequestId">-->
-      <!--        </RequestCard>-->
-      <!--      </div>-->
     </div>
   </div>
 </template>
@@ -79,31 +59,43 @@ import SystemSettings from "@/components/Settings/SystemSettings.vue";
 import AddressSettings from "@/components/Settings/AddressSettings.vue";
 import StaffSettings from "@/components/Settings/StaffSettings.vue";
 import OrganizationSettings from "@/components/Settings/OrganizationSettings.vue";
+import axios from "axios";
+import config from "bootstrap/js/src/util/config";
 
 export default {
   components: {OrganizationSettings, StaffSettings, AddressSettings, SystemSettings, MyButton},
-  // computed: {
-  //   store() {
-  //     return store
-  //   },
-  //   ...mapState({
-  //     activeSection: state => state.settings.activeSettingsSection,
-  //   }),
-  //   ...mapGetters({})
-  // },
+  computed: {
+    ...mapState({
+      baseURL: state => state.main.baseURL,
+    })
+  },
   data() {
     return {
       activeSection: 'systemSettings',
     }
   },
-  mounted() {
-
-  },
   methods: {
-    // ...mapMutations({
-    //   setActiveSection: "settings/setActiveSettingsSection",
-    // }),
-    // ...mapActions({}),
+    async loguot() {
+      try {
+        const response = (await axios.post(
+            `${this.baseURL}/auth/token/logout`,
+            {},
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user_role');
+
+        this.$router.push('/');
+      } catch (e) {
+        alert(`Ошибка выхода\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+      }
+    }
   }
 }
 </script>

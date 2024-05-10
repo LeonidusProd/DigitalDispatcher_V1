@@ -9,7 +9,7 @@
             <img class="close-dialog-button-img"
                  src="@/assets/Close.svg"
                  alt="close-dialog"
-                 @click="closeDialog">
+                 @click="this.$emit('close')">
           </div>
         </div>
 
@@ -178,7 +178,7 @@
             </div>
           </div>
 
-          <MyButton @click="saveSchedule">
+          <MyButton @click="save">
             Сохранить
           </MyButton>
         </div>
@@ -193,6 +193,7 @@ import MySelect from "@/components/UI/MySelect.vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import axios from "axios";
 import MyCheckbox from "@/components/UI/MyCheckBox.vue";
+import {mapState} from "vuex";
 
 export default {
   components: {MyCheckbox, MyButton, MySelect, MyInput},
@@ -231,11 +232,49 @@ export default {
       sundayEndTime: '',
     }
   },
+  computed: {
+    ...mapState({
+      baseURL: state => state.main.baseURL,
+    })
+  },
   methods: {
-    closeDialog() {
-      this.$emit('closeScheduleDialog')
+    async configWorkDays(newSchedulePk, days) {
+      try {
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/schedule/${newSchedulePk}`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
+
+        let workDays = response.data.work_days
+
+        for (let day in days) {
+          await axios.put(
+              `${this.baseURL}/api/v1/schedule/workday/manage/${workDays[days[day].dayId - 1].id}`,
+              {
+                is_not_working: false,
+                start_time: days[day].start,
+                end_time: days[day].end,
+              },
+              {
+                headers: {
+                  'Authorization': `Token ${localStorage.getItem('auth_token')}`
+                }
+              }
+          )
+        }
+      } catch (e) {
+        alert(`Ошибка сохранения\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
+      }
     },
-    saveSchedule() {
+    async save() {
       let days = [];
 
       if (this.mondayIsWork && this.mondayStartTime !== '' && this.mondayEndTime !== '') {
@@ -260,10 +299,29 @@ export default {
         days.push({dayId: 7, start: this.sundayStartTime, end: this.sundayEndTime})
       }
 
-      this.$emit('saveSchedule', {
-        scheduleName: this.scheduleName,
-        days: days
-      })
+      try {
+        const response = (await axios.post(
+            `${this.baseURL}/api/v1/schedule/create/`,
+            {
+              name: this.scheduleName,
+            },
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
+        let newSchedulePk = response.data.id
+        await this.configWorkDays(newSchedulePk, days)
+      } catch (e) {
+        alert(`Ошибка сохранения\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
+      }
+
+      this.$emit('save')
 
       this.scheduleName = ''
       this.mondayIsWork = false

@@ -9,7 +9,7 @@
             <img class="close-dialog-button-img"
                  src="@/assets/Close.svg"
                  alt="close-dialog"
-                 @click="$emit('closeDialog')">
+                 @click="this.$emit('close')">
           </div>
         </div>
 
@@ -94,7 +94,7 @@
             </MyInput>
           </div>
 
-          <MyButton v-if="this.showNumberBlock" @click="saveAddress">
+          <MyButton v-if="this.showNumberBlock" @click="save">
             Сохранить
           </MyButton>
         </div>
@@ -108,6 +108,7 @@ import MyButton from "@/components/UI/MyButton.vue";
 import MySelect from "@/components/UI/MySelect.vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import axios from "axios";
+import {mapState} from "vuex";
 
 export default {
   components: {MyButton, MySelect, MyInput},
@@ -135,45 +136,81 @@ export default {
       houseCorpus: '',
     }
   },
-  mounted() {
+  beforeMount() {
     this.loadCities();
+  },
+  computed: {
+    ...mapState({
+      baseURL: state => state.main.baseURL,
+    })
   },
   methods: {
     async loadCities() {
       try {
-        const response = (await axios.get(`http://localhost:8000/api/v1/city/`))
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/city/`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
         this.cities = response.data
       } catch (e) {
-        alert('Сервер не доступен')
+        alert(`Города: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
       }
     },
     async loadStreets() {
       try {
-        const response = (await axios.get(`http://localhost:8000/api/v1/city/${this.selectedCity}/streets`))
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/city/${this.selectedCity}/streets`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
         this.streets = response.data
       } catch (e) {
-        alert('Сервер не доступен')
+        alert(`Улицы: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
       }
     },
-    cityChanged(cityPk) {
-      this.selectedCity = cityPk
+    cityChanged(pk) {
+      this.selectedCity = pk
       this.showStreetBlock = true
       this.loadStreets()
     },
-    streetChanged(streetPk) {
-      this.selectedStreet = streetPk
+    streetChanged(pk) {
+      this.selectedStreet = pk
       this.showNumberBlock = true
     },
     async createCity() {
       try {
         await axios.post(
-            'http://localhost:8000/api/v1/city/create/',
+            `${this.baseURL}/api/v1/city/create/`,
             {
               name: this.cityName,
+            },
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
             }
         )
       } catch (e) {
-        alert('Сервер не доступен')
+        alert(`Ошибка создания города\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
       }
       this.loadCities()
       this.cityMode = 'select'
@@ -181,30 +218,48 @@ export default {
     async createStreet() {
       try {
         await axios.post(
-            'http://localhost:8000/api/v1/street/create/',
+            `${this.baseURL}/api/v1/street/create/`,
             {
               city: this.selectedCity,
               name: this.streetName,
+            },
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
             }
         )
       } catch (e) {
-        alert('Сервер не доступен')
+        alert(`Ошибка создания улицы\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
       }
       this.loadStreets()
       this.streetMode = 'select'
     },
-    async saveAddress() {
+    async save() {
       try {
         await axios.post(
-            'http://localhost:8000/api/v1/address/create/',
+            `${this.baseURL}/api/v1/address/create/`,
             {
               street: this.selectedStreet,
               number: this.houseNumber,
               corpus: this.houseCorpus
+            },
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
             }
         )
       } catch (e) {
-        alert('Сервер не доступен')
+        alert(`Ошибка сохранения\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+          this.$emit('close')
       }
 
       this.$emit('save')

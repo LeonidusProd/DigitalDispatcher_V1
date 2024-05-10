@@ -9,7 +9,7 @@
             <img class="close-dialog-button-img"
                  src="@/assets/Close.svg"
                  alt="close-dialog"
-                 @click="$emit('closeDialog')">
+                 @click="$emit('close')">
           </div>
         </div>
 
@@ -68,7 +68,7 @@
             </div>
           </div>
 
-          <MyButton @click="saveEmployee">
+          <MyButton @click="save">
             Сохранить
           </MyButton>
         </div>
@@ -82,6 +82,7 @@ import MyButton from "@/components/UI/MyButton.vue";
 import MySelect from "@/components/UI/MySelect.vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import axios from "axios";
+import {mapState} from "vuex";
 
 export default {
   components: {MyButton, MySelect, MyInput},
@@ -105,47 +106,92 @@ export default {
       tgId: '',
     }
   },
-  mounted() {
+  beforeMount() {
     this.loadOffices();
     this.loadPositions();
+  },
+  computed: {
+    ...mapState({
+      baseURL: state => state.main.baseURL,
+    })
   },
   methods: {
     async loadOffices() {
       try {
-        const response = (await axios.get('http://localhost:8000/api/v1/office/'))
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/office/`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
         this.offices = response.data
       } catch (e) {
-        alert('Сервер не доступен')
+        alert(`УК: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
       }
     },
     async loadPositions() {
       try {
-        const response = (await axios.get('http://localhost:8000/api/v1/position/'))
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/position/`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
         this.positions = response.data
       } catch (e) {
-        alert('Сервер не доступен')
+        alert(`Должности: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
       }
     },
-    officeChanged(officePk) {
-      this.selectedOffice = officePk
+    officeChanged(pk) {
+      this.selectedOffice = pk
     },
-    positionChanged(positionPk) {
-      this.selectedPosition = positionPk
+    positionChanged(pk) {
+      this.selectedPosition = pk
     },
-    saveEmployee() {
+    async save() {
       if (this.surname !== '' && this.name !== '' && this.patronymic !== '' &&
           this.phone !== '' && this.email !== '' && this.selectedOffice !== -1 &&
           this.selectedPosition !== -1 && this.tgId !== '') {
-        this.$emit('save', {
-          surname: this.surname,
-          name: this.name,
-          patronymic: this.patronymic,
-          phone: this.phone,
-          email: this.email,
-          selectedOffice: this.selectedOffice,
-          selectedPosition: this.selectedPosition,
-          tgId: this.tgId,
-        })
+        try {
+          await axios.post(
+              `${this.baseURL}/api/v1/employee/create/`,
+              {
+                surname: this.surname,
+                name: this.name,
+                patronymic: this.patronymic,
+                phone: this.phone,
+                email: this.email,
+                office: this.selectedOffice,
+                position: this.selectedPosition,
+                tg_id: this.tgId,
+              },
+              {
+                headers: {
+                  'Authorization': `Token ${localStorage.getItem('auth_token')}`
+                }
+              }
+          )
+        } catch (e) {
+          alert(`Ошибка сохранения\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+          this.$emit('close')
+        }
+
+        this.$emit('save')
         this.surname = ''
         this.name = ''
         this.patronymic = ''

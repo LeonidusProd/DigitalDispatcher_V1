@@ -9,7 +9,7 @@
             <img class="close-dialog-button-img"
                  src="@/assets/Close.svg"
                  alt="close-dialog"
-                 @click="closeDialog">
+                 @click="this.$emit('close')">
           </div>
         </div>
 
@@ -20,7 +20,7 @@
                    @input="this.departmentName = $event.target.value">
           </MyInput>
 
-          <MyButton @click="saveDepartment">
+          <MyButton @click="save">
             Сохранить
           </MyButton>
         </div>
@@ -32,6 +32,8 @@
 <script>
 import MyButton from "@/components/UI/MyButton.vue";
 import MyInput from "@/components/UI/MyInput.vue";
+import {mapState} from "vuex";
+import axios from "axios";
 
 export default {
   components: {MyButton, MyInput},
@@ -46,15 +48,35 @@ export default {
       departmentName: '',
     }
   },
+  computed: {
+    ...mapState({
+      baseURL: state => state.main.baseURL,
+    })
+  },
   methods: {
-    closeDialog() {
-      this.$emit('closeDepartmentDialog')
-    },
-    saveDepartment() {
+    async save() {
       if (this.departmentName !== '') {
-        this.$emit('saveDepartment', {
-          name: this.departmentName,
-        })
+        try {
+          await axios.post(
+              `${this.baseURL}/api/v1/department/create/`,
+              {
+                name: this.departmentName
+              },
+              {
+                headers: {
+                  'Authorization': `Token ${localStorage.getItem('auth_token')}`
+                }
+              }
+          )
+        } catch (e) {
+          alert(`Ошибка сохранения\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+          this.$emit('close')
+        }
+
+        this.$emit('save')
         this.departmentName = ''
       }
     },

@@ -1,5 +1,6 @@
 <template>
-  <div class="inside-container">
+  <div class="inside-container"
+       v-if="loadAddressesSucsess && loadHousesSucsess && loadComplexesSucsess">
     <div class="outer-block left">
       <div class="inner-block">
         <div>
@@ -19,7 +20,7 @@
 
         <CreateAddressPopup :show="this.showAddressDialog"
                             @save="saveAddress"
-                            @closeDialog="this.showAddressDialog = false">
+                            @close="this.showAddressDialog = false">
         </CreateAddressPopup>
       </div>
 
@@ -41,7 +42,7 @@
 
         <CreateHousePopup :show="this.showHouseDialog"
                           @save="saveHouse"
-                          @closeDialog="this.showHouseDialog = false">
+                          @close="this.showHouseDialog = false">
         </CreateHousePopup>
       </div>
     </div>
@@ -65,10 +66,15 @@
 
         <CreateComplexPopup :show="this.showComplexDialog"
                             @save="saveComplex"
-                            @closeDialog="this.showComplexDialog = false">
+                            @close="this.showComplexDialog = false">
         </CreateComplexPopup>
       </div>
     </div>
+  </div>
+  <div class="alert" v-else>
+    <h1>Ошибка загрузки данных, попробуйте ещё раз позже</h1>
+    <h4>Ошибка: {{ errorCode }}</h4>
+    <h4>Сообщение: {{ errorMessage }}</h4>
   </div>
 </template>
 
@@ -80,6 +86,7 @@ import SettingsListView from "@/components/Settings/SettingsListView.vue";
 import CreateComplexPopup from "@/components/Settings/CreateComplexPopup.vue";
 import CreateAddressPopup from "@/components/Settings/CreateAddressPopup.vue";
 import CreateHousePopup from "@/components/Settings/CreateHousePopup.vue";
+import {mapState} from "vuex";
 
 
 export default {
@@ -93,6 +100,12 @@ export default {
   },
   data() {
     return {
+      loadAddressesSucsess: true,
+      loadHousesSucsess: true,
+      loadComplexesSucsess: true,
+      errorMessage: '',
+      errorCode: 0,
+
       addressesList: [],
       addressesListKey: 1,
       showAddressDialog: false,
@@ -106,15 +119,34 @@ export default {
       showHouseDialog: false,
     }
   },
-  created() {
+  computed: {
+    ...mapState({
+      baseURL: state => state.main.baseURL,
+    })
+  },
+  beforeMount() {
     this.loadAddresses();
     this.loadComplexes();
     this.loadHouses();
   },
   methods: {
     async loadAddresses() {
-      const response = (await axios.get(`http://localhost:8000/api/v1/address/`))
-      this.addressesList = response.data
+      try {
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/address/`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
+        this.addressesList = response.data
+      } catch (e) {
+        this.errorMessage = `Адреса: ${e.response.data.detail}`
+        this.errorCode = e.response.status
+
+        this.loadAddressesSucsess = false
+      }
     },
     saveAddress() {
       this.loadAddresses();
@@ -123,8 +155,22 @@ export default {
     },
 
     async loadComplexes() {
-      const response = (await axios.get(`http://localhost:8000/api/v1/complex/`))
-      this.complexesList = response.data
+      try {
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/complex/`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
+        this.complexesList = response.data
+      } catch (e) {
+        this.errorMessage = `ЖК: ${e.response.data.detail}`
+        this.errorCode = e.response.status
+
+        this.loadComplexesSucsess = false
+      }
     },
     saveComplex() {
       this.loadComplexes();
@@ -133,8 +179,22 @@ export default {
     },
 
     async loadHouses() {
-      const response = (await axios.get(`http://localhost:8000/api/v1/house/`))
-      this.housesList = response.data
+      try {
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/house/`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
+        this.housesList = response.data
+      } catch (e) {
+        this.errorMessage = `ЖК: ${e.response.data.detail}`
+        this.errorCode = e.response.status
+
+        this.loadHousesSucsess = false
+      }
     },
     saveHouse() {
       this.loadHouses();
