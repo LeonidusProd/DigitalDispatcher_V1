@@ -96,8 +96,6 @@ export default {
             }
         ))
         this.employees = response.data
-        console.log('загрузка сотрудников')
-        console.log(response.data)
       } catch (e) {
         alert(`Сотрудники: Ошибка получения данных\n
                 Ошибка: ${e.response.status}\n
@@ -116,9 +114,6 @@ export default {
     },
     employeeChanged(pk) {
       this.selectedEmployee = pk
-      console.log('смена сотрудника')
-      console.log(this.employees[this.selectedEmployee - 1].empl_name)
-      console.log(this.employees[this.selectedEmployee - 1].empl_surname)
     },
     async save() {
       if (this.login !== '' && this.password !== '' && this.selectedRole !== -1) {
@@ -140,8 +135,6 @@ export default {
                 }
             )
           } catch (e) {
-            console.log('1 условие')
-            console.log(e)
             alert(`Ошибка сохранения\n
                 Ошибка: ${e.response.status}\n
                 Сообщение: ${e.response.data.detail}`)
@@ -164,8 +157,6 @@ export default {
                 }
             )
           } catch (e) {
-            console.log('2 условие')
-            console.log(e)
             alert(`Ошибка сохранения\n
                 Ошибка: ${e.response.status}\n
                 Сообщение: ${e.response.data.detail}`)
@@ -190,8 +181,6 @@ export default {
                 }
             )
           } catch (e) {
-            console.log('3 условие')
-            console.log(e)
             alert(`Ошибка сохранения\n
                 Ошибка: ${e.response.status}\n
                 Сообщение: ${e.response.data.detail}`)
