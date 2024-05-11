@@ -1,6 +1,3 @@
-import axios from "axios";
-
-
 export const mainModule = {
     state: () => ({
         baseURL: 'http://localhost:8000'
