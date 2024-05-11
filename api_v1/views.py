@@ -8,7 +8,9 @@ from .permissions import *
 from rest_framework import status
 
 from .models import *
+from django.contrib.auth.models import User
 from .serializers import *
+from django.db.models import Q
 
 """
 Permissions:
@@ -322,6 +324,27 @@ class TaskDeleteView(generics.DestroyAPIView):
     queryset = RequestTask.objects.all()
     serializer_class = RequestTaskDelSerializer
     permission_classes = ((IsSuperuser | IsStaff), )
+
+
+class UserListView(generics.ListAPIView):
+    """Список всех пользователей"""
+    queryset = User.objects.filter(~Q(pk=1))
+    serializer_class = UserLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class UserCreateView(generics.CreateAPIView):
+    """Добавление нового пользователя"""
+    queryset = User.objects.all()
+    serializer_class = UserLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
+
+
+class UserDeleteView(generics.DestroyAPIView):
+    """Удаление пользователя"""
+    queryset = User.objects.all()
+    serializer_class = UserLstMngCrtDelSerializer
+    permission_classes = (IsSuperuser, )
 
 
 # Не используются в настоящий момент

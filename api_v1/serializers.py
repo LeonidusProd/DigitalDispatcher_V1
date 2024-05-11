@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
 
 from .models import *
+from django.contrib.auth.models import User
 
 
 '''
@@ -64,13 +65,21 @@ class DepartmentUltimateSerializer(serializers.ModelSerializer):
 
 class EmployeeSpecSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(method_name='get_name')
+    empl_name = serializers.SerializerMethodField(method_name='get_empl_name')
+    empl_surname = serializers.SerializerMethodField(method_name='get_empl_surname')
 
     def get_name(self, obj):
         return f'{obj.surname} {obj.name} {obj.patronymic}'.strip()
 
+    def get_empl_name(self, obj):
+        return obj.name
+
+    def get_empl_surname(self, obj):
+        return obj.surname
+
     class Meta:
         model = Employee
-        fields = ['pk', 'name']
+        fields = ['pk', 'name', 'empl_name', 'empl_surname']
 
 
 class EmployeeFullLstMngCrtDelSerializer(serializers.ModelSerializer):
@@ -264,6 +273,22 @@ class WorkDayShortLstSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkDay
         fields = ['id', 'resume']
+
+
+class UserLstMngCrtDelSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField(method_name='get_name')
+
+    def get_name(self, obj):
+        if obj.is_superuser:
+            return f'{obj.username}: Администратор'
+        elif obj.is_staff and obj.is_superuser:
+            return f'{obj.username}: Администратор'
+        elif obj.is_staff:
+            return f'{obj.username}: Персонал'
+
+    class Meta:
+        model = User
+        fields = ['pk', 'name', 'username', 'password', 'is_superuser', 'is_staff', 'first_name', 'last_name', ]
 
 
 # Не используются в настоящий момент

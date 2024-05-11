@@ -59,6 +59,9 @@ urlpatterns = [
     path('task/create', views.TaskCreateView.as_view(), name='create_task'),
     path('task/delete/<int:pk>', views.TaskDeleteView.as_view(), name='delete_task'),
 
+    path('user/', views.UserListView.as_view(), name='user_list'),
+    path('user/create/', views.UserCreateView.as_view(), name='user_create'),
+    path('user/delete/<int:pk>', views.UserDeleteView.as_view(), name='user_delete'),
 
     # Не используются в настоящий момент
     # path('city/<int:pk>', views.CityDetailView.as_view(), name='city_detail'),

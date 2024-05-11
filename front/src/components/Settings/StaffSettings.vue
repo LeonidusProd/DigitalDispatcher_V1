@@ -72,6 +72,29 @@
                              @close="this.showEmployeeDialog = false">
         </CreateEmployeePopup>
       </div>
+
+      <div class="inner-block">
+        <div>
+          <h3>Пользователи</h3>
+
+          <SettingsListView :key="this.usersListKey"
+                            :empty-header="'Список пользователей пуст'"
+                            :elements-list="this.usersList"
+                            :model-name="'user'"
+                            @deleteElement="loadUsers">
+          </SettingsListView>
+        </div>
+
+        <MyButton @click="this.showUserDialog = true">
+          Добавить пользователя
+        </MyButton>
+
+        <CreateUserPopup :key="this.usersPopupKey"
+                             :show="this.showUserDialog"
+                             @save="saveUser"
+                             @close="this.showUserDialog = false">
+        </CreateUserPopup>
+      </div>
     </div>
   </div>
   <div class="alert" v-else>
@@ -90,10 +113,12 @@ import CreateDepartmentPopup from "@/components/Settings/CreateDepartmentPopup.v
 import CreatePositionPopup from "@/components/Settings/CreatePositionPopup.vue";
 import CreateEmployeePopup from "@/components/Settings/CreateEmployeePopup.vue";
 import {mapState} from "vuex";
+import CreateUserPopup from "@/components/Settings/CreateUserPopup.vue";
 
 
 export default {
   components: {
+    CreateUserPopup,
     CreateEmployeePopup,
     CreatePositionPopup,
     CreateDepartmentPopup,
@@ -106,6 +131,7 @@ export default {
       loadDepartmentsSucsess: true,
       loadPositionsSucsess: true,
       loadEmployeesSucsess: true,
+      loadUsersSucsess: true,
       errorMessage: '',
       errorCode: 0,
 
@@ -123,12 +149,18 @@ export default {
       employeesListKey: 1,
       employeesPopupKey: 1,
       showEmployeeDialog: false,
+
+      usersList: [],
+      usersListKey: 1,
+      usersPopupKey: 1,
+      showUserDialog: false,
     }
   },
   beforeMount() {
     this.loadDepartments();
     this.loadPositions();
     this.loadEmployees();
+    this.loadUsers();
   },
   computed: {
     ...mapState({
@@ -210,6 +242,30 @@ export default {
       this.loadEmployees()
       this.employeesListKey += 1
       this.showEmployeeDialog = false
+    },
+
+    async loadUsers() {
+      try {
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/user/`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
+        this.usersList = response.data
+      } catch (e) {
+        this.errorMessage = `УК: ${e.response.data.detail}`
+        this.errorCode = e.response.status
+
+        this.loadUsersSucsess = false
+      }
+    },
+    saveUser() {
+      this.loadUsers()
+      this.usersListKey += 1
+      this.showUserDialog = false
     }
   }
 }
