@@ -8,10 +8,7 @@
     </div>
     <div class="tasks-list custom-scroll">
       <RequestTaskCard v-for="task in this.requestTasks"
-                       :pk="task.pk"
-                       :employee="task.employee"
-                       :task="task.task"
-                       :status="task.status"
+                       :task-data="task"
                        @deleteTask="$emit('deleteTask')">
       </RequestTaskCard>
     </div>
@@ -19,64 +16,62 @@
 </template>
 
 <script>
-import store from "@/store";
-import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
-import RequestsList from "@/components/RequestManage/RequestsList.vue";
-import ShortRequestCard from "@/components/RequestManage/ShortRequestCard.vue";
-import MyButton from "@/components/UI/MyButton.vue";
+import {mapMutations, mapState} from "vuex";
+import axios from "axios";
 import RequestTaskCard from "@/components/RequestManage/RequestTaskCard.vue";
-import {getCurrentInstance} from 'vue';
 
 export default {
-  // props: ['pk'],
-  computed: {
-    store() {
-      return store
-    },
-    ...mapState({
-      activeRequestId: state => state.requests.activeRequestId,
-      requestTasks: state => state.requests.requestTasks,
-      taskListKey: state => state.requests.taskListKey,
-      // requestData: state => state.requests.requestData,
-      // requests: state => state.requests.requests,
-    }),
-    ...mapGetters({})
-  },
   components: {RequestTaskCard},
   data() {
-    return {}
+    return {
+      requestTasks: [],
+    }
   },
-  created() {
-    this.loadRequestTasks(this.activeRequestId);
-    // this.loadRequestData(this.requestId)
+  computed: {
+    ...mapState({
+      activeRequestId: state => state.requests.activeRequestId,
+      baseURL: state => state.main.baseURL,
+    }),
+  },
+  mounted() {
+    if (this.activeRequestId !== -1) {
+      this.loadRequestTasks()
+    }
   },
   methods: {
     ...mapMutations({
-      setTaskListKey: "requests/setTaskListKey",
+      setActiveRequestId: "requests/setActiveRequestId"
     }),
-    ...mapActions({
-      loadRequestTasks: 'requests/loadRequestTasks',
-      // loadRequestData: 'requests/loadRequestData'
-    }),
-    reRender() {
-      console.log('reRender')
-      // this.$emit('deleteTask')
-      this.setTaskListKey(this.taskListKey + 1)
+    async loadRequestTasks() {
+      try {
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/request/${this.activeRequestId}/tasks`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
+
+        this.requestTasks = response.data
+      } catch (e) {
+        alert(`Заявка № ${this.activeRequestId}: Задачи: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.setActiveRequestId(-1)
+      }
     },
-  }
+  },
 }
+
 </script>
 
 <style scoped>
 .task-cards {
-  //display: flex;
-  //flex-direction: column;
   height: 84%;
-  //border: 1px solid white;
 }
-
 .tasks-list {
-  //border: 1px solid blue;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -84,51 +79,36 @@ export default {
   margin-top: 3px;
   border-radius: 12px;
   height: 140px;
-  //min-height: 65%;
 }
-
 .task-card-empl {
   width: 30%
 }
-
 .task-card-task {
   width: 44%
 }
-
 .task-card-stat {
   width: 21%
 }
-
 .task-card-headers {
-  //border: 1px solid red;
   border-radius: 10px;
   margin-top: 7px;
   padding: 3px 10px;
   width: 99%;
   height: 32px;
-  //height: 15%;
-  //min-height: 15%;
   display: flex;
   background-color: rgb(109, 197, 195, 0.4);
 }
-
 .custom-scroll::-webkit-scrollbar {
-  width: 5px; /* Ширина полосы прокрутки */
+  width: 5px;
 }
-
-/* Фон полосы прокрутки */
 .custom-scroll::-webkit-scrollbar-track {
   background: rgb(169, 168, 159);
   border-radius: 6px;
 }
-
-/* Стиль ползунка */
 .custom-scroll::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 6px;
 }
-
-/* Цвет ползунка при наведении */
 .custom-scroll::-webkit-scrollbar-thumb:hover {
   background: #555;
 }

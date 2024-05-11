@@ -25,9 +25,12 @@
         </div>
       </div>
       <div class="down-block">
-        <my-button @click="loguot">
+        <MyButton @click="this.$router.push('/requests')">
+          Управление заявками
+        </MyButton>
+        <MyButton @click="loguot">
           Выход
-        </my-button>
+        </MyButton>
       </div>
     </div>
 
@@ -48,19 +51,13 @@
 </template>
 
 <script>
-import RequestCard from "@/components/RequestManage/RequestCard.vue";
-import RequestsList from "@/components/RequestManage/RequestsList.vue";
 import MyButton from "@/components/UI/MyButton.vue";
-import {defineComponent} from "vue";
-import store from "@/store";
-import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
-import ShortRequestCard from "@/components/RequestManage/ShortRequestCard.vue";
+import {mapState} from "vuex";
 import SystemSettings from "@/components/Settings/SystemSettings.vue";
 import AddressSettings from "@/components/Settings/AddressSettings.vue";
 import StaffSettings from "@/components/Settings/StaffSettings.vue";
 import OrganizationSettings from "@/components/Settings/OrganizationSettings.vue";
 import axios from "axios";
-import config from "bootstrap/js/src/util/config";
 
 export default {
   components: {OrganizationSettings, StaffSettings, AddressSettings, SystemSettings, MyButton},
@@ -77,7 +74,7 @@ export default {
   methods: {
     async loguot() {
       try {
-        const response = (await axios.post(
+        await axios.post(
             `${this.baseURL}/auth/token/logout`,
             {},
             {
@@ -85,7 +82,7 @@ export default {
                 'Authorization': `Token ${localStorage.getItem('auth_token')}`
               }
             }
-        ))
+        )
         localStorage.removeItem('auth_token');
         localStorage.removeItem('user_role');
 

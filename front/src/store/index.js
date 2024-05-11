@@ -1,11 +1,11 @@
 import {createStore} from "vuex";
-import {requestsModule} from "@/store/requestsModule";
+import {requestsModuleOld} from "@/store/requestsModuleOld";
 import {settingsModule} from "@/store/settingsModule";
 import {mainModule} from "@/store/mainModule";
 
 export default createStore({
     modules: {
-        requests: requestsModule,
+        requests: requestsModuleOld,
         settings: settingsModule,
         main: mainModule
     }

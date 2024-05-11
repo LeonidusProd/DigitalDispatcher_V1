@@ -1,16 +1,16 @@
 <template>
   <div class="request-short-card">
-    <span>Заявка от {{ date.split(' ')[0] }} в {{ date.split(' ')[1] }}</span>
-    <span>{{ address }}</span>
+    <span>Заявка от {{ request.date.split(' ')[0] }} в {{ request.date.split(' ')[1] }}</span>
+    <span>{{ request.address }}</span>
     <div class="request-short-text">
-      {{ info }}
+      {{ request.info }}
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  props: ['date', 'address', 'info'],
+  props: ['request'],
 }
 </script>
 
@@ -19,12 +19,10 @@ export default {
   background-color: rgb(139, 182, 177, 0.4);
   display: flex;
   flex-direction: column;
-  //border: 1px solid ;
   border-radius: 10px;
   margin-top: 7px;
   padding: 3px 10px;
 }
-
 .request-short-card:hover {
   background-color: rgb(109, 197, 195, 0.4);
   display: flex;
@@ -34,7 +32,6 @@ export default {
   margin-top: 7px;
   padding: 3px 10px;
 }
-
 .request-short-text {
   white-space: nowrap;
   overflow: hidden;

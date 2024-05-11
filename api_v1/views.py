@@ -204,7 +204,7 @@ class NewRequestsView(generics.ListAPIView):
         status__name='Новая'
     )
     serializer_class = RequestShortInfoSerializer
-    permission_classes = (IsSuperuser, IsStaff, )
+    permission_classes = ((IsSuperuser | IsStaff), )
 
 
 class ActiveRequestsView(generics.ListAPIView):
@@ -213,14 +213,14 @@ class ActiveRequestsView(generics.ListAPIView):
         status__name__in=['В работе', 'На проверке']
     )
     serializer_class = RequestShortInfoSerializer
-    permission_classes = (IsSuperuser, IsStaff, )
+    permission_classes = ((IsSuperuser | IsStaff), )
 
 
 class RequestDetailView(generics.RetrieveAPIView):
     """Полная информация о заявке"""
     queryset = Request.objects.all()
     serializer_class = RequestDetSerializer
-    permission_classes = (IsSuperuser, IsStaff, )
+    permission_classes = ((IsSuperuser | IsStaff), )
 
 
 class RequestTasksView(generics.ListAPIView):
@@ -231,7 +231,7 @@ class RequestTasksView(generics.ListAPIView):
             request_id=request_id
         )
     serializer_class = RequestTaskInfoSerializer
-    permission_classes = (IsSuperuser, IsStaff, )
+    permission_classes = ((IsSuperuser | IsStaff), )
 
 
 class WorkScheduleListView(generics.ListAPIView):
@@ -280,7 +280,7 @@ class ServiceListView(generics.ListAPIView):
     """Список всех типовых задач"""
     queryset = Service.objects.all()
     serializer_class = ServiceLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, IsStaff, )
+    permission_classes = ((IsSuperuser | IsStaff), )
 
 
 class ServiceEmployeesView(generics.ListAPIView):
@@ -293,7 +293,7 @@ class ServiceEmployeesView(generics.ListAPIView):
             office_id=data.get('office_pk')
         )
     serializer_class = ServiseEmployeesSerializer
-    permission_classes = (IsSuperuser, IsStaff, )
+    permission_classes = ((IsSuperuser | IsStaff), )
 
 
 class ServiceCreateView(generics.CreateAPIView):
@@ -314,14 +314,14 @@ class TaskCreateView(generics.CreateAPIView):
     """Создание задачи заявки"""
     queryset = RequestTask.objects.all()
     serializer_class = RequestTaskDelSerializer
-    permission_classes = (IsSuperuser, IsStaff, )
+    permission_classes = ((IsSuperuser | IsStaff), )
 
 
 class TaskDeleteView(generics.DestroyAPIView):
     """Удаление задачи заявки"""
     queryset = RequestTask.objects.all()
     serializer_class = RequestTaskDelSerializer
-    permission_classes = (IsSuperuser, IsStaff, )
+    permission_classes = ((IsSuperuser | IsStaff), )
 
 
 # Не используются в настоящий момент

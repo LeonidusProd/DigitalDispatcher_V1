@@ -27,11 +27,12 @@
                        id="password"
                        :placeholder="'Пароль'"
                        :model-value="this.password"
-                       @input="this.password = $event.target.value">
+                       @input="this.password = $event.target.value"
+                       v-on:keyup.enter="log_in">
               </MyInput>
             </div>
 
-            <MyButton @click="getToken">
+            <MyButton @click="log_in">
               Войти
             </MyButton>
           </form>
@@ -45,6 +46,7 @@
 import MyInput from "@/components/UI/MyInput.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import axios from "axios";
+import {mapState} from "vuex";
 
 export default {
   components: {
@@ -57,22 +59,24 @@ export default {
       password: ''
     }
   },
+  computed: {
+    ...mapState({
+      baseURL: state => state.main.baseURL,
+    })
+  },
   methods: {
-    async getToken() {
+    async log_in() {
       try {
         const response = (await axios.post(
-            `http://localhost:8000/auth/token/login`,
+            `${this.baseURL}/auth/token/login`,
             {
               username: this.login,
               password: this.password
             }
         ))
-        // this.offices = response.data
-        // console.log(response.data)
         localStorage.setItem('auth_token', response.data.auth_token);
         localStorage.setItem('user_role', response.data.role);
-        // console.log(localStorage.getItem('auth_token'))
-        // console.log(localStorage.getItem('user_role'))
+
         if (localStorage.getItem('user_role') === 'staff') {
           this.$router.push('/requests');
         } else if (localStorage.getItem('user_role') === 'admin') {

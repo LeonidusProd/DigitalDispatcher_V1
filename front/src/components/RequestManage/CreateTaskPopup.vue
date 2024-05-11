@@ -8,21 +8,21 @@
             <img class="close-dialog-button-img"
                  src="@/assets/Close.svg"
                  alt="close-dialog"
-                 @click="closeDialog">
+                 @click="this.$emit('close')">
           </div>
         </div>
         <div class="down-block">
           <h5>Задача:</h5>
-          <MySelect :options="this.standartServices"
+          <MySelect :options="services"
                     @selectChanged="serviceChanged"></MySelect>
           <h5 v-if="showEmploeesSelect">Сотрудник:</h5>
           <MySelect v-if="showEmploeesSelect"
-                    :options="this.serviceEmployees"
+                    :options="employees"
                     @selectChanged="employeeChanged">
           </MySelect>
 
           <my-button v-if="showSaveButton"
-                     @click="saveTask">
+                     @click="save">
             Сохранить
           </my-button>
         </div>
@@ -32,78 +32,126 @@
 </template>
 
 <script>
+import {mapState} from "vuex";
+import axios from "axios";
 import MySelect from "@/components/UI/MySelect.vue";
-import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
-import store from "@/store";
 import MyButton from "@/components/UI/MyButton.vue";
 
 export default {
-  computed: {
-    store() {
-      return store
-    },
-    ...mapState({
-      // activeRequestId: state => state.requests.activeRequestId,
-      standartServices: state => state.requests.standartServices,
-      serviceEmployees: state => state.requests.serviceEmployees,
-      requestData: state => state.requests.requestData,
-    }),
-    ...mapGetters({})
-  },
-  components: {MyButton, MySelect},
   props: {
     show: {
       type: Boolean,
       default: false
     },
+    requestOfficePk: [String]
   },
+  components: {MyButton, MySelect},
   data() {
     return {
-      servicePk: -1,
+      services: [],
+      selectedService: -1,
+
+      employees: [],
+      selectedEmployee: -1,
       showEmploeesSelect: false,
+
       showSaveButton: false,
-      employeePk: -1,
     }
   },
+  computed: {
+    ...mapState({
+      activeRequestId: state => state.requests.activeRequestId,
+      baseURL: state => state.main.baseURL,
+    }),
+  },
   mounted() {
-    this.loadStandartServices()
+    this.loadServices()
   },
   methods: {
-    ...mapMutations({
-      // setActiveSection: "requests/setActiveSection",
-    }),
-    ...mapActions({
-      // loadNewRequests: 'requests/loadNewRequests',
-      loadStandartServices: 'requests/loadStandartServices',
-      loadServiceEmployees: 'requests/loadServiceEmployees',
-    }),
-    closeDialog() {
-      this.$emit('closeDialog')
+    async loadServices() {
+      try {
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/service/`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
+        this.services = response.data
+      } catch (e) {
+        alert(`Задачи: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
+      }
     },
-    serviceChanged(ServicePk) {
-      // console.log('this.requestData[\'office_id\']: ' + this.requestData.office_id)
-      this.servicePk = ServicePk
-      this.loadServiceEmployees({
-        position_pk: ServicePk,
-        office_pk: this.requestData['office_id']
-      })
+    async loadEmployees() {
+      try {
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/service/employees/`,
+            {
+              params: {
+                'position_pk': this.selectedService,
+                'office_pk': this.requestOfficePk
+              },
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
+        console.log(response)
+        this.employees = response.data
+      } catch (e) {
+        alert(`Сотрудники: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
+      }
+    },
+    serviceChanged(pk) {
+      this.selectedService = pk
+      this.loadEmployees()
       this.showEmploeesSelect = true
-      // console.log('this.serviceEmployees ' + this.serviceEmployees)
     },
-    employeeChanged(EmployeePk) {
-      this.employeePk = EmployeePk
-      console.log('ServicePk: ' + this.servicePk)
-      console.log('EmployeePk: ' + this.employeePk)
+    employeeChanged(pk) {
+      this.selectedEmployee = pk
       this.showSaveButton = true
     },
-    saveTask() {
-      this.$emit('saveTask', this.servicePk, this.employeePk)
-      this.servicePk = -1
-      this.employeePk = -1
-      this.showSaveButton = false
+    async save() {
+      try {
+        await axios.post(
+            `${this.baseURL}/api/v1/task/create`,
+            {
+              request: this.activeRequestId,
+              employee: this.selectedEmployee,
+              service: this.selectedService,
+              status: 1
+            },
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        )
+      } catch (e) {
+        alert(`Ошибка сохранения\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.$emit('close')
+      }
+
+      this.$emit('save')
+
+      this.selectedService = -1
+      this.selectedEmployee = -1
       this.showEmploeesSelect = false
-    },
-  }
+      this.showSaveButton = false
+    }
+  },
 }
 </script>
 
@@ -117,7 +165,6 @@ export default {
   position: fixed;
   display: flex;
 }
-
 .dialog-content {
   margin: auto;
   background: white;
@@ -127,42 +174,33 @@ export default {
   padding: 20px;
   display: flex;
 }
-
 .create-task-content {
   width: 100%;
   background: rgb(169, 168, 159, 0.2);
   border-radius: 10px;
   padding: 10px;
-  //border: 1px solid black;
 }
-
 .up-block {
   height: 30px;
   width: 100%;
-  //border: 1px solid red;
   display: flex;
   justify-content: space-between;
   padding-left: 20px;
   padding-right: 20px;
 }
-
 .down-block {
   height: 90%;
   width: 100%;
-  //border: 1px solid blue;
   padding: 20px;
 }
-
 .close-dialog-button {
   height: 30px;
   width: 30px;
-  //border: 1px solid red;
   display: flex;
   vertical-align: middle;
   background-color: rgb(109, 197, 195, 0.4);
   border-radius: 11px;
 }
-
 .close-dialog-button:hover {
   height: 30px;
   width: 30px;
@@ -171,7 +209,6 @@ export default {
   background-color: rgb(109, 197, 195, 0.9);
   border-radius: 11px;
 }
-
 .close-dialog-button-img {
   width: 100%;
 }

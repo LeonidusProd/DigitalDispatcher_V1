@@ -6,34 +6,38 @@
           <img class="logo-img" src="@/assets/Лого%20текст%20снизу.svg" alt="logo">
         </div>
         <div class="menu-block">
-          <my-button @click="changeSection('newRequests')"
-                     :class="{'active-button':this.activeSection === 'newRequests'}">
+          <MyButton @click="changeSection('new')"
+                    :class="{'active-button':this.activeSection === 'new'}">
             Новые заявки
-          </my-button>
-          <my-button @click="changeSection('activeRequests')"
-                     :class="{'active-button':this.activeSection === 'activeRequests'}">
+          </MyButton>
+          <MyButton @click="changeSection('active')"
+                    :class="{'active-button':this.activeSection === 'active'}">
             Активные заявки
-          </my-button>
+          </MyButton>
         </div>
       </div>
       <div class="down-block">
-        <my-button @click="">
+        <MyButton @click="this.$router.push('/settings')" v-if="showSettingsButton">
+          Настройки
+        </MyButton>
+        <MyButton @click="loguot">
           Выход
-        </my-button>
+        </MyButton>
       </div>
     </div>
 
     <div class="workspace">
       <div class="requests-list">
-        <requests-list
-            :requests=this.requests
-            :request-list-landing="requestListLanding">
-        </requests-list>
+        <RequestsList :key="requestsListKey"
+                      :requests=this.requestsList
+                      :request-list-landing="requestListLanding">
+        </RequestsList>
       </div>
 
       <div class="request-card">
         <h4 v-if="this.activeRequestId === -1">Ни одна заявка не выбрана</h4>
-        <RequestCard v-else :key="this.activeRequestId">
+        <RequestCard v-else
+                     :key="this.activeRequestId">
         </RequestCard>
       </div>
     </div>
@@ -42,56 +46,118 @@
 
 <script>
 import MyButton from "@/components/UI/MyButton.vue";
-import ShortRequestCard from "@/components/RequestManage/ShortRequestCard.vue";
+import axios from "axios";
+import {mapMutations, mapState} from "vuex";
 import RequestsList from "@/components/RequestManage/RequestsList.vue";
-import store from "@/store";
-import {mapState, mapMutations, mapActions, mapGetters} from 'vuex'
 import RequestCard from "@/components/RequestManage/RequestCard.vue";
 
 export default {
-  computed: {
-    store() {
-      return store
-    },
-    ...mapState({
-      activeRequestId: state => state.requests.activeRequestId,
-      activeSection: state => state.requests.activeSection,
-      requests: state => state.requests.requests,
-      taskListKey: state => state.requests.taskListKey,
-    }),
-    ...mapGetters({})
-  },
-  components: {RequestCard, RequestsList, ShortRequestCard, MyButton},
+  components: {RequestCard, RequestsList, MyButton},
   data() {
     return {
-      requestListLanding: ''
+      activeSection: 'new',
+
+      requestListLanding: 'Новые заявки',
+      requestsListKey: 1,
+      requestsList: [],
+
+      showSettingsButton: false
     }
   },
+  computed: {
+    ...mapState({
+      activeRequestId: state => state.requests.activeRequestId,
+      baseURL: state => state.main.baseURL,
+    }),
+  },
   mounted() {
-    this.requestListLanding = 'Новые заявки'
-    this.loadNewRequests();
+    this.checkUserRole()
   },
   methods: {
     ...mapMutations({
-      setActiveSection: "requests/setActiveSection",
       setActiveRequestId: "requests/setActiveRequestId"
     }),
-    ...mapActions({
-      loadNewRequests: 'requests/loadNewRequests',
-      loadActiveRequests: "requests/loadActiveRequests"
-    }),
     changeSection(section) {
-      this.setActiveSection(section)
-      if (section === 'newRequests') {
-        this.loadNewRequests()
-        this.requestListLanding = 'Новые заявки'
-      } else if (section === 'activeRequests') {
-        this.requestListLanding = 'Активные заявки'
-        this.loadActiveRequests()
-      }
+      this.activeSection = section
+      this.loadRequests()
       this.setActiveRequestId(-1)
     },
-  }
+    loadRequests() {
+      if (this.activeSection === 'new') {
+        this.requestListLanding = 'Новые заявки'
+        this.loadNew()
+      } else if (this.activeSection === 'active') {
+        this.requestListLanding = 'Активные заявки'
+        this.loadActive()
+      }
+
+      this.requestsListKey += 1
+    },
+    async loadNew() {
+      try {
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/requests/new`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
+        this.requestsList = response.data
+      } catch (e) {
+        alert(`Новые заявки: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.requestsList = []
+      }
+    },
+    async loadActive() {
+      try {
+        const response = (await axios.get(
+            `${this.baseURL}/api/v1/requests/active`,
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
+        this.requestsList = response.data
+      } catch (e) {
+        alert(`Активные заявки: Ошибка получения данных\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+
+        this.requestsList = []
+      }
+    },
+    async loguot() {
+      try {
+        await axios.post(
+            `${this.baseURL}/auth/token/logout`,
+            {},
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        )
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user_role');
+
+        this.$router.push('/');
+      } catch (e) {
+        alert(`Ошибка выхода\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+      }
+    },
+    checkUserRole() {
+      if (localStorage.getItem('user_role') === 'admin') {
+       this.showSettingsButton = true
+      }
+    },
+  },
 }
 </script>
 
@@ -102,7 +168,6 @@ export default {
   min-height: 400px;
   height: 94vh;
 }
-
 .left-side-menu {
   background-color: rgb(169, 168, 159, 0.2);
   width: 20%;
@@ -112,19 +177,15 @@ export default {
   flex-direction: column;
   justify-content: space-between;
 }
-
 .logo-block {
   text-align: center;
 }
-
 .logo-img {
   width: 50%;
 }
-
 .down-block {
   width: 100%;
 }
-
 .workspace {
   background-color: rgb(169, 168, 159, 0.2);
   width: 79%;
@@ -134,7 +195,6 @@ export default {
   justify-content: space-between;
   border-radius: 20px;
 }
-
 .requests-list {
   width: 35%;
   border: 1px;
@@ -142,20 +202,15 @@ export default {
   border-radius: 12px;
   padding: 10px 10px 15px;
 }
-
 .request-card {
   width: 64%;
-  //border: 1px solid #212523;
   background-color: rgb(169, 168, 159, 0.4);
   border-radius: 12px;
   padding: 10px;
-
 }
-
 .active-button {
   background-color: rgb(79, 212, 213);
 }
-
 .active-button:hover {
   background-color: rgb(79, 212, 213);
 }
