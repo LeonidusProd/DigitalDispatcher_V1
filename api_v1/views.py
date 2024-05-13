@@ -25,7 +25,7 @@ class BuildingListView(generics.ListAPIView):
     """Список всех адресов"""
     queryset = Building.objects.all()
     serializer_class = BuildingLstSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = ((IsSuperuser | IsStaff), )
 
 
 class BuildingCreateView(generics.CreateAPIView):
@@ -203,7 +203,7 @@ class PositionDeleteView(generics.DestroyAPIView):
 class NewRequestsView(generics.ListAPIView):
     """Список заявок со статусом 'Новая'"""
     queryset = Request.objects.filter(
-        status__name='Новая'
+        status__pk=1
     )
     serializer_class = RequestShortInfoSerializer
     permission_classes = ((IsSuperuser | IsStaff), )
@@ -212,13 +212,13 @@ class NewRequestsView(generics.ListAPIView):
 class ActiveRequestsView(generics.ListAPIView):
     """Список заявок со статусом 'Новая'"""
     queryset = Request.objects.filter(
-        status__name__in=['В работе', 'На проверке']
+        status__pk__in=[2, 3]
     )
     serializer_class = RequestShortInfoSerializer
     permission_classes = ((IsSuperuser | IsStaff), )
 
 
-class RequestDetailView(generics.RetrieveAPIView):
+class RequestDetailView(generics.RetrieveUpdateAPIView):
     """Полная информация о заявке"""
     queryset = Request.objects.all()
     serializer_class = RequestDetSerializer
@@ -233,6 +233,28 @@ class RequestTasksView(generics.ListAPIView):
             request_id=request_id
         )
     serializer_class = RequestTaskInfoSerializer
+    permission_classes = ((IsSuperuser | IsStaff), )
+
+
+class RequestCreateView(generics.CreateAPIView):
+    """Добавление новой заявки"""
+    queryset = Request.objects.all()
+    serializer_class = RequestLstMngCrtDelSerializer
+    permission_classes = ((IsSuperuser | IsStaff), )
+
+
+#######################################################################
+class ResidentListView(generics.ListAPIView):
+    """Список всех жителей"""
+    queryset = Resident.objects.all()
+    serializer_class = ResidentLstSerializer
+    permission_classes = ((IsSuperuser | IsStaff), )
+
+
+class ResidentCreateView(generics.CreateAPIView):
+    """Добавление нового жителя"""
+    queryset = Resident.objects.all()
+    serializer_class = ResidentFullLstMngCrtDelSerializer
     permission_classes = ((IsSuperuser | IsStaff), )
 
 
@@ -502,13 +524,6 @@ class UserDeleteView(generics.DestroyAPIView):
 #     permission_classes = (IsSuperuser, )
 #
 #
-# class ResidentCreateView(generics.CreateAPIView):
-#     """Добавление нового жителя"""
-#     queryset = Resident.objects.all()
-#     serializer_class = ResidentFullLstMngCrtDelSerializer
-#     permission_classes = (IsSuperuser, )
-#
-#
 # class ResidentDeleteView(generics.DestroyAPIView):
 #     """Удаление жителя"""
 #     queryset = Resident.objects.all()
@@ -639,13 +654,6 @@ class UserDeleteView(generics.DestroyAPIView):
 #     queryset = Request.objects.all()
 #     serializer_class = RequestLstMngCrtDelSerializer
 #     permission_classes = (IsSuperuser, )
-#
-#
-# class RequestCreateView(generics.CreateAPIView):
-#     """Добавление новой заявки"""
-#     queryset = Request.objects.all()
-#     serializer_class = RequestLstMngCrtDelSerializer
-#     permission_classes = (IsSuperuser, IsStaff, )
 #
 #
 # class RequestDeleteView(generics.DestroyAPIView):

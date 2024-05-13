@@ -14,6 +14,13 @@
                     :class="{'active-button':this.activeSection === 'active'}">
             Активные заявки
           </MyButton>
+          <MyButton @click="this.showRequestDialog = true">
+            Создать заявку
+          </MyButton>
+          <CreateRequestPopup :show="this.showRequestDialog"
+                              @close="this.showRequestDialog = false"
+                              @save="saveRequest">
+          </CreateRequestPopup>
         </div>
       </div>
       <div class="down-block">
@@ -30,14 +37,16 @@
       <div class="requests-list">
         <RequestsList :key="requestsListKey"
                       :requests=this.requestsList
-                      :request-list-landing="requestListLanding">
+                      :request-list-landing="requestListLanding"
+                      @reload="loadRequests">
         </RequestsList>
       </div>
 
       <div class="request-card">
         <h4 v-if="this.activeRequestId === -1">Ни одна заявка не выбрана</h4>
         <RequestCard v-else
-                     :key="this.activeRequestId">
+                     :key="this.activeRequestId"
+                     @closeRequest="loadRequests">
         </RequestCard>
       </div>
     </div>
@@ -50,9 +59,11 @@ import axios from "axios";
 import {mapMutations, mapState} from "vuex";
 import RequestsList from "@/components/RequestManage/RequestsList.vue";
 import RequestCard from "@/components/RequestManage/RequestCard.vue";
+import CreateRequestPopup from "@/components/RequestManage/CreateRequestPopup.vue";
+import CreateTaskPopup from "@/components/RequestManage/CreateTaskPopup.vue";
 
 export default {
-  components: {RequestCard, RequestsList, MyButton},
+  components: {CreateTaskPopup, CreateRequestPopup, RequestCard, RequestsList, MyButton},
   data() {
     return {
       activeSection: 'new',
@@ -60,6 +71,8 @@ export default {
       requestListLanding: 'Новые заявки',
       requestsListKey: 1,
       requestsList: [],
+
+      showRequestDialog: false,
 
       showSettingsButton: false
     }
@@ -72,6 +85,7 @@ export default {
   },
   mounted() {
     this.checkUserRole()
+    this.loadRequests()
   },
   methods: {
     ...mapMutations({
@@ -131,6 +145,10 @@ export default {
         this.requestsList = []
       }
     },
+    saveRequest() {
+      this.loadRequests()
+      this.showRequestDialog = false
+    },
     async loguot() {
       try {
         await axios.post(
@@ -154,7 +172,7 @@ export default {
     },
     checkUserRole() {
       if (localStorage.getItem('user_role') === 'admin') {
-       this.showSettingsButton = true
+        this.showSettingsButton = true
       }
     },
   },
@@ -168,6 +186,7 @@ export default {
   min-height: 400px;
   height: 94vh;
 }
+
 .left-side-menu {
   background-color: rgb(169, 168, 159, 0.2);
   width: 20%;
@@ -177,15 +196,19 @@ export default {
   flex-direction: column;
   justify-content: space-between;
 }
+
 .logo-block {
   text-align: center;
 }
+
 .logo-img {
   width: 50%;
 }
+
 .down-block {
   width: 100%;
 }
+
 .workspace {
   background-color: rgb(169, 168, 159, 0.2);
   width: 79%;
@@ -195,6 +218,7 @@ export default {
   justify-content: space-between;
   border-radius: 20px;
 }
+
 .requests-list {
   width: 35%;
   border: 1px;
@@ -202,15 +226,18 @@ export default {
   border-radius: 12px;
   padding: 10px 10px 15px;
 }
+
 .request-card {
   width: 64%;
   background-color: rgb(169, 168, 159, 0.4);
   border-radius: 12px;
   padding: 10px;
 }
+
 .active-button {
   background-color: rgb(79, 212, 213);
 }
+
 .active-button:hover {
   background-color: rgb(79, 212, 213);
 }

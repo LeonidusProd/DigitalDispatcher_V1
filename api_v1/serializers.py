@@ -137,7 +137,7 @@ class RequestDetSerializer(serializers.ModelSerializer):
     info = serializers.SerializerMethodField(method_name='get_info')
     date = serializers.SerializerMethodField(method_name='get_date')
     complex = serializers.SerializerMethodField(method_name='get_complex')
-    status = serializers.SlugRelatedField(slug_field='name', read_only=True)
+    status_name = serializers.SerializerMethodField(method_name='get_status_name', read_only=True)
     address = serializers.SerializerMethodField(method_name='get_address')
     resident = serializers.SerializerMethodField(method_name='get_resident')
     office_id = serializers.SerializerMethodField(method_name='get_office_id')
@@ -151,6 +151,9 @@ class RequestDetSerializer(serializers.ModelSerializer):
 
     def get_complex(self, obj):
         return obj.address.complex.__str__()
+
+    def get_status_name(self, obj):
+        return obj.status.name
 
     def get_address(self, obj):
         if obj.apartment:
@@ -166,7 +169,7 @@ class RequestDetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Request
-        fields = ['pk', 'info', 'date', 'status', 'resident', 'address', 'complex', 'photo', 'office_id']
+        fields = ['pk', 'info', 'date', 'status_name', 'status', 'resident', 'address', 'complex', 'photo', 'office_id']
 
 
 class RequestTaskInfoSerializer(serializers.ModelSerializer):
@@ -183,6 +186,13 @@ class RequestTaskInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = RequestTask
         fields = ['pk', 'employee', 'task', 'status']
+
+
+class RequestLstMngCrtDelSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Request
+        fields = '__all__'
 
 
 class WorkScheduleLstSerializer(serializers.ModelSerializer):
@@ -261,6 +271,24 @@ class RequestTaskDelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RequestTask
+        fields = '__all__'
+
+
+class ResidentLstSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField(method_name='get_name')
+
+    def get_name(self,obj):
+        return obj.__str__()
+
+    class Meta:
+        model = Resident
+        fields = ['pk', 'name']
+
+
+class ResidentFullLstMngCrtDelSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Resident
         fields = '__all__'
 
 
@@ -502,12 +530,6 @@ class UserLstMngCrtDelSerializer(serializers.ModelSerializer):
 #         fields = ['id', 'name', 'position', 'position_name', 'description']
 #
 # #####################################################################
-#
-# class RequestLstMngCrtDelSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = Request
-#         fields = '__all__'
 
 
 # class RequestDetSerializer(serializers.ModelSerializer):

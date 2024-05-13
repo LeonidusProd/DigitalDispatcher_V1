@@ -42,6 +42,10 @@ urlpatterns = [
     path('requests/active', views.ActiveRequestsView.as_view(), name='active_requests'),
     path('request/<int:pk>', views.RequestDetailView.as_view(), name='request_detail'),
     path('request/<int:pk>/tasks', views.RequestTasksView.as_view(), name='request_tasks'),
+    path('request/create/', views.RequestCreateView.as_view(), name='request_create'),
+
+    path('resident/', views.ResidentListView.as_view(), name='resident_list'),
+    path('resident/create/', views.ResidentCreateView.as_view(), name='resident_create'),
 
     path('schedule/', views.WorkScheduleListView.as_view(), name='schedule_list'),
     path('schedule/<int:pk>', views.WorkScheduleDetailView.as_view(), name='schedule_detail'),
@@ -106,6 +110,5 @@ urlpatterns = [
     # path('service/manage/<int:pk>', views.ServiceManageView.as_view(), name='service_manage'),
     # path('request/', views.RequestListView.as_view(), name='request_list'),
     # path('request/manage/<int:pk>', views.RequestManageView.as_view(), name='request_manage'),
-    # path('request/create/', views.RequestCreateView.as_view(), name='request_create'),
     # path('request/delete/<int:pk>', views.RequestDeleteView.as_view(), name='request_delete'),
 ]

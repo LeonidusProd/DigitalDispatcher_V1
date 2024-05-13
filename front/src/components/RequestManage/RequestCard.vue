@@ -15,6 +15,11 @@
         <span><b>Житель:</b> {{ requestResident }}</span>
         <span><b>ЖК:</b> {{ requestComplex }}</span>
         <span><b>Адрес:</b> {{ requestAddress }}</span>
+
+        <MyButton @click="closeRequest"
+                  class="close-task-button">
+          Закрыть заявку
+        </MyButton>
       </div>
       <div class="request-card-photo-block">
         <b>Прикреплённая фотография:</b><br>
@@ -103,7 +108,7 @@ export default {
 
         this.requestInfo = response.data.info
         this.requestDate = response.data.date
-        this.requestStatus = response.data.status
+        this.requestStatus = response.data.status_name
         this.requestResident = response.data.resident
         this.requestAddress = response.data.address
         if (response.data.photo) {
@@ -121,6 +126,28 @@ export default {
         // this.$emit('loadError')
       }
     },
+    async closeRequest() {
+      try {
+        const response = (await axios.put(
+            `${this.baseURL}/api/v1/request/${this.activeRequestId}`,
+            {
+              status: 4
+            },
+            {
+              headers: {
+                'Authorization': `Token ${localStorage.getItem('auth_token')}`
+              }
+            }
+        ))
+        this.$emit('closeRequest')
+      } catch (e) {
+        alert(`Заявка № ${this.activeRequestId}: Ошибка закрытия заявки\n
+                Ошибка: ${e.response.status}\n
+                Сообщение: ${e.response.data.detail}`)
+      }
+
+      this.setActiveRequestId(-1)
+    },
     saveTask() {
       this.taskListKey += 1
       this.showDialog = false
@@ -130,27 +157,37 @@ export default {
 </script>
 
 <style scoped>
+.card-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .request-card-content {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 94%;
 }
+
 .request-card-up {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   height: 49%;
 }
+
 .request-card-info-block {
   width: 49%;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
 }
+
 .request-card-photo-block {
   width: 49%;
 }
+
 .request-photo {
   width: 95%;
   height: 95%;
@@ -159,12 +196,14 @@ export default {
   border-radius: 11px;
   overflow: hidden;
 }
+
 .request-photo img {
   width: 100%;
   height: 100%;
   border-radius: 11px;
   object-fit: cover;
 }
+
 .request-card-tasks-block {
   height: 49%;
   max-height: 49%;
@@ -172,28 +211,35 @@ export default {
   flex-direction: column;
   justify-content: space-between;
 }
+
 .create-task-button {
   width: 200px;
 }
+
 .custom-scroll::-webkit-scrollbar {
   width: 5px;
 }
+
 .custom-scroll::-webkit-scrollbar-track {
   background: rgb(169, 168, 159);
   border-radius: 6px;
 }
+
 .custom-scroll::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 6px;
 }
+
 .custom-scroll::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
 .tasks-list-block {
   display: flex;
   flex-direction: column;
   height: 80%;
 }
+
 .tasks-button-block {
   height: 19%;
   display: flex;
