@@ -59,14 +59,28 @@ services:
       - net
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
-#    healthcheck:
-#      test:
-#        [
-#          "CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}"
-#        ]
-#      interval: 5s
-#      timeout: 5s
-#      retries: 5
+
+  frontend:
+    restart: always
+    build:
+      context: ./front/
+      dockerfile: ./Dockerfile
+    image: dd_frontend
+    container_name: dd_frontend
+    volumes:
+      - dd_front_app:/dd_front
+    expose:
+      - "${FRONTEND_HOST_PORT}:${FRONTEND_CONTAINER_PORT}"
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    networks:
+      - net
+    command: >
+      sh -c "
+      npm run serve
+      "
 
 networks:
   net:
@@ -76,3 +90,4 @@ volumes:
   static_dd_back:
   media_dd_back:
   db_data:
+  dd_front_app:
