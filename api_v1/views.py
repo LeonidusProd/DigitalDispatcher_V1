@@ -4,8 +4,14 @@ from rest_framework import generics, viewsets
 # from rest_framework.response import Response
 # from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
+from rest_framework.views import APIView
+
 from .permissions import *
 from rest_framework import status
+import uuid
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from .models import *
 from django.contrib.auth.models import User
@@ -46,7 +52,7 @@ class BotTokensUpdateView(generics.RetrieveUpdateAPIView):
     """Обновление и получение токенов ботов"""
     queryset = BotsSettings.objects.all()
     serializer_class = BotTokensSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = ((IsSuperuser | IsStaff), )
 
 
 class CityListView(generics.ListAPIView):
@@ -78,7 +84,7 @@ class HousingComplexListView(generics.ListAPIView):
     """Список всех жилых комплексов"""
     queryset = HousingComplex.objects.all()
     serializer_class = HousingComplexLstMngCrtDelSerializer
-    permission_classes = (IsSuperuser, )
+    permission_classes = ((IsSuperuser | IsStaff), )
 
 
 class HousingComplexCreateView(generics.CreateAPIView):
@@ -93,6 +99,17 @@ class HousingComplexDeleteView(generics.DestroyAPIView):
     queryset = HousingComplex.objects.all()
     serializer_class = HousingComplexLstMngCrtDelSerializer
     permission_classes = (IsSuperuser, )
+
+
+class HousingComplexHousesListView(generics.ListAPIView):
+    """Список домов комплекса"""
+
+    def get_queryset(self):
+        return House.objects.filter(
+            complex_id=self.kwargs.get('pk')
+        )
+    serializer_class = HouseShortLstSerializer
+    permission_classes = ((IsSuperuser | IsStaff),)
 
 
 class DepartmentListView(generics.ListAPIView):
@@ -243,6 +260,22 @@ class RequestCreateView(generics.CreateAPIView):
     permission_classes = ((IsSuperuser | IsStaff), )
 
 
+class RequestCreateByBotView(generics.CreateAPIView):
+    """Добавление новой заявки ботом"""
+    permission_classes = (IsValidTemporaryToken, )
+    serializer_class = RequestLstMngCrtDelSerializer
+
+    def create(self, request, *args, **kwargs):
+        token = request.data.get('token')
+        temp_token = get_object_or_404(TemporaryToken, token=token)
+
+        # Удаляем токен после использования
+        temp_token.delete()
+
+        # Сохранение заявки (данные будут взяты из request.data)
+        return super().create(request, *args, **kwargs)
+
+
 #######################################################################
 class ResidentListView(generics.ListAPIView):
     """Список всех жителей"""
@@ -256,6 +289,18 @@ class ResidentCreateView(generics.CreateAPIView):
     queryset = Resident.objects.all()
     serializer_class = ResidentFullLstMngCrtDelSerializer
     permission_classes = ((IsSuperuser | IsStaff), )
+
+
+class ResidentByTgView(APIView):
+    permission_classes = ((IsSuperuser | IsStaff), )
+
+    def get(self, request, tgID, format=None):
+        try:
+            resident = Resident.objects.get(tg_id=tgID)
+            serializer = ResidentLstSerializer(resident)
+            return Response({'exists': True, 'resident': serializer.data}, status=status.HTTP_200_OK)
+        except Resident.DoesNotExist:
+            return Response({'exists': False}, status=status.HTTP_404_NOT_FOUND)
 
 
 class WorkScheduleListView(generics.ListAPIView):
@@ -367,6 +412,19 @@ class UserDeleteView(generics.DestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserLstMngCrtDelSerializer
     permission_classes = (IsSuperuser, )
+
+
+# Специализированные view
+class GenerateTempTokenView(generics.CreateAPIView):
+    queryset = TemporaryToken.objects.all()
+    serializer_class = TemporaryTokenSerializer
+    permission_classes = ((IsSuperuser | IsStaff), )
+
+    def create(self, request, *args, **kwargs):
+        token = str(uuid.uuid4())
+        created_to = request.data.get('created_to')
+        temp_token = TemporaryToken.objects.create(token=token, created_to=created_to)
+        return Response({'token': temp_token.token})
 
 
 # Не используются в настоящий момент

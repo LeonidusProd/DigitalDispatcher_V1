@@ -100,6 +100,17 @@ class HouseLstMngCrtDelSerializer(serializers.ModelSerializer):
         fields = ['pk', 'name', 'complex', 'address']
 
 
+class HouseShortLstSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField(method_name='get_name')
+
+    def get_name(self, obj):
+        return str(obj.short_str())
+
+    class Meta:
+        model = House
+        fields = ['pk', 'name', 'complex', 'address']
+
+
 class OfficeLstMngCrtDelSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -317,6 +328,13 @@ class UserLstMngCrtDelSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['pk', 'name', 'username', 'password', 'is_superuser', 'is_staff', 'first_name', 'last_name', ]
+
+
+# Специализированные serializer
+class TemporaryTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TemporaryToken
+        fields = ['token', 'created_to', 'created_at']
 
 
 # Не используются в настоящий момент

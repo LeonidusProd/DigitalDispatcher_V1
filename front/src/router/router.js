@@ -2,6 +2,7 @@ import LoginPage from "@/pages/LoginPage.vue";
 import {createRouter, createWebHistory} from "vue-router";
 import RequestsManage from "@/pages/RequestsManage.vue";
 import Settings from "@/pages/Settings.vue";
+import SendRequest from "@/pages/SendRequest.vue";
 
 
 const routes = [
@@ -21,6 +22,11 @@ const routes = [
         name: 'settings',
         component: Settings,
         meta: { requiresAuth: true, allowedRoles: ['admin'] }
+    },
+    {
+        path: '/send-request',
+        name: 'send_request',
+        component: SendRequest,
     },
 ]
 

@@ -30,6 +30,7 @@ services:
     volumes:
       - static_dd_back:/app/static
       - media_dd_back:/app/media
+      - dd_front_dist:/app/dist
     env_file:
       - .env
     ports:
@@ -68,19 +69,19 @@ services:
     image: dd_frontend
     container_name: dd_frontend
     volumes:
-      - dd_front_app:/dd_front
-    expose:
-      - "${FRONTEND_HOST_PORT}:${FRONTEND_CONTAINER_PORT}"
-    env_file:
-      - .env
+      - dd_front_dist:/app/dist
+#    expose:
+#      - "${FRONTEND_HOST_PORT}:${FRONTEND_CONTAINER_PORT}"
+#    env_file:
+#      - .env
     depends_on:
       - backend
     networks:
       - net
-    command: >
-      sh -c "
-      npm run serve
-      "
+#    command: >
+#      sh -c "
+#      npm run serve
+#      "
 
 networks:
   net:
@@ -90,4 +91,4 @@ volumes:
   static_dd_back:
   media_dd_back:
   db_data:
-  dd_front_app:
+  dd_front_dist:

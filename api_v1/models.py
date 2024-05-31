@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from datetime import timedelta
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -162,6 +163,9 @@ class House(models.Model):
     def __str__(self):
         return f'{self.complex.__str__()}: {self.address.short_str_with_city()}'
 
+    def short_str(self):
+        return f'{self.address.short_str()}'
+
     class Meta:
         verbose_name = 'Жилой дом'
         verbose_name_plural = 'Жилые дома'
@@ -319,3 +323,12 @@ class BotsSettings(models.Model):
     class Meta:
         verbose_name = 'Токены ботов'
         verbose_name_plural = 'Токены ботов'
+
+
+class TemporaryToken(models.Model):
+    token = models.CharField(max_length=100, unique=True)
+    created_to = models.BigIntegerField(unique=True, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_valid(self):
+        return timezone.now() - self.created_at < timedelta(minutes=15)  # Токен действителен 15 минут

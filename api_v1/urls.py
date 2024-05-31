@@ -17,6 +17,7 @@ urlpatterns = [
     path('complex/', views.HousingComplexListView.as_view(), name='complex_list'),
     path('complex/create/', views.HousingComplexCreateView.as_view(), name='complex_create'),
     path('complex/delete/<int:pk>', views.HousingComplexDeleteView.as_view(), name='complex_delete'),
+    path('complex/<int:pk>/houses', views.HousingComplexHousesListView.as_view(), name='complex_houses_list'),
 
     path('department/', views.DepartmentListView.as_view(), name='department_list'),
     path('department/create/', views.DepartmentCreateView.as_view(), name='department_create'),
@@ -43,9 +44,11 @@ urlpatterns = [
     path('request/<int:pk>', views.RequestDetailView.as_view(), name='request_detail'),
     path('request/<int:pk>/tasks', views.RequestTasksView.as_view(), name='request_tasks'),
     path('request/create/', views.RequestCreateView.as_view(), name='request_create'),
+    path('request/create/by-bot', views.RequestCreateByBotView.as_view(), name='request_create_by_bot'),
 
     path('resident/', views.ResidentListView.as_view(), name='resident_list'),
     path('resident/create/', views.ResidentCreateView.as_view(), name='resident_create'),
+    path('resident/by_tgid/<int:tgID>', views.ResidentByTgView.as_view(), name='resident_byTG'),
 
     path('schedule/', views.WorkScheduleListView.as_view(), name='schedule_list'),
     path('schedule/<int:pk>', views.WorkScheduleDetailView.as_view(), name='schedule_detail'),
@@ -66,6 +69,9 @@ urlpatterns = [
     path('user/', views.UserListView.as_view(), name='user_list'),
     path('user/create/', views.UserCreateView.as_view(), name='user_create'),
     path('user/delete/<int:pk>', views.UserDeleteView.as_view(), name='user_delete'),
+
+    # Специализированные api
+    path('generate-add-request-token', views.GenerateTempTokenView.as_view())
 
     # Не используются в настоящий момент
     # path('city/<int:pk>', views.CityDetailView.as_view(), name='city_detail'),
