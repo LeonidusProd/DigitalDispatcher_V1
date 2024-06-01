@@ -15,7 +15,7 @@ import backend_connection as bc
 async def start_keyboard():
     keyboard = InlineKeyboardBuilder()
     keyboard.add(InlineKeyboardButton(text='Отправить заявку', callback_data='send_req_first_step'))
-    keyboard.add(InlineKeyboardButton(text='Проверить статус', callback_data='!check_status'))
+    keyboard.add(InlineKeyboardButton(text='Мои заявки', callback_data='user_requests'))
     return keyboard.as_markup()
 
 

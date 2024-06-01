@@ -149,6 +149,16 @@ async def save_request(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await callback.message.delete()
 
 
+@router.callback_query(lambda query: query.data in ['user_requests'])
+async def input_snp(callback: CallbackQuery, state: FSMContext):
+    await state.update_data(user_state='user_requests')
+    await callback.message.answer(
+        text=await msg.user_requests_message(callback.from_user.id),
+        reply_markup=await kbs.start_keyboard()
+    )
+    await callback.message.delete()
+
+
 @router.message(lambda message: message.content_type in [ContentType.TEXT, ContentType.PHOTO])
 async def union_text_handler(message: Message, state: FSMContext):
     try:
@@ -176,7 +186,7 @@ async def union_text_handler(message: Message, state: FSMContext):
                     if message.caption:
                         await state.update_data(request_reason=str(message.caption))
                         print(message.photo)
-                        await state.update_data(request_photo=message.photo[1].file_id)
+                        await state.update_data(request_photo=message.photo[-1].file_id)
                         await message.answer(
                             text=msg.THIRD_STEP_MESSAGE,
                             reply_markup=await kbs.request_third_step(state)

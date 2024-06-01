@@ -18,7 +18,6 @@ async def get_bot_token(token):
                     url=f'{base_url}/api/v1/bottokens/manage/1',
                     headers=headers
             ) as response:
-                # print(await response.json())
                 return dict(await response.json())['residentBotToken']
     except aiohttp.ClientError as e:
         print(e)
@@ -36,7 +35,6 @@ async def get_complexes_list(token):
                     url=f'{base_url}/api/v1/complex/',
                     headers=headers
             ) as response:
-                # print(await response.json())
                 return list(await response.json())
     except aiohttp.ClientError as e:
         print(e)
@@ -54,13 +52,11 @@ async def get_houses_list(token, complex_id):
                     url=f'{base_url}/api/v1/complex/{complex_id}/houses',
                     headers=headers
             ) as response:
-                # print(await response.json())
                 return list(await response.json())
     except aiohttp.ClientError as e:
         print(e)
 
 
-# @authorization(base_url)
 async def check_user_exists(token, user_id):
     headers = {
         'Authorization': f'Token {token}',
@@ -81,7 +77,6 @@ async def check_user_exists(token, user_id):
         print(e)
 
 
-# @authorization(base_url)
 async def get_or_create_resident(token, state):
     headers = {
         'Authorization': f'Token {token}',
@@ -119,36 +114,28 @@ async def get_or_create_resident(token, state):
 @authorization(base_url)
 async def create_new_request(token, state, bot):
     headers = {
-        'Authorization': f'Token {token}',
+        'Authorization': f'Token {token}'
     }
 
     user_data = dict(await state.get_data())
 
     form = aiohttp.FormData()
     form.add_field('text', str(user_data['request_reason']))
-    form.add_field('status', 1)
-    form.add_field('resident', await get_or_create_resident(token, state))
-    form.add_field('address', int(user_data['selected_address_id']))
+    form.add_field('status', '1')
+    form.add_field('resident', str(await get_or_create_resident(token, state)))
+    form.add_field('address', str(user_data['selected_address_id']))
 
     if 'apartment_number' in user_data:
-        form.add_field('apartment', int(user_data['apartment_number']))
+        form.add_field('apartment', str(user_data['apartment_number']))
 
     if 'request_photo' in user_data:
-        async with aiohttp.ClientSession() as session:
-            try:
-                file = await bot.get_file(user_data['request_photo'])
-                file_path = file.file_path
-                async with session.get(f'https://api.telegram.org/file/bot{get_bot_token()}/'
-                                       f'{file_path}') as response:
-                    if response.status == 200:
-                        photo_data = await response.read()
+        file = await bot.get_file(user_data['request_photo'])
+        photo = await bot.download_file(file.file_path)
 
-                        form.add_field('photo',
-                                       photo_data,
-                                       filename='request_photo.jpg',
-                                       content_type='multipart/form-data')
-            except aiohttp.ClientError as e:
-                print(e)
+        form.add_field('photo',
+                       photo,
+                       filename='request_photo.jpg',
+                       content_type='image/jpeg')
 
     try:
         async with aiohttp.ClientSession() as session:
@@ -160,6 +147,30 @@ async def create_new_request(token, state, bot):
                 return await response.json()
     except aiohttp.ClientError as e:
         print(e)
+
+
+@authorization(base_url)
+async def get_user_requests(token, user_id):
+    headers = {
+        'Authorization': f'Token {token}',
+    }
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                    url=f'{base_url}/api/v1/requests/from-user/{user_id}',
+                    headers=headers
+            ) as response:
+                return list(await response.json())
+    except aiohttp.ClientError as e:
+        print(e)
+
+
+
+
+
+
+
 
 
 # async def get_test_data():

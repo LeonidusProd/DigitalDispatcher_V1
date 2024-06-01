@@ -300,7 +300,7 @@ class ResidentFullLstMngCrtDelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Resident
-        fields = '__all__'
+        fields = ['pk', 'name', 'surname', 'patronymic', 'phone', 'tg_id']
 
 
 class WorkDayShortLstSerializer(serializers.ModelSerializer):

@@ -45,6 +45,7 @@ urlpatterns = [
     path('request/<int:pk>/tasks', views.RequestTasksView.as_view(), name='request_tasks'),
     path('request/create/', views.RequestCreateView.as_view(), name='request_create'),
     path('request/create/by-bot', views.RequestCreateByBotView.as_view(), name='request_create_by_bot'),
+    path('requests/from-user/<int:tgID>', views.UserRequestsView.as_view(), name='new_requests'),
 
     path('resident/', views.ResidentListView.as_view(), name='resident_list'),
     path('resident/create/', views.ResidentCreateView.as_view(), name='resident_create'),

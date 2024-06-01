@@ -276,6 +276,17 @@ class RequestCreateByBotView(generics.CreateAPIView):
         return super().create(request, *args, **kwargs)
 
 
+class UserRequestsView(generics.ListAPIView):
+    """Список заявок пользователя Tg"""
+    def get_queryset(self):
+        return Request.objects.filter(
+            resident__tg_id=self.kwargs.get('tgID')
+        )
+
+    serializer_class = RequestDetSerializer
+    permission_classes = ((IsSuperuser | IsStaff), )
+
+
 #######################################################################
 class ResidentListView(generics.ListAPIView):
     """Список всех жителей"""

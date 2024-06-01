@@ -1,6 +1,9 @@
+from backend_connection import get_user_requests
+
+
 START_MESSAGE = ("Привет, я \"Цифровой диспетчер\"!\n\n"
                  "Через меня можно обратиться в управляющую компанию и оставить аварийную заявку, "
-                 "а так же узнать ход её выполнения.\n\n"
+                 "а так же посмотреть созданные вами заявки и их ход выполнения.\n\n"
                  "Какое действие вы хотите выполнить?")
 
 FIRST_STEP_MESSAGE = ("Для начала укажите свой адрес. Выберите жилой комплекс и свой дом.\n\n"
@@ -31,3 +34,21 @@ INPUT_PHONE_MENU = ("Введите свой номер телефона и от
                     "Вы также можете поделиться номером телефона, привязанным к аккаунту Telegram.")
 
 REQUEST_SENDED_MESSAGE = "Заявка успешо создана! В скором времени мы с вами свяжемся."
+
+
+async def user_requests_message(user_id):
+    user_requests = await get_user_requests(user_id)
+    if len(user_requests) == 0:
+        return "Вы ещё не отправили ни одной заявки."
+    else:
+        message = "Ваши заявки:\n"
+        i = 1
+        for request in user_requests:
+            message += (f"{i}. Заявка от {request['date']}.\n"
+                        f"Статус выполнения: {request['status_name']}.\n"
+                        f"Адрес: {request['address']}.\n"
+                        f"Информация заявки: {str(request['info'])[:50]}...\n\n")
+
+            i += 1
+
+        return message
