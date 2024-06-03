@@ -278,6 +278,29 @@ class ServiseEmployeesSerializer(serializers.ModelSerializer):
         fields = ['pk', 'name']
 
 
+class TaskFullInfoSerializer(serializers.ModelSerializer):
+    employee = serializers.SerializerMethodField(method_name='get_employee')
+    task = serializers.SerializerMethodField(method_name='get_task')
+    status_name = serializers.SerializerMethodField(method_name='get_status_name')
+    task_description = serializers.SerializerMethodField(method_name='get_task_description')
+
+    def get_employee(self, obj):
+        return obj.employee.get_respectful_treatment()
+
+    def get_task(self, obj):
+        return obj.service.name
+
+    def get_status_name(self, obj):
+        return obj.status.name
+
+    def get_task_description(self, obj):
+        return obj.service.description
+
+    class Meta:
+        model = RequestTask
+        fields = ['pk', 'employee', 'task', 'status', 'status_name', 'request', 'task_description']
+
+
 class RequestTaskDelSerializer(serializers.ModelSerializer):
 
     class Meta:

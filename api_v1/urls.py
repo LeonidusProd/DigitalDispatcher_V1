@@ -64,8 +64,10 @@ urlpatterns = [
     path('service/create/', views.ServiceCreateView.as_view(), name='service_create'),
     path('service/delete/<int:pk>', views.ServiceDeleteView.as_view(), name='service_delete'),
 
+    path('task/<int:pk>', views.TaskFullInfoView.as_view(), name='create_full_info'),
     path('task/create', views.TaskCreateView.as_view(), name='create_task'),
     path('task/delete/<int:pk>', views.TaskDeleteView.as_view(), name='delete_task'),
+    path('tasks/for-master/<int:tgID>', views.TasksForMasterView.as_view(), name='tasks_for_master'),
 
     path('user/', views.UserListView.as_view(), name='user_list'),
     path('user/create/', views.UserCreateView.as_view(), name='user_create'),

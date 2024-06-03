@@ -1,12 +1,16 @@
+import os
 import aiohttp
-from functools import wraps
+
 from decorators import authorization
-import json
-
-base_url = "http://127.0.0.1:8000"
 
 
-@authorization(base_url)
+BASE_URL = str(os.environ.get(
+    "BASE_URL",
+    default='http://127.0.0.1:8000'
+))
+
+
+@authorization(BASE_URL)
 async def get_bot_token(token):
     headers = {
         'Authorization': f'Token {token}',
@@ -15,7 +19,7 @@ async def get_bot_token(token):
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                    url=f'{base_url}/api/v1/bottokens/manage/1',
+                    url=f'{BASE_URL}/api/v1/bottokens/manage/1',
                     headers=headers
             ) as response:
                 return dict(await response.json())['residentBotToken']
@@ -23,7 +27,7 @@ async def get_bot_token(token):
         print(e)
 
 
-@authorization(base_url)
+@authorization(BASE_URL)
 async def get_complexes_list(token):
     headers = {
         'Authorization': f'Token {token}',
@@ -32,7 +36,7 @@ async def get_complexes_list(token):
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                    url=f'{base_url}/api/v1/complex/',
+                    url=f'{BASE_URL}/api/v1/complex/',
                     headers=headers
             ) as response:
                 return list(await response.json())
@@ -40,7 +44,7 @@ async def get_complexes_list(token):
         print(e)
 
 
-@authorization(base_url)
+@authorization(BASE_URL)
 async def get_houses_list(token, complex_id):
     headers = {
         'Authorization': f'Token {token}',
@@ -49,9 +53,10 @@ async def get_houses_list(token, complex_id):
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                    url=f'{base_url}/api/v1/complex/{complex_id}/houses',
+                    url=f'{BASE_URL}/api/v1/complex/{complex_id}/houses',
                     headers=headers
             ) as response:
+                print(list(await response.json()))
                 return list(await response.json())
     except aiohttp.ClientError as e:
         print(e)
@@ -65,7 +70,7 @@ async def check_user_exists(token, user_id):
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                    url=f'{base_url}/api/v1/resident/by_tgid/{user_id}',
+                    url=f'{BASE_URL}/api/v1/resident/by_tgid/{user_id}',
                     headers=headers
             ) as response:
                 resp = dict(await response.json())
@@ -102,7 +107,7 @@ async def get_or_create_resident(token, state):
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(
-                        url=f'{base_url}/api/v1/resident/create/',
+                        url=f'{BASE_URL}/api/v1/resident/create/',
                         headers=headers,
                         data=data
                 ) as response:
@@ -111,7 +116,7 @@ async def get_or_create_resident(token, state):
             print(e)
 
 
-@authorization(base_url)
+@authorization(BASE_URL)
 async def create_new_request(token, state, bot):
     headers = {
         'Authorization': f'Token {token}'
@@ -140,7 +145,7 @@ async def create_new_request(token, state, bot):
     try:
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                    url=f'{base_url}/api/v1/request/create/',
+                    url=f'{BASE_URL}/api/v1/request/create/',
                     headers=headers,
                     data=form
             ) as response:
@@ -149,7 +154,7 @@ async def create_new_request(token, state, bot):
         print(e)
 
 
-@authorization(base_url)
+@authorization(BASE_URL)
 async def get_user_requests(token, user_id):
     headers = {
         'Authorization': f'Token {token}',
@@ -158,83 +163,9 @@ async def get_user_requests(token, user_id):
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                    url=f'{base_url}/api/v1/requests/from-user/{user_id}',
+                    url=f'{BASE_URL}/api/v1/requests/from-user/{user_id}',
                     headers=headers
             ) as response:
                 return list(await response.json())
     except aiohttp.ClientError as e:
         print(e)
-
-
-
-
-
-
-
-
-
-# async def get_test_data():
-#     async with aiohttp.ClientSession() as session:
-#         async with session.get('http://localhost:8000/api/v1/test/') as response:
-#             return await response.json()
-#
-#
-# async def get_complexes_data():
-#     async with aiohttp.ClientSession() as session:
-#         async with session.get('http://127.0.0.1:8000/api/v1/complexes/') as response:
-#             return await response.json()
-#
-#
-# async def get_houses_data():
-#     async with aiohttp.ClientSession() as session:
-#         async with session.get('http://127.0.0.1:8000/api/v1/houses/') as response:
-#             return await response.json()
-#
-#
-# async def get_complex_houses_data(complex_id: int):
-#     async with aiohttp.ClientSession() as session:
-#         async with session.get(f'http://127.0.0.1:8000/api/v1/complex_houses/{complex_id}') as response:
-#             return await response.json()
-#
-#
-# async def get_user_by_tgID(user_tgID: int):
-#     async with aiohttp.ClientSession() as session:
-#         async with session.get(f'http://127.0.0.1:8000/api/v1/resident/by_tgID/{user_tgID}') as response:
-#             return await response.json()
-#
-#
-# async def create_user(snp: str, phone: str, user_tgID: int):
-#     async with aiohttp.ClientSession() as session:
-#         data = {
-#             'snp': snp,
-#             'phone': phone,
-#             'tg_id': user_tgID
-#         }
-#         async with session.post(f'http://127.0.0.1:8000/api/v1/resident', data=data) as response:
-#             return await response.json()
-#
-#
-# async def create_request(text: str, resident: int, house: int, apartment: int, photo: str):
-#     async with aiohttp.ClientSession() as session:
-#         data = {
-#             'text': text,
-#             'resident': resident,
-#             'address': house,
-#         }
-#         if apartment != -1:
-#             data['apartment'] = apartment
-#         if photo != '-1':
-#             data['photo'] = photo
-#         async with session.post(f'http://127.0.0.1:8000/api/v1/requests/', data=data) as response:
-#             return await response.json()
-
-
-# async def send_data_to_api(bot_data):
-#     async with aiohttp.ClientSession() as session:
-#         url = 'http://localhost:8000/api/v1/requests/'  # Предполагая, что это URL вашего API для создания объектов Request
-#         headers = {'Content-Type': 'application/json'}
-#         async with session.post(url, data=json.dumps(bot_data), headers=headers) as response:
-#             if response.status == 201:  # Проверяем успешность создания объекта на сервере
-#                 return True
-#             else:
-#                 return False

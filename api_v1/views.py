@@ -390,6 +390,13 @@ class ServiceDeleteView(generics.DestroyAPIView):
     permission_classes = (IsSuperuser, )
 
 
+class TaskFullInfoView(generics.RetrieveUpdateAPIView):
+    """Список всех типовых задач"""
+    queryset = RequestTask.objects.all()
+    serializer_class = TaskFullInfoSerializer
+    permission_classes = ((IsSuperuser | IsStaff), )
+
+
 class TaskCreateView(generics.CreateAPIView):
     """Создание задачи заявки"""
     queryset = RequestTask.objects.all()
@@ -401,6 +408,18 @@ class TaskDeleteView(generics.DestroyAPIView):
     """Удаление задачи заявки"""
     queryset = RequestTask.objects.all()
     serializer_class = RequestTaskDelSerializer
+    permission_classes = ((IsSuperuser | IsStaff), )
+
+
+class TasksForMasterView(generics.ListAPIView):
+    """Список задач пользователя Tg"""
+    def get_queryset(self):
+        return RequestTask.objects.filter(
+            employee__tg_id=self.kwargs.get('tgID'),
+            status__in=[1, 2, 3]
+        )
+
+    serializer_class = RequestTaskInfoSerializer
     permission_classes = ((IsSuperuser | IsStaff), )
 
 
