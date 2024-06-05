@@ -27,4 +27,3 @@ def shorten_name(name, max_length=30):
         shorted_street_name = street_name
 
     return f"{street_label} {shorted_street_name}., {number_label} {number_number}"
-

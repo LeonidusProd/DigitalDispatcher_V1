@@ -1,5 +1,17 @@
 import aiohttp
 from functools import wraps
+import os
+
+
+LOGIN_USERNAME = str(os.environ.get(
+    "EMPL_LOGIN_USERNAME",
+    default='piter'
+))
+
+LOGIN_PASSWORD = str(os.environ.get(
+    "EMPL_LOGIN_PASSWORD",
+    default='pass1234forpiter'
+))
 
 
 def authorization(base_url):
@@ -21,8 +33,8 @@ async def login(base_url):
     try:
         async with aiohttp.ClientSession() as session:
             data = {
-                'username': 'piter',
-                'password': 'pass1234forpiter'
+                'username': LOGIN_USERNAME,
+                'password': LOGIN_PASSWORD
             }
 
             async with session.post(
@@ -31,7 +43,7 @@ async def login(base_url):
             ) as response:
                 return dict(await response.json())['auth_token']
     except aiohttp.ClientError as e:
-        print(e)
+        print(f"Backend conection error: {e}. Source: login")
 
 
 async def logout(base_url, token):
@@ -47,4 +59,4 @@ async def logout(base_url, token):
             ) as response:
                 return await response.json()
     except aiohttp.ClientError as e:
-        print(e)
+        print(f"Backend conection error: {e}. Source: logout")

@@ -9,6 +9,7 @@ import backend_connection as bc
 from utils import ensure_download_directory
 
 router = Router()
+DOWNLOAD_DIR = './EmployeesBot/downloads'
 
 
 @router.message(CommandStart())
@@ -88,8 +89,6 @@ async def open_request(callback: CallbackQuery):
             reply_markup=await kbs.request_info_keyboard(task_id)
         )
     else:
-        DOWNLOAD_DIR = './EmployeesBot/downloads'
-
         ensure_download_directory(DOWNLOAD_DIR)
         local_photo_path = str(await bc.download_photo(request_info['photo'], DOWNLOAD_DIR))
 

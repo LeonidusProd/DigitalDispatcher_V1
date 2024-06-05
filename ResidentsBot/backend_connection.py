@@ -24,7 +24,7 @@ async def get_bot_token(token):
             ) as response:
                 return dict(await response.json())['residentBotToken']
     except aiohttp.ClientError as e:
-        print(e)
+        print(f"Backend conection error: {e}. Source: get_bot_token")
 
 
 @authorization(BASE_URL)
@@ -41,7 +41,7 @@ async def get_complexes_list(token):
             ) as response:
                 return list(await response.json())
     except aiohttp.ClientError as e:
-        print(e)
+        print(f"Backend conection error: {e}. Source: get_complexes_list")
 
 
 @authorization(BASE_URL)
@@ -59,7 +59,7 @@ async def get_houses_list(token, complex_id):
                 print(list(await response.json()))
                 return list(await response.json())
     except aiohttp.ClientError as e:
-        print(e)
+        print(f"Backend conection error: {e}. Source: get_houses_list")
 
 
 async def check_user_exists(token, user_id):
@@ -79,7 +79,7 @@ async def check_user_exists(token, user_id):
                 else:
                     return False, -1
     except aiohttp.ClientError as e:
-        print(e)
+        print(f"Backend conection error: {e}. Source: check_user_exists")
 
 
 async def get_or_create_resident(token, state):
@@ -113,7 +113,7 @@ async def get_or_create_resident(token, state):
                 ) as response:
                     return dict(await response.json())['pk']
         except aiohttp.ClientError as e:
-            print(e)
+            print(f"Backend conection error: {e}. Source: get_or_create_resident")
 
 
 @authorization(BASE_URL)
@@ -151,7 +151,7 @@ async def create_new_request(token, state, bot):
             ) as response:
                 return await response.json()
     except aiohttp.ClientError as e:
-        print(e)
+        print(f"Backend conection error: {e}. Source: create_new_request")
 
 
 @authorization(BASE_URL)
@@ -168,4 +168,4 @@ async def get_user_requests(token, user_id):
             ) as response:
                 return list(await response.json())
     except aiohttp.ClientError as e:
-        print(e)
+        print(f"Backend conection error: {e}. Source: get_user_requests")
